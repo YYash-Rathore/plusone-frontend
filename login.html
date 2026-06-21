@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — PlusOne Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:        #08080a;
+    --surface:    #0f0f14;
+    --rule:       rgba(255, 255, 255, 0.06);
+    --rule-hi:    rgba(255, 255, 255, 0.12);
+    --gold:       #d4af37;
+    --gold-dim:   #aa842c;
+    --text-1:     #f4f4f6;
+    --text-2:     #a1a1aa;
+    --text-3:     #52525b;
+    --serif:      'Cormorant Garamond', Georgia, serif;
+    --sans:       'Plus Jakarta Sans', system-ui, sans-serif;
+    --r-sm:       8px;
+    --r-lg:       24px;
+  }
+
+  body {
+    background: var(--ink);
+    color: var(--text-1);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── AMBIENT GLOW ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle 600px at 50% 50%, rgba(212, 175, 55, 0.03), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SIMPLE NAVBAR ── */
+  nav {
+    padding: 24px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 0.5px solid var(--rule);
+    position: relative;
+    z-index: 10;
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--text-1);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); font-style: italic; }
+  
+  .back-link {
+    font-size: 13px;
+    color: var(--text-2);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  /* ── AUTH BOX ── */
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 6%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-lg);
+    padding: 60px 50px;
+    width: 100%;
+    max-width: 460px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  }
+
+  .auth-title {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 300;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .auth-title em { color: var(--gold); font-style: italic; }
+
+  .auth-sub {
+    font-size: 14px;
+    color: var(--text-2);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-sm);
+    padding: 16px;
+    color: var(--text-1);
+    font-family: var(--sans);
+    font-size: 15px;
+    transition: all 0.3s;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+    background: rgba(212, 175, 55, 0.02);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 18px;
+    background: var(--gold);
+    color: #000;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+  }
+
+  .btn-submit:hover {
+    background: #f1cc5b;
+    transform: translateY(-2px);
+  }
+
+  .error-message {
+    color: #ff4d4d;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 16px;
+    display: none; /* Hidden by default */
+  }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plus<span>One</span></a>
+  <a href="index.html" class="back-link">← Back to Home</a>
+</nav>
+
+<main>
+  <div class="auth-card">
+    <h1 class="auth-title">Welcome <em>Back</em>.</h1>
+    <p class="auth-sub">Enter your credentials to access your secure dashboard.</p>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="email" class="form-input" required placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-input" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Secure Login →</button>
+      <p id="errorMsg" class="error-message">Invalid credentials. Please try again.</p>
+    </form>
+  </div>
+</main>
+
+<script>
+  // Pura Login API Logic
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Page refresh rokne ke liye
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('errorMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Button loading state
+    submitBtn.textContent = 'Verifying...';
+    submitBtn.style.opacity = '0.7';
+
+    fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email: email, password: password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Token aur Email localStorage mein save kar lo
+            localStorage.setItem('userToken', data.token);
+            localStorage.setItem('userEmail', data.user.email);
+            
+            // Seedha Dashboard par bhej do
+            window.location.href = 'dashboard.html';
+        } else {
+            // Agar password galat ho
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = data.message || 'Invalid credentials.';
+            submitBtn.textContent = 'Secure Login →';
+            submitBtn.style.opacity = '1';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = 'Server error. Is your local server running?';
+        submitBtn.textContent = 'Secure Login →';
+        submitBtn.style.opacity = '1';
+    });
+  });
+
+  // Agar user pehle se logged in hai, toh login page dikhane ka koi fayda nahi, direct dashboard bhejo
+  window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('userToken')) {
+          window.location.href = 'dashboard.html';
+      }
+  });
+</script>
+
+</body>
+</html>
