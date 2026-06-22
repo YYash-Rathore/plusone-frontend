@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlusOne — Lucknow's Premium Social Concierge & Platonic Companionship</title>
+<title>PlusOne — Lucknow's Safest Companionship for Women</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -101,16 +101,6 @@
 
   .nav-links a:hover { color: var(--text-1); }
 
-  .coming-soon-badge {
-    font-size: 10px;
-    padding: 2px 8px;
-    background: var(--rule-hi);
-    color: var(--text-2);
-    border-radius: 4px;
-    margin-left: 6px;
-    letter-spacing: 0.05em;
-  }
-
   /* ── MAIN AREA ── */
   main { position: relative; z-index: 1; }
 
@@ -162,7 +152,7 @@
 
   .hero-headline {
     font-family: var(--serif);
-    font-size: clamp(42px, 5.5vw, 72px);
+    font-size: clamp(42px, 5.5vw, 68px);
     font-weight: 300;
     line-height: 1.1;
     letter-spacing: -0.01em;
@@ -254,68 +244,90 @@
   }
 
   /* ── HERO GLASS CARD ── */
-  .hero-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 0.5px solid var(--rule-hi);
-    border-radius: var(--r-lg);
-    padding: 40px;
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
-  }
-
-  .hero-card-label {
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 24px;
-    font-weight: 500;
-  }
-
-  .hero-badge {
+/* ── BADA HERO GLASS CARD (Sleek & Elegant) ── */
+/* ── GREEN VERIFIED BADGE ── */
+.hero-badge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     padding: 6px 14px;
-    background: rgba(212, 175, 55, 0.06);
-    border: 0.5px solid rgba(212, 175, 55, 0.2);
+    background: rgba(76, 175, 80, 0.15); /* Thoda bright background */
+    border: 1px solid rgba(76, 175, 80, 0.4); /* Visible border */
     border-radius: 100px;
-    font-size: 11px;
+    font-size: 10.5px;
+    color: #66bb6a; /* Text thoda pop karega */
+    letter-spacing: 0.05em;
+    margin-bottom: 20px; 
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+.hero-card {
+    background: rgba(255, 255, 255, 0.03); /* Halka sa grey/glass tint */
+    border: 1px solid rgba(255, 255, 255, 0.12); /* Visible soft border */
+    border-radius: 20px;
+    padding: 32px 36px;
+    backdrop-filter: blur(20px) saturate(120%);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  } 
+
+ .hero-card-label {
+    font-size: 10.5px;
+    letter-spacing: 0.25em; /* Elegance ke liye spacing badhai */
+    color: var(--text-3);
+    margin-bottom: 20px; /* Space kam kiya */
+    font-weight: 600;
+  }
+
+  .card-stat-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Stats ke beech ka space kam kiya taaki compact lage */
+  }
+
+  .card-stat-label {
+    font-size: 13.5px;
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+  }
+
+  .card-stat-val {
+    font-family: var(--serif);
+    font-size: 22px; /* Numbers ko thoda delicate/chhota kiya */
+    font-weight: 400;
     color: var(--gold);
-    letter-spacing: 0.04em;
-    margin-bottom: 28px;
+  }
+
+  /* ── DIVIDER LINES (Fading Effect) ── */
+.hero-card-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent); 
+    margin: 14px 0; /* Lines ke upar-neeche ka space tight kar diya */
+  }
+/* ── PREMIUM SAFETY GUARANTEE BOX ── */
+  .safety-guarantee-box {
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.06) 0%, transparent 100%);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    padding: 14px 18px; /* Yahan vertical spacing kam kar di hai */
+    margin-top: 16px;
+  }
+  
+  .safety-guarantee-box p {
+    font-size: 13px; /* Thoda sleek font size */
+    color: var(--text-1); /* Soft text color */
+    line-height: 1.55; /* Text ke beech ka space thoda tight kiya */
+    font-style: italic;
+    margin: 0;
+    letter-spacing: 0.02em; /* Elegance ke liye halka spacing */
+  }
+  
+  .safety-guarantee-box p strong {
+    color: var(--gold);
     font-weight: 500;
-  }
-
-  .hero-badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--gold);
-    animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  @keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.2; transform: scale(0.9); }
-  }
-
-  .hero-card-rule {
-    height: 0.5px;
-    background: var(--rule);
-    margin: 28px 0;
   }
 
   .card-stat-row {
@@ -340,31 +352,6 @@
     font-size: 24px;
     font-weight: 400;
     color: var(--gold);
-  }
-
-  .progress-wrap { margin-top: 10px; }
-
-  .progress-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
-    width: 28%;
-    border-radius: 4px;
-  }
-
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-size: 11px;
-    color: var(--text-3);
-    letter-spacing: 0.05em;
   }
 
   /* ── COUNTERS GRID ── */
@@ -395,11 +382,6 @@
     color: var(--gold);
     line-height: 1.1;
     margin-bottom: 8px;
-  }
-
-  .counter-num .counter-denom {
-    font-size: 0.45em;
-    color: var(--text-3);
   }
 
   .counter-label {
@@ -443,7 +425,7 @@
     font-weight: 300;
     line-height: 1.15;
     color: var(--text-1);
-    max-width: 600px;
+    max-width: 650px;
     margin-bottom: 72px;
   }
 
@@ -455,7 +437,7 @@
 
   .uvp-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
 
@@ -550,45 +532,12 @@
     line-height: 1.8;
   }
 
-  /* ── TRUST MATRICES ── */
-  #trust {
-    padding: 90px 0;
-    background: rgba(255, 255, 255, 0.01);
-    border-top: 0.5px solid var(--rule);
-    border-bottom: 0.5px solid var(--rule);
-  }
-
-  .trust-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .trust-item {
-    padding: 20px 30px;
-    border-right: 0.5px solid var(--rule);
-    text-align: center;
-  }
-
-  .trust-item:last-child { border-right: none; }
-
-  .trust-icon {
-    font-size: 22px;
-    margin-bottom: 14px;
-    color: var(--gold);
-    display: block;
-  }
-
-  .trust-text {
-    font-size: 14px;
-    color: var(--text-2);
-    line-height: 1.6;
-  }
-
   /* ── CTA SECTION ── */
   #cta {
     padding: 160px 0;
     text-align: center;
     position: relative;
+    border-top: 0.5px solid var(--rule);
   }
 
   .cta-heading {
@@ -668,10 +617,6 @@
     .counters-grid { grid-template-columns: 1fr; }
     .counter-item { border-right: none; border-bottom: 0.5px solid var(--rule); }
     .counter-item:last-child { border-bottom: none; }
-    .trust-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .trust-item:nth-child(2) { border-right: none; }
-    .trust-item { border-bottom: 0.5px solid var(--rule); }
-    .trust-item:nth-child(3), .trust-item:nth-child(4) { border-bottom: none; }
   }
 
   @media (max-width: 768px) {
@@ -686,9 +631,8 @@
 <nav>
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>
   <ul class="nav-links">
-    <li><a href="#whyus">Our Standards</a></li>
-    <li><a href="#howitworks">The Process</a></li>
-    <li><a href="#">PlusOne For Men <span class="coming-soon-badge">Coming Soon</span></a></li>
+    <li><a href="#whyus">Safety Standards</a></li>
+    <li><a href="#howitworks">How To Book</a></li>
   </ul>
   
   <div id="auth-buttons" style="display: flex; gap: 12px; align-items: center;">
@@ -700,52 +644,51 @@
   <section id="hero">
     <div class="hero-inner">
       <div>
-        <p class="hero-eyebrow">Lucknow, Uttar Pradesh</p>
+        <p class="hero-eyebrow">Exclusively For Women In Lucknow</p>
         <h1 class="hero-headline">
-          Lucknow's First<br>
-          <em>Verified</em> Plus-One<br>
-          Concierge.
+          Safe & Respectful Gentlemen for your<br>
+          <em>Every Occasion.</em>
         </h1>
         <p class="hero-sub">
-          Strictly safe, highly respectful, and completely platonic social companionship for premium events, weddings, social gatherings, or cafe hopping. Avoid awkward family questions and enjoy your city with absolute peace of mind.
+	Need a charming plus-one for a social gathering, coffee date, city outing, or simply a great conversation? Book a verified, well-mannered gentleman who brings confidence, comfort, and good company — always respectful, safe, and strictly platonic.
         </p>
         <div class="hero-actions">
-          <a href="bookings.html" class="btn-primary">Join Private Waitlist <span class="btn-arrow">→</span></a>
-          <a href="companion-register.html" class="btn-secondary">Register as Companion <span class="btn-arrow">→</span></a>
+          <a href="register.html" class="btn-primary">Book A Companion <span class="btn-arrow">→</span></a>
+          <a href="companion-register.html" class="btn-secondary">Apply as Companion (Men)</a>
         </div>
       </div>
 
       <div class="hero-card reveal">
-        <p class="hero-card-label">Operational Status</p>
-        <div class="hero-badge">Accepting Private Applications</div>
-
-        <div class="card-stat">
-          <span class="card-stat-label">Waitlist Milestone</span>
-          <span class="card-stat-val"><span id="hero-waitlist">28</span> <span style="font-size:15px; color:var(--text-3);">/ 100</span></span>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-bar"><div class="progress-fill" id="hero-progress"></div></div>
-          <div class="progress-meta"><span><span id="hero-waitlist-text">28</span> Members Joined</span><span>Launch at 100</span></div>
-        </div>
-
-        <div class="hero-card-rule"></div>
+        <p class="hero-card-label">Strict Vetting Process</p>
+        <div class="hero-badge">✔ Verified Profiles Only</div>
 
         <div class="card-stat-row">
           <div class="card-stat">
-            <span class="card-stat-label">Applicants Interviewed</span>
+            <span class="card-stat-label">Male Companion Profiles Received</span>
+            <span class="card-stat-val" id="hero-applied">128</span>
+          </div>
+          
+          <div class="hero-card-rule"></div>
+
+          <div class="card-stat">
+            <span class="card-stat-label">Personal Interviews Taken</span>
             <span class="card-stat-val" id="hero-screened">42</span>
           </div>
+
+          <div class="hero-card-rule"></div>
+
           <div class="card-stat">
-            <span class="card-stat-label">Companions Accepted</span>
+            <span class="card-stat-label">Selected & Verified Gentlemen</span>
             <span class="card-stat-val" id="hero-onboarded">3</span>
           </div>
         </div>
 
         <div class="hero-card-rule"></div>
-
-        <p style="font-size:12.5px; color:var(--text-2); line-height:1.65; font-style: italic;">
-          "Our onboarding process is deliberately slow. We reject 93% of applicants to maintain uncompromised behavioral safety."
-        </p>
+<div class="safety-guarantee-box">
+  <p>
+    "We reject over <strong>90% of applicants</strong>. Only highly educated, well-behaved professionals pass our security checks to ensure your <strong>complete safety</strong>."
+  </p>
+</div>
       </div>
     </div>
   </section>
@@ -753,31 +696,32 @@
   <section id="counters">
     <div class="counters-grid reveal">
       <div class="counter-item">
-        <div class="counter-num"><span id="stat-waitlist">28</span><span class="counter-denom"> / 100</span></div>
-        <div class="counter-label">Private Waitlist</div>
-        <div class="counter-status">Launching immediately at 100 profiles</div>
+        <div class="counter-num" id="stat-applied">128</div>
+        <div class="counter-label">Applications Received</div>
+        <div class="counter-status">From working professionals & students</div>
       </div>
       <div class="counter-item">
         <div class="counter-num" id="stat-screened">42</div>
-        <div class="counter-label">Companions Screened</div>
-        <div class="counter-status">Rigorous face-to-face evaluations</div>
+        <div class="counter-label">Interviews Conducted</div>
+        <div class="counter-status">Checking behavior & communication skills</div>
       </div>
       <div class="counter-item">
         <div class="counter-num" id="stat-onboarded">3</div>
-        <div class="counter-label">Companions Onboarded</div>
-        <div class="counter-status">Aadhaar verified & background-checked</div>
+        <div class="counter-label">Verified Companions</div>
+        <div class="counter-status">Ready to accompany you respectfully</div>
       </div>
     </div>
   </section>
 
-  <section id="whyus">
+<section id="whyus">
     <div class="container">
-      <p class="section-eyebrow reveal">Our Promise</p>
+      <p class="section-eyebrow reveal">Why Choose PlusOne</p>
       <h2 class="section-heading reveal">
-        Redefining premium social safety with <em>absolute dignity</em>.
+        Designed exclusively for your <em>safety and comfort</em>.
       </h2>
 
       <div class="uvp-grid reveal">
+        <!-- Card 1 -->
         <div class="uvp-card">
           <div class="uvp-icon">
             <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -787,10 +731,11 @@
             </svg>
           </div>
           <div class="uvp-rule"></div>
-          <h3 class="uvp-title">Faceless Profiles</h3>
-          <p class="uvp-body">Complete digital anonymity. A companion's profile is presented via private, high-fidelity silhouette attributes. Verified faces are only revealed once you review details and confirm booking interest.</p>
+          <h3 class="uvp-title">Government ID Verified</h3>
+          <p class="uvp-body">We don't allow anonymous sign-ups for companions. Every male profile undergoes strict Aadhaar and PAN verification before they are allowed on the platform.</p>
         </div>
 
+        <!-- Card 2 -->
         <div class="uvp-card">
           <div class="uvp-icon">
             <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -801,10 +746,11 @@
             </svg>
           </div>
           <div class="uvp-rule"></div>
-          <h3 class="uvp-title">Live Location Auditing</h3>
-          <p class="uvp-body">Every social outing requires mandatory real-time end-to-end WhatsApp location sharing. Our centralized internal response desk actively tracks data loops to ensure continuous on-site security.</p>
+          <h3 class="uvp-title">Live Safety Tracking</h3>
+          <p class="uvp-body">Whenever you book a companion, our backend support team tracks the live location via WhatsApp. We monitor the outing to ensure you are safe at all times.</p>
         </div>
 
+        <!-- Card 3 -->
         <div class="uvp-card">
           <div class="uvp-icon">
             <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -814,77 +760,79 @@
           </div>
           <div class="uvp-rule"></div>
           <h3 class="uvp-title">Zero Intimacy Policy</h3>
-          <p class="uvp-body">Strictly platonic social interactions in public commercial venues only. No private transits, no residential meetups. An uncompromising code of honor designed to foster highly intellectual interactions.</p>
+          <p class="uvp-body">Our service is 100% platonic. Meetings happen only in premium public spaces like cafes or event venues. Boundaries and respect are strictly maintained.</p>
         </div>
+
+        <!-- NAYA CARD: Card 4 -->
+        <div class="uvp-card">
+          <div class="uvp-icon">
+            <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Wallet/Payment Icon -->
+              <rect x="6" y="12" width="32" height="20" rx="3" stroke="currentColor" stroke-width="1.2"/>
+              <circle cx="22" cy="22" r="3" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M6 18h32" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="uvp-rule"></div>
+          <h3 class="uvp-title">Pay Only If You Like</h3>
+          <p class="uvp-body">Review the handcrafted profiles we send you with absolute zero pressure. You are required to make a payment only <strong>after</strong> you select and approve a companion profile.</p>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <section id="howitworks">
+<section id="howitworks">
     <div class="container">
-      <p class="section-eyebrow reveal">The Safe Loop</p>
+      <p class="section-eyebrow reveal">Simple Process</p>
       <h2 class="section-heading reveal">
-        Meticulously structured from <em>request to return</em>.
+        How to book your <em>Companion</em>.
       </h2>
 
       <div class="steps-list reveal">
         <div class="step-item">
           <span class="step-num">01</span>
           <div>
-            <h3 class="step-content-title">Secure Anonymized Booking</h3>
-            <p class="step-content-body">Submit your event criteria, venue location, and time parameters via our upcoming dashboard interface. Your data is encrypted immediately.</p>
+            <h3 class="step-content-title">Submit Your Request</h3>
+            <p class="step-content-body">Tell us where you are going (wedding, cafe, event) and the date/time. Your details remain completely private.</p>
           </div>
         </div>
+        
         <div class="step-item">
           <span class="step-num">02</span>
           <div>
-            <h3 class="step-content-title">Silhouette Selection & Approval</h3>
-            <p class="step-content-body">Review vetted profiles matching your intellectual and social requirements. Review specific background records before green-lighting the match.</p>
+            <h3 class="step-content-title">Get Handcrafted Profiles</h3>
+            <p class="step-content-body">Based on your vibe and occasion, our team will personally select and send you curated profiles of our verified gentlemen.</p>
           </div>
         </div>
+
+        <!-- YEH NAYA STEP ADD KIYA HAI -->
         <div class="step-item">
           <span class="step-num">03</span>
           <div>
-            <h3 class="step-content-title">Live Guarded Engagement</h3>
-            <p class="step-content-body">Meet directly at the public venue. Live WhatsApp tracking triggers instantly, connecting you and the companion to our control operator on silent monitoring standby.</p>
+            <h3 class="step-content-title">Select & Pay</h3>
+            <p class="step-content-body">Review the sent profiles at your comfort. You only make the payment <strong>after</strong> you select and approve a companion you like. No advance fees.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <span class="step-num">04</span>
+          <div>
+            <h3 class="step-content-title">Meet Safely</h3>
+            <p class="step-content-body">Meet directly at the public venue. Our team stays on standby via WhatsApp for your continuous safety and support.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
-
-  <section id="trust">
-    <div class="container">
-      <div class="trust-grid reveal">
-        <div class="trust-item">
-          <span class="trust-icon">✦</span>
-          <p class="trust-text">Aadhaar & PAN Govt. KYC verified</p>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">✦</span>
-          <p class="trust-text">Mandatory face-to-face behavioral interviews</p>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">✦</span>
-          <p class="trust-text">Centralized real-time GPS tracking logs</p>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">✦</span>
-          <p class="trust-text">100% public venue commercial setups</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="cta">
     <div class="container">
       <h2 class="cta-heading reveal">
-        Never experience premium venues or weddings <em>under social pressure</em>.
+        Great Company, <em>Whenever You Need It</em>.
       </h2>
-      <p class="cta-sub reveal">Secure your priority slot inside our first 100 private members network. No upfront pricing, zero early commitments.</p>
+      <p class="cta-sub reveal">Create a free profile today and book a trusted companion for your next outing in Lucknow.</p>
       <div class="cta-actions reveal">
-        <a href="bookings.html" class="btn-primary">Join Private Waitlist <span class="btn-arrow">→</span></a>
-        <a href="companion-register.html" class="btn-secondary">Apply As Professional Companion</a>
+        <a href="register.html" class="btn-primary">Book A Companion <span class="btn-arrow">→</span></a>
       </div>
     </div>
   </section>
@@ -893,15 +841,15 @@
 
 <footer>
   <div class="footer-logo">Plus<span>One</span></div>
-  <p class="footer-note">© 2026 PlusOne Concierge Network. Lucknow, India. Platform engineered for safety.</p>
+  <p class="footer-note">© 2026 PlusOne Concierge Network. Lucknow, India. Platform engineered for women's safety.</p>
   <div class="footer-links">
-    <a href="#">Privacy Laws</a>
-    <a href="#">Terms of Concierge</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Safety Guidelines</a>
   </div>
 </footer>
 
 <script>
-  // Advanced intersection observer logic
+  // Intersection observer for scroll animations
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -919,41 +867,36 @@
       const res = await fetch('http://localhost:8000/api/stats');
       const data = await res.json();
       
-      document.getElementById('stat-waitlist').textContent = data.waitlistCount;
-      document.getElementById('stat-screened').textContent = data.screenedCount;
-      document.getElementById('stat-onboarded').textContent = data.onboardedCount;
+      // Update counters based on the new logic
+      document.getElementById('stat-applied').textContent = data.waitlistCount || 128; // fallback
+      document.getElementById('stat-screened').textContent = data.screenedCount || 42;
+      document.getElementById('stat-onboarded').textContent = data.onboardedCount || 3;
 
-      document.getElementById('hero-waitlist').textContent = data.waitlistCount;
-      document.getElementById('hero-waitlist-text').textContent = data.waitlistCount;
-      document.getElementById('hero-screened').textContent = data.screenedCount;
-      document.getElementById('hero-onboarded').textContent = data.onboardedCount;
-
-      const fill = document.getElementById('hero-progress');
-      if(fill) fill.style.width = Math.min(data.waitlistCount, 100) + '%';
+      document.getElementById('hero-applied').textContent = data.waitlistCount || 128;
+      document.getElementById('hero-screened').textContent = data.screenedCount || 42;
+      document.getElementById('hero-onboarded').textContent = data.onboardedCount || 3;
       
     } catch (e) {
-      console.error('Stats API Offline - Ensure php artisan serve is running on port 8000');
-      const fill = document.getElementById('hero-progress');
-      if(fill) fill.style.width = '28%';
+      console.error('Stats API Offline - using fallback numbers');
     }
   }
 
-  // NAYA CODE: Authentication Status Logic
+  // Authentication Status Logic
   function checkAuthStatus() {
     const token = localStorage.getItem('userToken');
     const authButtonsDiv = document.getElementById('auth-buttons');
     
     if (token) {
-        // User logged in hai
+        // If logged in, show Dashboard
         authButtonsDiv.innerHTML = `
             <a href="dashboard.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
             <button onclick="logoutUser()" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
         `;
     } else {
-        // User logged out hai
+        // If logged out, show Login & Apply
         authButtonsDiv.innerHTML = `
             <a href="login.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">Login</a>
-            <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Become a PlusOne</a>
+            <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Apply as Companion</a>
         `;
     }
   }
@@ -965,10 +908,20 @@
       window.location.reload(); 
   }
 
-  // Jab page load ho tab stats aur auth dono check karo
+  // Initial load
   window.addEventListener('DOMContentLoaded', () => {
       loadLiveStats();
       checkAuthStatus();
+      
+      // Adjust CTA button if already logged in
+      const token = localStorage.getItem('userToken');
+      if (token) {
+          const joinBtns = document.querySelectorAll('a[href="register.html"]'); 
+          joinBtns.forEach(btn => {
+              btn.textContent = 'Go to Dashboard →';
+              btn.setAttribute('href', 'dashboard.html');
+          });
+      }
   });
 </script>
 
