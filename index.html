@@ -11,20 +11,18 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink:        #08080a;
-    --surface:    #0f0f14;
-    --glass:      rgba(255, 255, 255, 0.03);
-    --glass-b:    rgba(255, 255, 255, 0.07);
-    --frost:      rgba(255, 255, 255, 0.05);
-    --rule:       rgba(255, 255, 255, 0.06);
-    --rule-hi:    rgba(255, 255, 255, 0.12);
+    --ink:        #050507; /* Thoda aur deep, elegant black */
+    --surface:    #0a0a0e;
+    --glass:      rgba(255, 255, 255, 0.02);
+    --glass-hover:rgba(255, 255, 255, 0.04);
+    --rule:       rgba(255, 255, 255, 0.05);
+    --rule-hi:    rgba(255, 255, 255, 0.1);
     --gold:       #d4af37;
     --gold-dim:   #aa842c;
     --gold-pale:  rgba(212, 175, 55, 0.08);
-    --gold-glow:  rgba(212, 175, 55, 0.04);
-    --text-1:     #f4f4f6;
+    --text-1:     #fcfcfc;
     --text-2:     #a1a1aa;
-    --text-3:     #52525b;
+    --text-3:     #63636e;
     --serif:      'Cormorant Garamond', Georgia, serif;
     --sans:       'Plus Jakarta Sans', system-ui, sans-serif;
     --r-sm:       8px;
@@ -44,14 +42,14 @@
     overflow-x: hidden;
   }
 
-  /* ── AMBIENT GLOW EFFECTS ── */
+  /* ── AMBIENT GLOW EFFECTS (For Transparent Feel) ── */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(circle 500px at 80% 20%, rgba(212, 175, 55, 0.05), transparent),
-      radial-gradient(circle 400px at 15% 80%, rgba(255, 255, 255, 0.02), transparent);
+      radial-gradient(circle 600px at 80% 10%, rgba(212, 175, 55, 0.04), transparent),
+      radial-gradient(circle 500px at 20% 70%, rgba(255, 255, 255, 0.015), transparent);
     pointer-events: none;
     z-index: 0;
   }
@@ -65,7 +63,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(8, 8, 10, 0.6);
+    background: rgba(5, 5, 7, 0.7);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     border-bottom: 0.5px solid var(--rule);
@@ -73,7 +71,7 @@
 
   .nav-logo {
     font-family: var(--serif);
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 400;
     letter-spacing: 0.02em;
     color: var(--text-1);
@@ -90,16 +88,16 @@
   }
 
   .nav-links a {
-    font-size: 13px;
-    letter-spacing: 0.08em;
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-2);
     text-decoration: none;
-    font-weight: 400;
-    transition: color 0.2s;
+    font-weight: 500;
+    transition: color 0.3s;
   }
 
-  .nav-links a:hover { color: var(--text-1); }
+  .nav-links a:hover { color: var(--gold); }
 
   /* ── MAIN AREA ── */
   main { position: relative; z-index: 1; }
@@ -123,9 +121,9 @@
   .hero-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 140px 6% 60px;
+    padding: 160px 6% 60px;
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 80px;
     align-items: center;
   }
@@ -146,8 +144,8 @@
     content: '';
     display: inline-block;
     width: 32px;
-    height: 0.5px;
-    background: var(--gold);
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
   }
 
   .hero-headline {
@@ -181,12 +179,13 @@
     flex-wrap: wrap;
   }
 
+  /* Luxurious Primary Button */
   .btn-primary {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     padding: 16px 36px;
-    background: var(--gold);
+    background: linear-gradient(135deg, #e6c86a 0%, #d4af37 100%);
     color: #000;
     font-family: var(--sans);
     font-size: 13px;
@@ -196,16 +195,17 @@
     border: none;
     border-radius: var(--r-sm);
     text-decoration: none;
-    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.15);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .btn-primary:hover {
-    background: #f1cc5b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.25);
+    background: linear-gradient(135deg, #f1d478 0%, #e6c86a 100%);
   }
 
+  /* Glassmorphism Secondary Button */
   .btn-secondary {
     display: inline-flex;
     align-items: center;
@@ -218,24 +218,25 @@
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    border: 0.5px solid var(--rule-hi);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--r-sm);
     text-decoration: none;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
   }
 
   .btn-secondary:hover {
-    border-color: var(--gold);
-    background: var(--gold-pale);
-    transform: translateY(-2px);
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.05);
+    color: var(--gold);
+    transform: translateY(-3px);
   }
 
   .btn-arrow {
     display: inline-block;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease;
   }
 
   .btn-primary:hover .btn-arrow,
@@ -243,49 +244,54 @@
     transform: translateX(4px);
   }
 
-  /* ── HERO GLASS CARD ── */
-/* ── BADA HERO GLASS CARD (Sleek & Elegant) ── */
-/* ── GREEN VERIFIED BADGE ── */
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    background: rgba(76, 175, 80, 0.15); /* Thoda bright background */
-    border: 1px solid rgba(76, 175, 80, 0.4); /* Visible border */
-    border-radius: 100px;
-    font-size: 10.5px;
-    color: #66bb6a; /* Text thoda pop karega */
-    letter-spacing: 0.05em;
-    margin-bottom: 20px; 
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-.hero-card {
-    background: rgba(255, 255, 255, 0.03); /* Halka sa grey/glass tint */
-    border: 1px solid rgba(255, 255, 255, 0.12); /* Visible soft border */
+  /* ── HERO GLASS CARD (Sleek & Elegant) ── */
+  .hero-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 20px;
-    padding: 32px 36px;
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    padding: 40px 44px;
+    backdrop-filter: blur(30px) saturate(140%);
+    -webkit-backdrop-filter: blur(30px) saturate(140%);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
     position: relative;
     overflow: hidden;
   } 
 
- .hero-card-label {
+  .hero-card-label {
     font-size: 10.5px;
-    letter-spacing: 0.25em; /* Elegance ke liye spacing badhai */
+    letter-spacing: 0.25em;
     color: var(--text-3);
-    margin-bottom: 20px; /* Space kam kiya */
+    margin-bottom: 20px;
     font-weight: 600;
+  }
+
+  /* ── GREEN VERIFIED BADGE ── */
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.25);
+    border-radius: 100px;
+    font-size: 10.5px;
+    color: #66bb6a;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px; 
+    font-weight: 600;
+    text-transform: uppercase;
   }
 
   .card-stat-row {
     display: flex;
     flex-direction: column;
-    gap: 16px; /* Stats ke beech ka space kam kiya taaki compact lage */
+    gap: 16px;
+  }
+
+  .card-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .card-stat-label {
@@ -296,33 +302,34 @@
 
   .card-stat-val {
     font-family: var(--serif);
-    font-size: 22px; /* Numbers ko thoda delicate/chhota kiya */
+    font-size: 22px;
     font-weight: 400;
     color: var(--gold);
   }
 
   /* ── DIVIDER LINES (Fading Effect) ── */
-.hero-card-rule {
+  .hero-card-rule {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent); 
-    margin: 14px 0; /* Lines ke upar-neeche ka space tight kar diya */
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent); 
+    margin: 14px 0;
   }
-/* ── PREMIUM SAFETY GUARANTEE BOX ── */
+
+  /* ── PREMIUM SAFETY GUARANTEE BOX ── */
   .safety-guarantee-box {
-    background: linear-gradient(90deg, rgba(212, 175, 55, 0.06) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
     border-left: 2px solid var(--gold);
     border-radius: 0 var(--r-sm) var(--r-sm) 0;
-    padding: 14px 18px; /* Yahan vertical spacing kam kar di hai */
-    margin-top: 16px;
+    padding: 16px 20px;
+    margin-top: 20px;
   }
   
   .safety-guarantee-box p {
-    font-size: 13px; /* Thoda sleek font size */
-    color: var(--text-1); /* Soft text color */
-    line-height: 1.55; /* Text ke beech ka space thoda tight kiya */
+    font-size: 13px;
+    color: var(--text-1);
+    line-height: 1.6;
     font-style: italic;
     margin: 0;
-    letter-spacing: 0.02em; /* Elegance ke liye halka spacing */
+    letter-spacing: 0.02em;
   }
   
   .safety-guarantee-box p strong {
@@ -330,36 +337,25 @@
     font-weight: 500;
   }
 
-  .card-stat-row {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .card-stat {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .card-stat-label {
-    font-size: 14px;
-    color: var(--text-2);
-  }
-
-  .card-stat-val {
-    font-family: var(--serif);
-    font-size: 24px;
-    font-weight: 400;
-    color: var(--gold);
-  }
-
   /* ── COUNTERS GRID ── */
   #counters {
-    padding: 60px 0;
-    border-top: 0.5px solid var(--rule);
-    border-bottom: 0.5px solid var(--rule);
-    background: rgba(255, 255, 255, 0.01);
+    padding: 70px 0;
+    position: relative;
+  }
+
+  #counters::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
+  }
+  #counters::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
   }
 
   .counters-grid {
@@ -368,20 +364,27 @@
   }
 
   .counter-item {
-    padding: 30px 50px;
-    border-right: 0.5px solid var(--rule);
+    padding: 20px 40px;
     text-align: center;
+    position: relative;
   }
 
-  .counter-item:last-child { border-right: none; }
+  /* Soft dividers between counters */
+  .counter-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 20%; bottom: 20%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--rule-hi), transparent);
+  }
 
   .counter-num {
     font-family: var(--serif);
-    font-size: clamp(46px, 4.5vw, 68px);
+    font-size: clamp(42px, 4.5vw, 60px);
     font-weight: 300;
     color: var(--gold);
     line-height: 1.1;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
 
   .counter-label {
@@ -389,16 +392,16 @@
     color: var(--text-1);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    font-weight: 500;
-    margin-bottom: 4px;
+    font-weight: 600;
+    margin-bottom: 6px;
   }
 
   .counter-status {
-    font-size: 12px;
-    color: var(--text-2);
+    font-size: 12.5px;
+    color: var(--text-3);
   }
 
-  /* ── WHY US (SPECIFIC UVPs) ── */
+  /* ── WHY US (GLASS UVP CARDS) ── */
   .section-eyebrow {
     font-size: 11px;
     letter-spacing: 0.25em;
@@ -415,8 +418,8 @@
     content: '';
     display: inline-block;
     width: 32px;
-    height: 0.5px;
-    background: var(--gold);
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
   }
 
   .section-heading {
@@ -438,40 +441,46 @@
   .uvp-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 28px;
   }
 
   .uvp-card {
-    padding: 50px 40px;
-    background: rgba(255, 255, 255, 0.01);
-    border: 0.5px solid var(--rule);
+    padding: 48px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: var(--r-lg);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
   }
 
+  /* Subtle hover glow */
   .uvp-card:hover {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: var(--rule-hi);
-    transform: translateY(-4px);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(212, 175, 55, 0.02) 100%);
+    border-color: rgba(212, 175, 55, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   }
 
   .uvp-icon {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     color: var(--gold);
     margin-bottom: 32px;
+    opacity: 0.9;
   }
 
   .uvp-icon svg { width: 100%; height: 100%; }
 
   .uvp-title {
     font-family: var(--serif);
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 400;
     color: var(--text-1);
     margin-bottom: 16px;
+    letter-spacing: 0.01em;
   }
 
   .uvp-body {
@@ -482,15 +491,22 @@
 
   .uvp-rule {
     height: 1px;
-    width: 36px;
-    background: var(--gold-dim);
+    width: 40px;
+    background: linear-gradient(90deg, var(--gold-dim), transparent);
     margin-bottom: 24px;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
   /* ── HOW IT WORKS ── */
   #howitworks {
-    border-top: 0.5px solid var(--rule);
+    position: relative;
+  }
+  #howitworks::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
   }
 
   .steps-list {
@@ -504,23 +520,31 @@
     grid-template-columns: 80px 1fr;
     gap: 24px;
     padding: 44px 0;
-    border-bottom: 0.5px solid var(--rule);
+    position: relative;
   }
 
-  .step-item:last-child { border-bottom: none; }
+  /* Elegant Divider for steps */
+  .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule), transparent);
+  }
 
   .step-num {
     font-family: var(--serif);
-    font-size: 16px;
-    color: var(--text-3);
+    font-size: 20px;
+    color: var(--gold-dim);
     letter-spacing: 0.05em;
     font-weight: 400;
-    margin-top: 4px;
+    margin-top: 2px;
+    opacity: 0.8;
   }
 
   .step-content-title {
     font-family: var(--serif);
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 400;
     color: var(--text-1);
     margin-bottom: 12px;
@@ -537,7 +561,13 @@
     padding: 160px 0;
     text-align: center;
     position: relative;
-    border-top: 0.5px solid var(--rule);
+  }
+  #cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
   }
 
   .cta-heading {
@@ -557,16 +587,29 @@
     color: var(--text-2);
     max-width: 500px;
     margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
   }
 
   /* ── FOOTER ── */
   footer {
     padding: 50px 6%;
-    border-top: 0.5px solid var(--rule);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #060608;
+    background: rgba(0,0,0,0.4);
+    position: relative;
+  }
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
   }
 
   .footer-logo {
@@ -585,19 +628,21 @@
   .footer-links { display: flex; gap: 32px; }
 
   .footer-links a {
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--text-3);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
-  .footer-links a:hover { color: var(--text-2); }
+  .footer-links a:hover { color: var(--text-1); }
 
   /* ── SCROLL ANIMATIONS ── */
   .reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .reveal.visible {
@@ -614,9 +659,8 @@
     .hero-eyebrow { justify-content: center; }
     .hero-eyebrow::before { display: none; }
     .uvp-grid { grid-template-columns: 1fr; gap: 24px; }
-    .counters-grid { grid-template-columns: 1fr; }
-    .counter-item { border-right: none; border-bottom: 0.5px solid var(--rule); }
-    .counter-item:last-child { border-bottom: none; }
+    .counters-grid { grid-template-columns: 1fr; gap: 40px; }
+    .counter-item:not(:last-child)::after { display: none; }
   }
 
   @media (max-width: 768px) {
@@ -684,11 +728,11 @@
         </div>
 
         <div class="hero-card-rule"></div>
-<div class="safety-guarantee-box">
-  <p>
-    "We reject over <strong>90% of applicants</strong>. Only highly educated, well-behaved professionals pass our security checks to ensure your <strong>complete safety</strong>."
-  </p>
-</div>
+        <div class="safety-guarantee-box">
+          <p>
+            "We reject over <strong>90% of applicants</strong>. Only highly educated, well-behaved professionals pass our security checks to ensure your <strong>complete safety</strong>."
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -763,11 +807,10 @@
           <p class="uvp-body">Our service is 100% platonic. Meetings happen only in premium public spaces like cafes or event venues. Boundaries and respect are strictly maintained.</p>
         </div>
 
-        <!-- NAYA CARD: Card 4 -->
+        <!-- Card 4 -->
         <div class="uvp-card">
           <div class="uvp-icon">
             <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Wallet/Payment Icon -->
               <rect x="6" y="12" width="32" height="20" rx="3" stroke="currentColor" stroke-width="1.2"/>
               <circle cx="22" cy="22" r="3" stroke="currentColor" stroke-width="1.2"/>
               <path d="M6 18h32" stroke="currentColor" stroke-width="1.2"/>
@@ -806,7 +849,6 @@
           </div>
         </div>
 
-        <!-- YEH NAYA STEP ADD KIYA HAI -->
         <div class="step-item">
           <span class="step-num">03</span>
           <div>
@@ -849,7 +891,6 @@
 </footer>
 
 <script>
-  // Intersection observer for scroll animations
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -861,14 +902,12 @@
   }, { threshold: 0.1 });
   reveals.forEach(el => io.observe(el));
 
-  // Dynamic API Fetch for Counters
   async function loadLiveStats() {
     try {
       const res = await fetch('http://localhost:8000/api/stats');
       const data = await res.json();
       
-      // Update counters based on the new logic
-      document.getElementById('stat-applied').textContent = data.waitlistCount || 128; // fallback
+      document.getElementById('stat-applied').textContent = data.waitlistCount || 128; 
       document.getElementById('stat-screened').textContent = data.screenedCount || 42;
       document.getElementById('stat-onboarded').textContent = data.onboardedCount || 3;
 
@@ -881,19 +920,16 @@
     }
   }
 
-  // Authentication Status Logic
   function checkAuthStatus() {
     const token = localStorage.getItem('userToken');
     const authButtonsDiv = document.getElementById('auth-buttons');
     
     if (token) {
-        // If logged in, show Dashboard
         authButtonsDiv.innerHTML = `
             <a href="dashboard.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
             <button onclick="logoutUser()" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
         `;
     } else {
-        // If logged out, show Login & Apply
         authButtonsDiv.innerHTML = `
             <a href="login.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">Login</a>
             <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Apply as Companion</a>
@@ -901,19 +937,16 @@
     }
   }
 
-  // Logout functionality
   function logoutUser() {
       localStorage.removeItem('userToken');
       localStorage.removeItem('userEmail');
       window.location.reload(); 
   }
 
-  // Initial load
   window.addEventListener('DOMContentLoaded', () => {
       loadLiveStats();
       checkAuthStatus();
       
-      // Adjust CTA button if already logged in
       const token = localStorage.getItem('userToken');
       if (token) {
           const joinBtns = document.querySelectorAll('a[href="register.html"]'); 
