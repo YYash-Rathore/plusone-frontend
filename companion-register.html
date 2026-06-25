@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlusOne Companion Network — Apply As Professional Companion</title>
+<title>PlusOne — Apply As Professional Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -51,7 +51,7 @@
     z-index: 0;
   }
 
-  /* ── CUSTOM SCROLLBAR (Sleek & Invisible until hovered) ── */
+  /* ── CUSTOM SCROLLBAR ── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 10px; }
@@ -90,9 +90,9 @@
     grid-template-columns: 360px 1fr;
   }
 
-  /* ── SIDEBAR CONTEXT PANEL (Fixed the overflow issue here) ── */
+  /* ── SIDEBAR CONTEXT PANEL ── */
   .sidebar {
-    padding: 110px 45px 40px; /* Reduced top/bottom padding to fit smaller screens better */
+    padding: 110px 45px 40px; 
     border-right: 0.5px solid var(--rule);
     background: linear-gradient(180deg, rgba(255,255,255,0.01) 0%, transparent 100%);
     position: sticky;
@@ -100,7 +100,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* THIS FIXES THE CUT-OFF TEXT ISSUE */
+    overflow-y: auto; 
   }
 
   .sidebar-eyebrow { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; font-weight: 600; }
@@ -113,7 +113,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 280px; /* Ensures it doesn't shrink too much */
+    min-height: 280px; 
   }
 
   .step-ind {
@@ -132,7 +132,6 @@
     font-size: 11px; color: var(--text-3); flex-shrink: 0; background: transparent; transition: all 0.4s ease;
   }
 
-  /* Enhanced Active State Glow */
   .step-ind.active .step-ind-num {
     background: var(--gold); border-color: var(--gold); color: #000; font-weight: 700;
     box-shadow: 0 0 16px rgba(212,175,55,0.4);
@@ -147,7 +146,7 @@
   .step-ind.active .step-ind-label { color: var(--text-2); }
   .step-ind.done .step-ind-label strong { color: var(--gold); }
 
-  /* Upgraded Privacy Box Aesthetics */
+  /* Privacy Box */
   .sidebar-privacy {
     margin-top: 20px;
     padding: 22px;
@@ -186,7 +185,7 @@
 
   label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); font-weight: 600; }
 
-  input[type="text"], input[type="email"], input[type="tel"], input[type="number"], textarea {
+  input[type="text"], input[type="password"], input[type="email"], input[type="tel"], input[type="number"], textarea {
     width: 100%;
     background: rgba(255, 255, 255, 0.015);
     border: 0.5px solid var(--rule-hi);
@@ -214,7 +213,7 @@
   .field-error.show { display: block; animation: shake 0.4s ease; }
   @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-4px);} 75% {transform: translateX(4px);} }
 
-  /* INTERACTIVE RADIO CARDS (More Premium) */
+  /* INTERACTIVE RADIO CARDS */
   .radio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
   .radio-card { position: relative; }
   .radio-card input[type="radio"] { position: absolute; opacity: 0; inset: 0; cursor: pointer; z-index: 2; }
@@ -291,6 +290,9 @@
   }
   .btn-next:hover { background: #f1cc5b; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212,175,55,0.25); }
 
+  /* Loading State */
+  .btn-next.loading { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+
   /* SUCCESS ENGINE PANELS */
   #success-screen { display: none; text-align: center; padding: 80px 20px; animation: slidePanelIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
   .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(212,175,55,0.1); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; font-size: 28px; color: var(--gold); box-shadow: 0 0 30px rgba(212,175,55,0.2); }
@@ -313,43 +315,43 @@
 
 <nav>
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>
-  <a href="index.html" class="nav-back">← Exit Application</a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
 </nav>
 
 <div class="page-wrap">
   <aside class="sidebar">
-    <p class="sidebar-eyebrow">Onboarding Gateway</p>
-    <h2 class="sidebar-heading">Join the<br><em>Network.</em></h2>
-    <p class="sidebar-sub">Every verification loop is processed with strict operational discretion to protect your professional identity.</p>
+    <p class="sidebar-eyebrow">Apply Now</p>
+    <h2 class="sidebar-heading">Become a<br><em>Companion.</em></h2>
+    <p class="sidebar-sub">We keep your professional and personal identity strictly confidential throughout the process.</p>
 
     <div class="step-indicators" id="step-indicators">
       <div class="step-ind active" data-step="1">
         <div class="step-ind-num">1</div>
-        <div class="step-ind-label"><strong>Identity Profiles</strong>Basic legal details</div>
+        <div class="step-ind-label"><strong>Basic Details</strong>Name, Age, Contact</div>
       </div>
       <div class="step-ind" data-step="2">
         <div class="step-ind-num">2</div>
-        <div class="step-ind-label"><strong>Background Status</strong>Corporate / Academic scope</div>
+        <div class="step-ind-label"><strong>Professional Background</strong>Work or Education</div>
       </div>
       <div class="step-ind" data-step="3">
         <div class="step-ind-num">3</div>
-        <div class="step-ind-label"><strong>Vetting Matrix</strong>Behavioral evaluation</div>
+        <div class="step-ind-label"><strong>Situational Check</strong>Your behavior style</div>
       </div>
       <div class="step-ind" data-step="4">
         <div class="step-ind-num">4</div>
-        <div class="step-ind-label"><strong>KYC Verification</strong>Encrypted doc processing</div>
+        <div class="step-ind-label"><strong>Verify Identity</strong>Govt. ID upload</div>
       </div>
     </div>
 
     <div class="sidebar-privacy">
-      <p><strong>🔒 Data Isolation Lock</strong>Your credentials are detached from our consumer interface. Clients never access your official identification documents.</p>
+      <p><strong>🔒 Total Privacy</strong>Your details are safe. Our clients will only see the information you approve. Your documents are never shared publicly.</p>
     </div>
   </aside>
 
   <main class="form-area">
     <div class="progress-header">
       <div class="progress-step-label">
-        <span class="psl-step" id="progress-step-label">Step 1 of 4 — Identity Profiles</span>
+        <span class="psl-step" id="progress-step-label">Step 1 of 4 — Basic Details</span>
         <span class="psl-count" id="progress-count">25%</span>
       </div>
       <div class="progress-track"><div class="progress-fill-bar" id="progress-bar"></div></div>
@@ -359,144 +361,163 @@
       
       <div class="form-step active" id="step-1">
         <h1 class="step-title">Tell us about<br><em>yourself.</em></h1>
-        <p class="step-desc">Provide your foundational metrics. All information entered here is stored in a secured internal vault.</p>
+        <p class="step-desc">Enter your basic details. This information stays secure with us.</p>
         <div class="form-grid">
           <div class="field-group full">
-            <label for="full-name">Legal Full Name</label>
-            <input type="text" id="full-name" placeholder="Exactly as printed on your Aadhaar card" required>
-            <span class="field-error" id="err-full-name">Legal name string is required.</span>
+            <label for="full-name">Full Name</label>
+            <input type="text" id="full-name" placeholder="As printed on your Aadhaar card" required>
+            <span class="field-error" id="err-full-name">Please enter your full name.</span>
           </div>
           <div class="field-group">
-            <label for="age">Current Age</label>
+            <label for="age">Age</label>
             <input type="number" id="age" placeholder="Min 18 - Max 40" min="18" max="40" required>
             <span class="field-error" id="err-age">Age must be between 18 and 40.</span>
           </div>
           <div class="field-group">
-            <label for="height">Physical Height</label>
+            <label for="height">Height</label>
             <input type="text" id="height" placeholder="e.g., 5'11&quot; or 180 cm" required>
-            <span class="field-error" id="err-height">Height metrics are required.</span>
+            <span class="field-error" id="err-height">Please enter your height.</span>
           </div>
           <div class="field-group">
-            <label for="phone">WhatsApp Line</label>
-            <input type="tel" id="phone" placeholder="10-digit active mobile number" required>
-            <span class="field-error" id="err-phone">Valid 10-digit communication link required.</span>
+            <label for="phone">WhatsApp Number</label>
+            <input type="tel" id="phone" placeholder="10-digit mobile number" required>
+            <span class="field-error" id="err-phone">Valid 10-digit phone number required.</span>
           </div>
           <div class="field-group">
-            <label for="email">Secure Email Link</label>
+            <label for="email">Email Address</label>
             <input type="email" id="email" placeholder="name@domain.com" required>
-            <span class="field-error" id="err-email">Valid secure email format is required.</span>
+            <span class="field-error" id="err-email">Please enter a valid email.</span>
           </div>
           <div class="field-group full">
-            <label for="city">Operational Base City</label>
+            <label for="password">Create Password</label>
+            <input type="password" id="password" placeholder="Minimum 8 characters for your account" required>
+            <span class="field-error" id="err-password">Password must be at least 8 characters.</span>
+          </div>
+          <div class="field-group full">
+            <label for="city">City</label>
             <input type="text" id="city" value="Lucknow" readonly style="opacity:0.7; cursor:not-allowed;">
-            <span class="field-error" id="err-city">Currently operating strictly in Lucknow.</span>
+            <span class="field-error" id="err-city">We are currently operating only in Lucknow.</span>
           </div>
         </div>
         <div class="form-nav">
           <button type="button" class="btn-prev" disabled>← Previous</button>
-          <button type="button" class="btn-next" onclick="nextStep(1)">Continue Framework →</button>
+          <button type="button" class="btn-next" onclick="nextStep(1)">Continue →</button>
         </div>
       </div>
 
       <div class="form-step" id="step-2">
-        <h1 class="step-title">Professional &amp;<br><em>Intellectual Status</em>.</h1>
-        <p class="step-desc">We curate client pairings heavily based on corporate communication skills and educational backgrounds.</p>
+        <h1 class="step-title">Work &amp;<br><em>Education</em>.</h1>
+        <p class="step-desc">Let us know what you do. This helps us match you with the right clients.</p>
         <div class="radio-cards">
           <div class="radio-card">
             <input type="radio" name="professional_status" id="status-professional" value="Working Professional">
             <label for="status-professional" class="radio-card-label">
               <div class="radio-dot"></div>
-              <span class="radio-card-title">Corporate / Freelance</span>
-              <span class="radio-card-sub">Active corporate earner or independent consultant</span>
+              <span class="radio-card-title">Working Professional</span>
+              <span class="radio-card-sub">I have a job or run a business.</span>
             </label>
           </div>
           <div class="radio-card">
             <input type="radio" name="professional_status" id="status-student" value="Student">
             <label for="status-student" class="radio-card-label">
               <div class="radio-dot"></div>
-              <span class="radio-card-title">Academic Enrollee</span>
-              <span class="radio-card-sub">Currently pursuing university or master's degrees</span>
+              <span class="radio-card-title">Student</span>
+              <span class="radio-card-sub">I am currently studying in college/university.</span>
             </label>
           </div>
         </div>
-        <span class="field-error" id="err-status" style="margin-top:-20px; margin-bottom:24px;">Please select your background status.</span>
+        <span class="field-error" id="err-status" style="margin-top:-20px; margin-bottom:24px;">Please select your current status.</span>
 
         <div class="form-grid" id="professional-fields" style="display:none;">
-          <div class="field-group"><label for="company-name">Organization Enterprise</label><input type="text" id="company-name" placeholder="Name of company"></div>
-          <div class="field-group"><label for="designation">Designation Role</label><input type="text" id="designation" placeholder="e.g., UI/UX Lead, Data Analyst"></div>
+          <div class="field-group"><label for="company-name">Company Name</label><input type="text" id="company-name" placeholder="Where do you work?"></div>
+          <div class="field-group"><label for="designation">Job Title / Designation</label><input type="text" id="designation" placeholder="e.g., Software Engineer, Manager"></div>
         </div>
         <div class="form-grid" id="student-fields" style="display:none;">
-          <div class="field-group"><label for="college-name">University Hub</label><input type="text" id="college-name" placeholder="Institution name"></div>
-          <div class="field-group"><label for="degree">Course Pathway</label><input type="text" id="degree" placeholder="e.g., MBA Finance, B.Tech"></div>
+          <div class="field-group"><label for="college-name">College / University Name</label><input type="text" id="college-name" placeholder="Where do you study?"></div>
+          <div class="field-group"><label for="degree">Course / Degree</label><input type="text" id="degree" placeholder="e.g., B.Tech, MBA"></div>
         </div>
         <div class="form-nav">
           <button type="button" class="btn-prev" onclick="prevStep(2)">← Previous</button>
-          <button type="button" class="btn-next" onclick="nextStep(2)">Verify Background →</button>
+          <button type="button" class="btn-next" onclick="nextStep(2)">Continue →</button>
         </div>
       </div>
 
       <div class="form-step" id="step-3">
-        <h1 class="step-title">Behavioral &amp;<br><em>Discretion Check</em>.</h1>
-        <p class="step-desc">This evaluation assesses social composure, boundary enforcement, and situational judgment.</p>
+        <h1 class="step-title">Situational<br><em>Awareness</em>.</h1>
+        <p class="step-desc">We value politeness and respect. Tell us how you handle social situations.</p>
         <div class="vibe-hint">
-          <p><strong>Contextual Paradigm:</strong> A client's immediate family relative spots you both unexpectedly at a premium cafe in Hazratganj and inquires about your identity. How do you articulate your presence while maintaining the client's absolute dignity?</p>
+          <p><strong>Scenario:</strong> You are at a premium cafe with our client. A relative of hers spots you both unexpectedly and asks who you are. How would you politely handle the situation to protect her dignity?</p>
         </div>
         <div class="field-group full">
-          <label for="vibe-answer">Your Behavioral Strategy</label>
-          <textarea id="vibe-answer" placeholder="Draft your natural response pattern here. Focus on discretion, politeness, and safety (Minimum 40 characters required)." required></textarea>
-          <span class="field-error" id="err-vibe">Please elaborate your response parameters (min 40 characters).</span>
+          <label for="vibe-answer">Your Answer</label>
+          <textarea id="vibe-answer" placeholder="Write your answer here in your own words. (Minimum 40 characters)" required></textarea>
+          <span class="field-error" id="err-vibe">Please write at least 40 characters.</span>
         </div>
         <div class="form-nav">
           <button type="button" class="btn-prev" onclick="prevStep(3)">← Previous</button>
-          <button type="button" class="btn-next" onclick="nextStep(3)">Lock Vetting Layer →</button>
+          <button type="button" class="btn-next" onclick="nextStep(3)">Continue →</button>
         </div>
       </div>
 
       <div class="form-step" id="step-4">
-        <h1 class="step-title">Government Identity<br><em>Auditing Logs</em>.</h1>
-        <p class="step-desc">Upload clear, original documentation. Files are encrypted end-to-end immediately upon upload.</p>
+        <h1 class="step-title">Verify Your<br><em>Identity</em>.</h1>
+        <p class="step-desc">Please provide your details and upload valid documents. This is mandatory for safety checks.</p>
         <div class="form-grid">
+          
           <div class="field-group full">
-            <label>Aadhaar Card Core Log</label>
+            <label for="aadhaar-number">Aadhaar Card Number</label>
+            <input type="text" id="aadhaar-number" placeholder="[Aadhaar Redacted]" maxlength="12" required>
+            <span class="field-error" id="err-aadhaar-num">Valid 12-digit Aadhaar number is required.</span>
+          </div>
+          <div class="field-group full" style="margin-top: -10px;">
+            <label>Aadhaar Card Document</label>
             <div class="file-upload-area">
               <input type="file" class="file-input-hidden" id="aadhaar-upload" accept=".jpg,.jpeg,.png,.pdf" onchange="processFileElement(this, 'aadhaar')">
               <div class="file-label-box" id="aadhaar-box">
                 <div class="file-icon">✦</div>
-                <div class="file-upload-title">Drop or Upload <strong>Aadhaar Certificate</strong></div>
+                <div class="file-upload-title">Click or Drop to upload <strong>Aadhaar Card</strong></div>
                 <div class="file-name-display" id="aadhaar-name" style="display:none;"></div>
               </div>
             </div>
-            <span class="field-error" id="err-aadhaar">Aadhaar upload is mandatory for background verification.</span>
+            <span class="field-error" id="err-aadhaar">Aadhaar document is required.</span>
           </div>
-          <div class="field-group full">
-            <label>PAN Card Tax Log</label>
+
+          <div class="field-group full" style="margin-top: 16px;">
+            <label for="pan-number">PAN Card Number</label>
+            <input type="text" id="pan-number" placeholder="e.g. ABCDE1234F" maxlength="10" style="text-transform: uppercase;" required>
+            <span class="field-error" id="err-pan-num">Valid 10-character PAN number is required.</span>
+          </div>
+          <div class="field-group full" style="margin-top: -10px;">
+            <label>PAN Card Document</label>
             <div class="file-upload-area">
               <input type="file" class="file-input-hidden" id="pan-upload" accept=".jpg,.jpeg,.png,.pdf" onchange="processFileElement(this, 'pan')">
               <div class="file-label-box" id="pan-box">
                 <div class="file-icon">✦</div>
-                <div class="file-upload-title">Drop or Upload <strong>PAN Verification Card</strong></div>
+                <div class="file-upload-title">Click or Drop to upload <strong>PAN Card</strong></div>
                 <div class="file-name-display" id="pan-name" style="display:none;"></div>
               </div>
             </div>
-            <span class="field-error" id="err-pan">PAN processing registration is required.</span>
+            <span class="field-error" id="err-pan">PAN document is required.</span>
           </div>
+
         </div>
+        
         <div class="security-note">
-          <p class="security-note-label">🔒 Safe Banking Policy Architecture</p>
-          <p>To preserve financial integrity, payout banking links are <strong>only generated after</strong> you clear the live physical interview protocols. Never submit financial records during this initial web registration stage.</p>
+          <p class="security-note-label">🔒 Important Note</p>
+          <p>Please do not share your bank account details right now. We will only ask for payout details after your face-to-face interview is cleared.</p>
         </div>
         <div class="form-nav">
           <button type="button" class="btn-prev" onclick="prevStep(4)">← Previous</button>
-          <button type="button" class="btn-next" onclick="executeSubmission()">Deploy Application →</button>
+          <button type="button" class="btn-next" id="final-submit-btn" onclick="executeSubmission()">Submit Application →</button>
         </div>
       </div>
     </form>
 
     <div id="success-screen">
       <div class="success-icon">✓</div>
-      <h1 class="success-title">Vaulted Matrix<br><em>Registered.</em></h1>
-      <p class="success-body">Your data profile has been successfully ingested into our encrypted vetting system. The operations unit will review records and coordinate via your registered WhatsApp line within 5-7 business processing days.</p>
-      <a href="index.html" class="btn-home">Return To Operations Center</a>
+      <h1 class="success-title">Application<br><em>Submitted.</em></h1>
+      <p class="success-body">Thank you for applying. Our team will review your details and get back to you on your WhatsApp number within 3 to 5 business days if you are shortlisted. You can now use your email and password to log in and check your status.</p>
+      <a href="login.html" class="btn-home">Go to Login</a>
     </div>
   </main>
 </div>
@@ -505,13 +526,12 @@
   let trackingStep = 1;
   const metricsPct = ['25%', '50%', '75%', '100%'];
   const processingLabels = [
-    'Step 1 of 4 — Identity Profiles',
-    'Step 2 of 4 — Background Status',
-    'Step 3 of 4 — Vetting Matrix',
-    'Step 4 of 4 — Document Logs'
+    'Step 1 of 4 — Basic Details',
+    'Step 2 of 4 — Professional Background',
+    'Step 3 of 4 — Situational Check',
+    'Step 4 of 4 — Verify Identity'
   ];
 
-  // UI Engine to transition between steps
   function shiftStepEngine(idx) {
     document.querySelectorAll('.form-step').forEach(panel => panel.classList.remove('active'));
     document.getElementById('step-' + idx).classList.add('active');
@@ -537,30 +557,27 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Next Button Logic
   function nextStep(currentStepIndex) {
     if (!runValidationProtocols(currentStepIndex)) return;
     if (currentStepIndex < 4) shiftStepEngine(currentStepIndex + 1);
   }
 
-  // Previous Button Logic
   function prevStep(currentStepIndex) {
     if (currentStepIndex > 1) shiftStepEngine(currentStepIndex - 1);
   }
 
-  // BULLETPROOF VALIDATION PROTOCOL
   function runValidationProtocols(step) {
     let checkPass = true;
 
     if (step === 1) {
-      // Evaluating all fields individually to prevent short-circuiting
       const v1 = auditFieldElement('full-name', txt => txt.trim().length >= 3, 'err-full-name');
       const v2 = auditFieldElement('age', num => num && parseInt(num) >= 18 && parseInt(num) <= 40, 'err-age');
       const v3 = auditFieldElement('height', txt => txt.trim().length >= 2, 'err-height');
       const v4 = auditFieldElement('phone', ph => /^\d{10}$/.test(ph.trim()), 'err-phone');
       const v5 = auditFieldElement('email', em => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.trim()), 'err-email');
+      const v6 = auditFieldElement('password', pass => pass.trim().length >= 8, 'err-password');
       
-      if (!v1 || !v2 || !v3 || !v4 || !v5) {
+      if (!v1 || !v2 || !v3 || !v4 || !v5 || !v6) {
         checkPass = false;
       }
     }
@@ -582,14 +599,21 @@
     }
 
     if (step === 4) {
+      // Validate Text Inputs
+      const vAadhaarNum = auditFieldElement('aadhaar-number', num => /^\d{12}$/.test(num.trim()), 'err-aadhaar-num');
+      const vPanNum = auditFieldElement('pan-number', num => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(num.trim()), 'err-pan-num');
+      
+      if (!vAadhaarNum || !vPanNum) checkPass = false;
+
+      // Validate File Uploads
       const aFile = document.getElementById('aadhaar-upload').files;
       const pFile = document.getElementById('pan-upload').files;
       
-      if(!aFile) { 
+      if(aFile.length === 0) { 
         document.getElementById('err-aadhaar').classList.add('show'); 
         checkPass = false; 
       }
-      if(!pFile) { 
+      if(pFile.length === 0) { 
         document.getElementById('err-pan').classList.add('show'); 
         checkPass = false; 
       }
@@ -598,12 +622,10 @@
     return checkPass;
   }
 
-  // Core Audit Function
   function auditFieldElement(domId, logicFn, errDomId) {
     const targetNode = document.getElementById(domId);
     const errNode = document.getElementById(errDomId);
     
-    // Safety net in case HTML ID is missing
     if (!targetNode || !errNode) return false; 
 
     if (!logicFn(targetNode.value)) {
@@ -617,7 +639,6 @@
     }
   }
 
-  // Auto-remove error states when user starts typing
   document.querySelectorAll('input, textarea').forEach(element => {
     element.addEventListener('input', () => {
       element.classList.remove('invalid');
@@ -626,7 +647,6 @@
     });
   });
 
-  // Radio button toggle logic
   document.querySelectorAll('input[name="professional_status"]').forEach(inputField => {
     inputField.addEventListener('change', () => {
       document.getElementById('err-status').classList.remove('show');
@@ -640,32 +660,93 @@
     });
   });
 
-  // File Upload Logic
   function processFileElement(input, contextStr) {
     const trackingFile = input.files;
-    if (!trackingFile) return;
+    if (trackingFile.length === 0) return;
+    const file = trackingFile;
     const targetsBox = document.getElementById(contextStr + '-box');
     const targetNameSpan = document.getElementById(contextStr + '-name');
     document.getElementById('err-' + contextStr).classList.remove('show');
     
     targetsBox.classList.add('has-file');
-    targetNameSpan.textContent = trackingFile.name + " (" + (trackingFile.size / 1024).toFixed(1) + " KB)";
+    targetNameSpan.textContent = file.name + " (" + (file.size / 1024).toFixed(1) + " KB)";
     targetNameSpan.style.display = 'block';
   }
 
-  // Final Submit Execution
-  function executeSubmission() {
+  // --- MODIFIED EXECUTIONSUBMISSION TO CONNECT WITH BACKEND API ---
+  async function executeSubmission() {
     if (!runValidationProtocols(4)) return;
-    document.getElementById('companion-form').style.display = 'none';
-    document.querySelector('.progress-header').style.display = 'none';
-    document.getElementById('success-screen').style.display = 'block';
 
-    document.querySelectorAll('.step-ind').forEach(indicator => {
-      indicator.classList.remove('active');
-      indicator.classList.add('done');
-      indicator.querySelector('.step-ind-num').innerHTML = '✓';
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const submitBtn = document.getElementById('final-submit-btn');
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.classList.add('loading');
+
+    // Create FormData object to send text and files
+    const formData = new FormData();
+    formData.append('name', document.getElementById('full-name').value);
+    formData.append('age', document.getElementById('age').value);
+    formData.append('height', document.getElementById('height').value);
+    formData.append('phone', document.getElementById('phone').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('password', document.getElementById('password').value);
+    formData.append('city', document.getElementById('city').value);
+    
+    const professionalStatus = document.querySelector('input[name="professional_status"]:checked').value;
+    formData.append('professional_status', professionalStatus);
+    
+    if (professionalStatus === 'Working Professional') {
+        formData.append('company_name', document.getElementById('company-name').value);
+        formData.append('designation', document.getElementById('designation').value);
+    } else {
+        formData.append('college_name', document.getElementById('college-name').value);
+        formData.append('degree', document.getElementById('degree').value);
+    }
+
+    formData.append('vibe_answer', document.getElementById('vibe-answer').value);
+    
+    // Append Manual ID Numbers
+    formData.append('aadhaar_number', document.getElementById('aadhaar-number').value);
+    formData.append('pan_number', document.getElementById('pan-number').value.toUpperCase());
+
+    // Append Files
+    const aadhaarFile = document.getElementById('aadhaar-upload').files;
+    const panFile = document.getElementById('pan-upload').files;
+    formData.append('aadhaar_file', aadhaarFile);
+    formData.append('pan_file', panFile);
+
+    try {
+        // Send to Laravel Backend
+        const response = await fetch('http://localhost:8000/api/companion-register', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            // Success Logic
+            document.getElementById('companion-form').style.display = 'none';
+            document.querySelector('.progress-header').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+
+            document.querySelectorAll('.step-ind').forEach(indicator => {
+              indicator.classList.remove('active');
+              indicator.classList.add('done');
+              indicator.querySelector('.step-ind-num').innerHTML = '✓';
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            const errorData = await response.json();
+            alert('Error submitting form: ' + (errorData.message || 'Please try again.'));
+        }
+    } catch (error) {
+        console.error('API Error:', error);
+        alert('Network error. Make sure your backend server is running (php artisan serve).');
+    } finally {
+        submitBtn.textContent = 'Submit Application →';
+        submitBtn.classList.remove('loading');
+    }
   }
 </script>
 
