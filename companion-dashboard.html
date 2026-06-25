@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Companion Portal — PlusOne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:        #08080a;
+    --surface:    #0f0f14;
+    --rule:       rgba(255, 255, 255, 0.08);
+    --rule-hi:    rgba(255, 255, 255, 0.15);
+    --gold:       #d4af37;
+    --gold-dim:   #aa842c;
+    --text-1:     #f4f4f6;
+    --text-2:     #a1a1aa;
+    --text-3:     #52525b;
+    --serif:      'Cormorant Garamond', Georgia, serif;
+    --sans:       'Plus Jakarta Sans', system-ui, sans-serif;
+    --r-sm:       8px;
+    --r-md:       16px;
+    --r-lg:       24px;
+    
+    /* Status Colors */
+    --status-pending: #f59e0b;
+    --status-approved: #10b981;
+    --status-rejected: #ef4444;
+  }
+
+  body {
+    background: var(--ink);
+    color: var(--text-1);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle 800px at 50% -20%, rgba(212, 175, 55, 0.05), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(8, 8, 10, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--rule);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--text-1);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); font-style: italic; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .user-email {
+    font-size: 13px;
+    color: var(--text-2);
+    display: none; /* Mobile pe hide karenge */
+  }
+
+  .btn-logout {
+    background: transparent;
+    border: 0.5px solid var(--rule-hi);
+    color: var(--text-2);
+    padding: 10px 20px;
+    border-radius: var(--r-sm);
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-logout:hover {
+    color: var(--text-1);
+    border-color: var(--text-3);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* ── MAIN DASHBOARD AREA ── */
+  main {
+    flex: 1;
+    padding: 60px 6%;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .page-header {
+    margin-bottom: 40px;
+  }
+
+  .greeting {
+    font-family: var(--serif);
+    font-size: 42px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .greeting em { color: var(--gold); font-style: italic; }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  /* ── STATUS CARD (Most Important) ── */
+  .status-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid var(--rule-hi);
+    border-radius: var(--r-md);
+    padding: 32px 40px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+  }
+
+  .status-info h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .status-message {
+    font-size: 16px;
+    color: var(--text-1);
+    line-height: 1.6;
+    max-width: 500px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Dynamic Status Classes */
+  .status-badge.pending {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--status-pending);
+  }
+  .status-badge.approved {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--status-approved);
+  }
+  .status-badge.rejected {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--status-rejected);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .pending .status-dot { background: var(--status-pending); box-shadow: 0 0 10px var(--status-pending); }
+  .approved .status-dot { background: var(--status-approved); box-shadow: 0 0 10px var(--status-approved); }
+  .rejected .status-dot { background: var(--status-rejected); box-shadow: 0 0 10px var(--status-rejected); }
+
+  /* ── QUICK STATS (Placeholders) ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    opacity: 0.5; /* Dimmed because they are pending */
+    pointer-events: none; /* Disabled until approved */
+    transition: all 0.3s;
+  }
+
+  /* Agar approved ho jaye toh opacity 1 karni hogi JS se */
+  .stats-grid.unlocked {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.015);
+    border: 0.5px solid var(--rule);
+    border-radius: var(--r-md);
+    padding: 32px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 36px;
+    color: var(--text-1);
+    font-weight: 300;
+  }
+
+  @media (max-width: 768px) {
+    .status-card { flex-direction: column; align-items: flex-start; gap: 24px; padding: 24px; }
+    .stats-grid { grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .user-email { display: block; } }
+  }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Plus<span>One</span></a>
+  <div class="nav-right">
+    <span class="user-email" id="displayEmail">loading...</span>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1 class="greeting">Welcome to the <em>Network</em>.</h1>
+    <p class="subtitle">Here is an overview of your professional profile and operations.</p>
+  </div>
+
+  <div class="status-card" id="statusCard">
+    <div class="status-info">
+      <h3>Vetting Status</h3>
+      <p class="status-message" id="statusMessage">
+        Fetching your application status...
+      </p>
+    </div>
+    <div class="status-badge" id="statusBadge" style="display: none;">
+      <div class="status-dot"></div>
+      <span id="statusText">Loading</span>
+    </div>
+  </div>
+
+  <h3 style="font-size: 14px; color: var(--text-2); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">Operations Overview</h3>
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-label">Total Bookings</div>
+      <div class="stat-value">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Profile Rating</div>
+      <div class="stat-value">--</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Earnings</div>
+      <div class="stat-value">₹0</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // 1. AUTHENTICATION PROTECTION
+  // Check agar user logged in nahi hai ya 'companion' nahi hai, toh bhaga do
+  window.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('userToken');
+    const role = localStorage.getItem('userRole');
+    const email = localStorage.getItem('userEmail');
+
+    if (!token || role !== 'companion') {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    document.getElementById('displayEmail').textContent = email;
+
+    // 2. FETCH STATUS FROM BACKEND (Mock logic for now)
+    fetchCompanionStatus();
+  });
+
+  // Logout Function
+  function logout() {
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userRole');
+      window.location.href = 'login.html';
+  }
+
+  // Fetch Status Data
+  function fetchCompanionStatus() {
+      // Abhi backend me status fetch ka API nahi banaya hai humne,
+      // isliye main yahan ek dummy "Pending" status laga raha hoon testing ke liye.
+      // Jab API ban jayegi, tab hum isay fetch() request se replace kar denge.
+
+      const mockStatusFromDB = 'pending'; // Change this to 'approved' or 'rejected' to test UI
+
+      const badge = document.getElementById('statusBadge');
+      const text = document.getElementById('statusText');
+      const message = document.getElementById('statusMessage');
+      const statsGrid = document.getElementById('statsGrid');
+
+      badge.style.display = 'inline-flex';
+      
+      // Remove all classes first
+      badge.classList.remove('pending', 'approved', 'rejected');
+
+      if (mockStatusFromDB === 'pending') {
+          badge.classList.add('pending');
+          text.textContent = 'Under Review';
+          message.textContent = 'Your data profile is currently being reviewed by our operations unit. We will coordinate with you via WhatsApp soon.';
+      } 
+      else if (mockStatusFromDB === 'approved') {
+          badge.classList.add('approved');
+          text.textContent = 'Active & Verified';
+          message.textContent = 'Your profile is approved. You are now visible to our curated list of clients for bookings.';
+          statsGrid.classList.add('unlocked'); // Unlock stats section
+      } 
+      else if (mockStatusFromDB === 'rejected') {
+          badge.classList.add('rejected');
+          text.textContent = 'Application Declined';
+          message.textContent = 'Unfortunately, your profile did not meet our strict vetting criteria at this time.';
+      }
+  }
+</script>
+
+</body>
+</html>
