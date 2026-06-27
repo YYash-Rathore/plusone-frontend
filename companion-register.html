@@ -500,6 +500,19 @@
             <span class="field-error" id="err-pan">PAN document is required.</span>
           </div>
 
+          <div class="field-group full" style="margin-top: 20px;">
+            <label>Profile Picture</label>
+            <div class="file-upload-area">
+              <input type="file" class="file-input-hidden" id="profile-picture-upload" accept="image/jpeg,image/png,image/webp" onchange="processFileElement(this, 'profile-picture')">
+              <div class="file-label-box" id="profile-picture-box">
+                <div class="file-icon">📸</div>
+                <div class="file-upload-title">Click or Drop to upload <strong>Your Profile Picture</strong></div>
+                <div class="file-name-display" id="profile-picture-name" style="display:none;"></div>
+              </div>
+            </div>
+            <span class="field-error" id="err-profile-picture">Profile picture is required.</span>
+          </div>
+
         </div>
         
         <div class="security-note">
@@ -607,11 +620,29 @@
       // Validate Text Inputs
       const vAadhaarNum = auditFieldElement('aadhaar-number', num => /^\d{12}$/.test(num.trim()), 'err-aadhaar-num');
       const vPanNum = auditFieldElement('pan-number', num => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(num.trim()), 'err-pan-num');
-      
-      if (!vAadhaarNum || !vPanNum) checkPass = false;
+      const profileFile = document.getElementById('profile-picture-upload').files;
+      const profileValid = profileFile.length > 0;
+      const aadhaarFile = document.getElementById('aadhaar-upload').files;
+      const panFile = document.getElementById('pan-upload').files;
+      const aadhaarValid = aadhaarFile.length > 0;
+      const panValid = panFile.length > 0;
 
-      document.getElementById('err-aadhaar').classList.remove('show');
-      document.getElementById('err-pan').classList.remove('show');
+      if (!profileValid) {
+        document.getElementById('err-profile-picture').classList.add('show');
+      } else {
+        document.getElementById('err-profile-picture').classList.remove('show');
+      }
+      if (!aadhaarValid) {
+        document.getElementById('err-aadhaar').classList.add('show');
+      }
+      if (!panValid) {
+        document.getElementById('err-pan').classList.add('show');
+      }
+
+      if (!vAadhaarNum || !vPanNum || !profileValid || !aadhaarValid || !panValid) checkPass = false;
+
+      document.getElementById('err-aadhaar-num').classList.remove('show');
+      document.getElementById('err-pan-num').classList.remove('show');
     }
 
     return checkPass;
@@ -669,7 +700,14 @@
   }
   // Supabase companion application submission
   async function executeSubmission() {
-    if (!runValidationProtocols(4)) return;
+    if (!runValidationProtocols(4)) {
+      const firstError = document.querySelector('.field-error.show');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      alert('Please complete all required fields and upload your profile picture before submitting.');
+      return;
+    }
 
     const submitBtn = document.getElementById('final-submit-btn');
     submitBtn.disabled = true;
@@ -681,6 +719,57 @@
     const professionalStatus = document.querySelector('input[name="professional_status"]:checked').value;
 
     try {
+      const profileFileInput = document.getElementById('profile-picture-upload');
+      const aadhaarFileInput = document.getElementById('aadhaar-upload');
+      const panFileInput = document.getElementById('pan-upload');
+      const profileFile = profileFileInput.files[0];
+      const aadhaarFile = aadhaarFileInput.files[0];
+      const panFile = panFileInput.files[0];
+
+      let profilePictureUrl = null;
+      let aadhaarDocPath = null;
+      let panDocPath = null;
+
+      if (profileFile) {
+        const safeProfileName = `profile-${Date.now()}-${Math.random().toString(36).slice(2)}-${profileFile.name}`.replace(/\s+/g, '_');
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from('companion_profiles')
+          .upload(safeProfileName, profileFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicData, error: publicError } = await supabaseClient
+          .storage
+          .from('companion_profiles')
+          .getPublicUrl(safeProfileName);
+
+        if (publicError) throw publicError;
+        profilePictureUrl = publicData.publicUrl;
+      }
+
+      if (aadhaarFile) {
+        const safeAadhaarName = `aadhaar-${Date.now()}-${Math.random().toString(36).slice(2)}-${aadhaarFile.name}`.replace(/\s+/g, '_');
+        const { data: aadhaarUploadData, error: aadhaarUploadError } = await supabaseClient
+          .storage
+          .from('companion_documents')
+          .upload(safeAadhaarName, aadhaarFile);
+
+        if (aadhaarUploadError) throw aadhaarUploadError;
+        aadhaarDocPath = aadhaarUploadData.path;
+      }
+
+      if (panFile) {
+        const safePanName = `pan-${Date.now()}-${Math.random().toString(36).slice(2)}-${panFile.name}`.replace(/\s+/g, '_');
+        const { data: panUploadData, error: panUploadError } = await supabaseClient
+          .storage
+          .from('companion_documents')
+          .upload(safePanName, panFile);
+
+        if (panUploadError) throw panUploadError;
+        panDocPath = panUploadData.path;
+      }
+
       const payload = {
         full_name: document.getElementById('full-name').value,
         email,
@@ -699,6 +788,9 @@
         vibe_answer: document.getElementById('vibe-answer').value,
         aadhaar_number: document.getElementById('aadhaar-number').value,
         pan_number: document.getElementById('pan-number').value.toUpperCase(),
+        aadhaar_doc_url: aadhaarDocPath,
+        pan_doc_url: panDocPath,
+        profile_picture_url: profilePictureUrl,
         status: 'pending'
       };
 

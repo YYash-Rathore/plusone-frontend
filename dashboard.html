@@ -195,6 +195,68 @@
   .comp-info p { font-size: 13px; color: var(--text-1); margin: 0; }
   .comp-info span { font-size: 11px; color: var(--gold); }
 
+  .flashcards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .flashcard {
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid var(--rule);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+  }
+  .fc-avatar {
+    height: 210px;
+    overflow: hidden;
+    background: var(--rule);
+  }
+  .fc-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .fc-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .fc-name {
+    font-size: 16px;
+    color: var(--text-1);
+    font-weight: 600;
+    margin: 0;
+  }
+  .fc-age {
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .fc-action {
+    margin-top: auto;
+  }
+  .btn-select-profile {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--gold);
+    border: none;
+    color: #000;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .btn-select-profile:hover {
+    background: #f1cc5b;
+    transform: translateY(-1px);
+  }
+
   .empty-state { font-size: 14px; color: var(--text-3); font-style: italic; text-align: center; padding: 40px 0; border: 0.5px dashed var(--rule); border-radius: var(--r-sm); }
 
   @media (max-width: 900px) {
@@ -317,29 +379,39 @@
     const activeContainer = document.getElementById('activeBookingsContainer');
     const historyContainer = document.getElementById('historyBookingsContainer');
     activeContainer.innerHTML = '<div class="empty-state">Loading your active requests...</div>';
+    historyContainer.innerHTML = '<div class="empty-state">Past engagements will appear here.</div>';
 
-    const { data, error } = await supabaseClient
-      .from('bookings')
-      .select('*')
-      .eq('client_email', user.email)
-      .order('meetup_date', { ascending: false });
+    const [{ data: bookingData, error: bookingError }, { data: companionData, error: companionError }] = await Promise.all([
+      supabaseClient
+        .from('bookings')
+        .select('*')
+        .eq('client_email', user.email)
+        .order('meetup_date', { ascending: false }),
+      supabaseClient
+        .from('companions')
+        .select('id, full_name, age, profile_picture_url')
+        .eq('status', 'approved')
+    ]);
 
-    if (error) {
-      activeContainer.innerHTML = `<div class="empty-state">${error.message}</div>`;
-      historyContainer.innerHTML = '<div class="empty-state">Past engagements will appear here.</div>';
+    if (bookingError) {
+      activeContainer.innerHTML = `<div class="empty-state">${bookingError.message}</div>`;
       return;
     }
+    if (companionError) {
+      console.error('Companion fetch error:', companionError);
+    }
 
-    const bookings = data || [];
+    const bookings = bookingData || [];
+    const approvedCompanions = companionData || [];
     const active = bookings.filter(b => !['completed', 'cancelled'].includes((b.status || 'pending').toLowerCase()));
     const history = bookings.filter(b => ['completed', 'cancelled'].includes((b.status || '').toLowerCase()));
-    renderActiveBookings(active);
+    renderActiveBookings(active, approvedCompanions);
     renderHistoryBookings(history);
   }
 
-  function renderActiveBookings(bookings) {
+  function renderActiveBookings(bookings, approvedCompanions) {
     const container = document.getElementById('activeBookingsContainer');
-    if(bookings.length === 0) {
+    if (bookings.length === 0) {
       container.innerHTML = '<div class="empty-state">No active requests at the moment.</div>';
       return;
     }
@@ -352,18 +424,33 @@
 
       if (status === 'pending') {
         statusHtml = '<span class="status-badge status-pending">Pending Review</span>';
-        companionHtml = `<p style="font-size:12px; color:var(--text-3); margin-top:12px;">We are matching your vibe with verified profiles.</p>`;
+        companionHtml = renderCompanionFlashcardGrid(approvedCompanions, b.id);
       } else {
         statusHtml = '<span class="status-badge status-assigned">Companion Assigned</span>';
-        companionHtml = `
-          <div class="companion-box">
-            <div class="comp-avatar">*</div>
-            <div class="comp-info">
-              <p>${b.companion_name || 'Verified PlusOne'}</p>
-              <span>ID: V-${b.companion_id || 'XXX'}</span>
+        const assignedCompanion = approvedCompanions.find(c => c.id === b.companion_id);
+        if (assignedCompanion) {
+          companionHtml = `
+            <div class="companion-box">
+              <div class="comp-avatar">
+                <img src="${assignedCompanion.profile_picture_url || 'https://via.placeholder.com/32'}" alt="${assignedCompanion.full_name}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+              </div>
+              <div class="comp-info">
+                <p>${assignedCompanion.full_name}</p>
+                <span>Age ${assignedCompanion.age || 'N/A'}</span>
+              </div>
             </div>
-          </div>
-        `;
+          `;
+        } else {
+          companionHtml = `
+            <div class="companion-box">
+              <div class="comp-avatar">*</div>
+              <div class="comp-info">
+                <p>Assigned companion</p>
+                <span>ID: V-${b.companion_id || 'XXX'}</span>
+              </div>
+            </div>
+          `;
+        }
       }
 
       html += `
@@ -380,6 +467,31 @@
       `;
     });
     container.innerHTML = html;
+  }
+
+  function renderCompanionFlashcardGrid(companions, bookingId) {
+    if (!companions || companions.length === 0) {
+      return '<div class="empty-state">No approved profiles are available yet. Please check again soon.</div>';
+    }
+
+    return `
+      <div class="flashcards-grid">
+        ${companions.map(companion => `
+          <div class="flashcard">
+            <div class="fc-avatar">
+              <img src="${companion.profile_picture_url || 'https://via.placeholder.com/300x300?text=No+Photo'}" alt="${companion.full_name}">
+            </div>
+            <div class="fc-body">
+              <h3 class="fc-name">${companion.full_name}</h3>
+              <div class="fc-age">Age ${companion.age || 'N/A'}</div>
+              <div class="fc-action">
+                <button class="btn-select-profile" id="assign-btn-${bookingId}-${companion.id}" onclick="assignCompanion('${bookingId}', '${companion.id}', '${companion.full_name.replace(/'/g, "\\'")}')">Select Profile</button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
   }
 
   function renderHistoryBookings(bookings) {
@@ -406,10 +518,36 @@
     return new Date(dateStr).toLocaleDateString('en-GB', options);
   }
 
+  async function assignCompanion(bookingId, companionId, companionName) {
+    const button = document.getElementById(`assign-btn-${bookingId}-${companionId}`);
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Assigning...';
+    }
+
+    try {
+      const { error } = await supabaseClient
+        .from('bookings')
+        .update({ companion_id: companionId, status: 'assigned' })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+      alert(`Companion ${companionName} has been assigned to your booking.`);
+      await fetchDashboardData();
+    } catch (err) {
+      alert(err.message || 'Could not assign companion. Please try again.');
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Select Profile';
+      }
+    }
+  }
+
   document.getElementById('bookingForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBookingBtn');
-    const originalText = 'Submit Secure Request ->';
+    const originalText = 'Submit Secure Request →';
     btn.disabled = true;
     btn.textContent = 'Processing...';
 
