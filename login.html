@@ -249,101 +249,148 @@
   </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Default login type
-  let currentLoginType = 'female'; 
+  const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let currentLoginType = 'female';
 
-  // Tab Switcher Logic
   function switchTab(type) {
     currentLoginType = type;
-    
-    // Update active tab button
     document.getElementById('tab-female').classList.remove('active');
     document.getElementById('tab-companion').classList.remove('active');
     document.getElementById('tab-' + type).classList.add('active');
 
-    // Update Text Content dynamically based on role
     const title = document.getElementById('auth-title');
     const sub = document.getElementById('auth-sub');
 
     if (type === 'female') {
-        title.innerHTML = 'Welcome <em>Back</em>.';
-        sub.innerText = 'Enter your credentials to access your secure dashboard.';
+      title.innerHTML = 'Welcome <em>Back</em>.';
+      sub.innerText = 'Enter your credentials to access your secure dashboard.';
     } else {
-        title.innerHTML = 'Companion <em>Portal</em>.';
-        sub.innerText = 'Login to view your application status and bookings.';
+      title.innerHTML = 'Companion <em>Portal</em>.';
+      sub.innerText = 'Login to view your application status and bookings.';
     }
   }
 
-  // Pura Login API Logic
-  document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault(); 
+  async function getUserRole(user, requestedRole) {
+    if (user.user_metadata?.role) return user.user_metadata.role;
 
-    const email = document.getElementById('email').value;
+    if (requestedRole === 'companion') {
+      const { data } = await supabaseClient
+        .from('companions')
+        .select('id')
+        .eq('email', user.email)
+        .maybeSingle();
+      if (data) return 'companion';
+    }
+
+    return 'female';
+  }
+
+  async function signInClientWithDatabase(email, password) {
+    const { data, error } = await supabaseClient
+      .from('clients')
+      .select('id, name, email, password')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data || data.password !== password) {
+      throw new Error('Invalid credentials. Please try again.');
+    }
+
+    localStorage.setItem('userToken', `client-${data.id}`);
+    localStorage.setItem('userEmail', data.email);
+    localStorage.setItem('userRole', 'female');
+    localStorage.setItem('userId', String(data.id));
+    localStorage.setItem('userName', data.name);
+    window.location.href = 'dashboard.html';
+  }
+
+  async function signInCompanionWithDatabase(email, password) {
+    const { data, error } = await supabaseClient
+      .from('companions')
+      .select('id, full_name, email, password, status')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data || data.password !== password) {
+      throw new Error('Invalid credentials. Please try again.');
+    }
+
+    localStorage.setItem('userToken', `companion-${data.id}`);
+    localStorage.setItem('userEmail', data.email);
+    localStorage.setItem('userRole', 'companion');
+    localStorage.setItem('userId', String(data.id));
+    localStorage.setItem('userName', data.full_name);
+    localStorage.setItem('companionStatus', data.status || 'pending');
+    window.location.href = 'companion-dashboard.html';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const errorMsg = document.getElementById('errorMsg');
     const submitBtn = document.getElementById('submitBtn');
 
+    errorMsg.style.display = 'none';
+    submitBtn.disabled = true;
     submitBtn.textContent = 'Verifying...';
     submitBtn.style.opacity = '0.7';
 
-    // Note: Hum payload mein `login_type` bhi bhej rahe hain
-    fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ 
-            email: email, 
-            password: password,
-            login_type: currentLoginType // 'female' ya 'companion'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Token, Email aur User Type localStorage mein save kar lo
-            localStorage.setItem('userToken', data.token);
-            localStorage.setItem('userEmail', data.user.email);
-            localStorage.setItem('userRole', currentLoginType); 
-            
-            // Smart Redirection
-            if (currentLoginType === 'female') {
-                window.location.href = 'dashboard.html';
-            } else {
-                window.location.href = 'companion-dashboard.html'; // Companion ke liye naya dashboard page
-            }
-        } else {
-            errorMsg.style.display = 'block';
-            errorMsg.textContent = data.message || 'Invalid credentials.';
-            submitBtn.textContent = 'Secure Login →';
-            submitBtn.style.opacity = '1';
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        errorMsg.style.display = 'block';
-        errorMsg.textContent = 'Server error. Is your local server running?';
-        submitBtn.textContent = 'Secure Login →';
-        submitBtn.style.opacity = '1';
-    });
-  });
-
-  // Agar user pehle se logged in hai, toh login page dikhane ka koi fayda nahi
-  window.addEventListener('DOMContentLoaded', () => {
-      const token = localStorage.getItem('userToken');
-      const role = localStorage.getItem('userRole');
-      
-      if (token) {
-          if (role === 'companion') {
-              window.location.href = 'companion-dashboard.html';
-          } else {
-              window.location.href = 'dashboard.html';
-          }
+    try {
+      if (currentLoginType === 'female') {
+        await signInClientWithDatabase(email, password);
+        return;
       }
-  });
-</script>
 
-</body>
+      if (currentLoginType === 'companion') {
+        await signInCompanionWithDatabase(email, password);
+        return;
+      }
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      const role = await getUserRole(data.user, currentLoginType);
+      if (role !== currentLoginType) {
+        await supabaseClient.auth.signOut();
+        throw new Error(`This account is registered as ${role}. Please choose the correct login tab.`);
+      }
+
+      localStorage.setItem('userToken', data.session.access_token);
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('userId', data.user.id);
+      window.location.href = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+    } catch (error) {
+      console.error('Login error:', error);
+      errorMsg.style.display = 'block';
+      errorMsg.textContent = error.message || 'Invalid credentials. Please try again.';
+      submitBtn.textContent = 'Secure Login ->';
+      submitBtn.style.opacity = '1';
+      submitBtn.disabled = false;
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const role = localStorage.getItem('userRole') || session?.user?.user_metadata?.role;
+    const localToken = localStorage.getItem('userToken');
+
+    if (localToken && (role === 'female' || role === 'companion')) {
+      window.location.href = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+      return;
+    }
+
+    if (session) {
+      window.location.href = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+    }
+  });
+</script></body>
 </html>

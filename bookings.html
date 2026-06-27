@@ -133,64 +133,105 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let registeredEmail = '';
 
-  // Step 1: Register API
+  function setMessage(el, message, type) {
+    el.innerText = message;
+    el.className = 'response-msg ' + type;
+  }
+
+  function formToObject(form) {
+    return Object.fromEntries(new FormData(form).entries());
+  }
+
   document.getElementById('formAccount').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('btn1');
     const resBox = document.getElementById('res1');
-    btn.disabled = true; btn.innerText = "Encrypting Data..."; resBox.className = "response-msg";
-    
+    const form = formToObject(this);
+
+    btn.disabled = true;
+    btn.innerText = 'Creating secure profile...';
+    resBox.className = 'response-msg';
+
     try {
-      const res = await fetch('http://localhost:8000/api/register-waitlist', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: new FormData(this)
-      });
-      const data = await res.json();
-      if(res.ok) {
-        registeredEmail = document.getElementById('userEmail').value;
-        document.getElementById('step-1-register').style.display = 'none';
-        document.getElementById('step-2-choice').style.display = 'block';
-      } else { throw new Error(data.message || 'Validation Failed'); }
+      registeredEmail = form.email;
+
+      const clientPayload = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        password: form.password,
+        emergency_contact: form.emergency_contact,
+        emergency_contact_relation: form.emergency_contact_relation,
+        vibe_tags: form.vibe_tags
+      };
+
+      const { data: existingClient } = await supabaseClient
+        .from('clients')
+        .select('id')
+        .eq('email', form.email)
+        .maybeSingle();
+
+      const clientQuery = existingClient
+        ? supabaseClient.from('clients').update(clientPayload).eq('id', existingClient.id)
+        : supabaseClient.from('clients').insert(clientPayload);
+
+      const { error: clientError } = await clientQuery;
+      if (clientError) throw clientError;
+
+      setMessage(resBox, 'Profile created. You can now place your request.', 'success');
+      document.getElementById('step-1-register').style.display = 'none';
+      document.getElementById('step-2-choice').style.display = 'block';
     } catch(err) {
-      resBox.innerText = err.message; resBox.classList.add('error');
-      btn.disabled = false; btn.innerText = "Create Profile & Continue →";
+      setMessage(resBox, err.message || 'Could not create profile. Please try again.', 'error');
+      btn.disabled = false;
+      btn.innerText = 'Create Profile & Continue ->';
     }
   });
 
-  // Switch to Web Form
   function showBookingForm() {
     document.getElementById('step-2-choice').style.display = 'none';
     document.getElementById('step-3-booking').style.display = 'block';
   }
 
-  // Step 3: Booking API
   document.getElementById('formBooking').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('btn3');
     const resBox = document.getElementById('res3');
-    btn.disabled = true; btn.innerText = "Sending Request..."; resBox.className = "response-msg";
-    
-    const formData = new FormData(this);
-    formData.append('email', registeredEmail); 
-    
+    const form = formToObject(this);
+
+    btn.disabled = true;
+    btn.innerText = 'Sending request...';
+    resBox.className = 'response-msg';
+
     try {
-      const res = await fetch('http://localhost:8000/api/create-booking', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: formData
-      });
-      const data = await res.json();
-      if(res.ok) {
-        document.getElementById('step-3-booking').style.display = 'none';
-        document.getElementById('step-4-success').style.display = 'block';
-      } else { throw new Error(data.message || 'Booking Failed'); }
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      const payload = {
+        client_email: registeredEmail || user?.email || document.getElementById('userEmail').value,
+        meetup_date: form.meetup_date,
+        meetup_time: form.meetup_time,
+        duration_type: form.duration_type,
+        location: form.location,
+        promo_code: form.coupon_code || null,
+        status: 'pending'
+      };
+
+      const { error } = await supabaseClient.from('bookings').insert(payload);
+      if (error) throw error;
+
+      setMessage(resBox, 'Request submitted successfully.', 'success');
+      document.getElementById('step-3-booking').style.display = 'none';
+      document.getElementById('step-4-success').style.display = 'block';
     } catch(err) {
-      resBox.innerText = err.message; resBox.classList.add('error');
-      btn.disabled = false; btn.innerText = "Submit Secure Request →";
+      setMessage(resBox, err.message || 'Booking failed. Please try again.', 'error');
+      btn.disabled = false;
+      btn.innerText = 'Submit Secure Request ->';
     }
   });
 </script>

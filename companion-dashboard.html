@@ -291,69 +291,99 @@
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // 1. AUTHENTICATION PROTECTION
-  // Check agar user logged in nahi hai ya 'companion' nahi hai, toh bhaga do
-  window.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('userToken');
-    const role = localStorage.getItem('userRole');
-    const email = localStorage.getItem('userEmail');
+  const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let currentUser = null;
 
-    if (!token || role !== 'companion') {
-        window.location.href = 'login.html';
-        return;
+  window.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const role = localStorage.getItem('userRole') || session?.user?.user_metadata?.role;
+    const localEmail = localStorage.getItem('userEmail');
+    const localId = localStorage.getItem('userId');
+
+    if (!session && role === 'companion' && localEmail) {
+      currentUser = { id: localId, email: localEmail, isCompanionRecord: true };
+      document.getElementById('displayEmail').textContent = localEmail;
+      await fetchCompanionStatus();
+      return;
     }
 
-    document.getElementById('displayEmail').textContent = email;
+    if (!session || role !== 'companion') {
+      window.location.href = 'login.html';
+      return;
+    }
 
-    // 2. FETCH STATUS FROM BACKEND (Mock logic for now)
-    fetchCompanionStatus();
+    currentUser = session.user;
+    localStorage.setItem('userToken', session.access_token);
+    localStorage.setItem('userEmail', session.user.email);
+    localStorage.setItem('userRole', 'companion');
+    localStorage.setItem('userId', session.user.id);
+    document.getElementById('displayEmail').textContent = session.user.email;
+    await fetchCompanionStatus();
   });
 
-  // Logout Function
-  function logout() {
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userRole');
-      window.location.href = 'login.html';
+  async function logout() {
+    await supabaseClient.auth.signOut();
+    localStorage.clear();
+    window.location.href = 'login.html';
   }
 
-  // Fetch Status Data
-  function fetchCompanionStatus() {
-      // Abhi backend me status fetch ka API nahi banaya hai humne,
-      // isliye main yahan ek dummy "Pending" status laga raha hoon testing ke liye.
-      // Jab API ban jayegi, tab hum isay fetch() request se replace kar denge.
+  async function fetchCompanionStatus() {
+    const badge = document.getElementById('statusBadge');
+    const text = document.getElementById('statusText');
+    const message = document.getElementById('statusMessage');
+    const statsGrid = document.getElementById('statsGrid');
 
-      const mockStatusFromDB = 'pending'; // Change this to 'approved' or 'rejected' to test UI
+    try {
+      const { data, error } = await supabaseClient
+        .from('companions')
+        .select('status, full_name')
+        .eq('email', currentUser.email)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      const badge = document.getElementById('statusBadge');
-      const text = document.getElementById('statusText');
-      const message = document.getElementById('statusMessage');
-      const statsGrid = document.getElementById('statsGrid');
-
+      if (error) throw error;
+      applyStatus(data?.status || 'pending');
+    } catch (error) {
+      console.error('Status fetch error:', error);
       badge.style.display = 'inline-flex';
-      
-      // Remove all classes first
       badge.classList.remove('pending', 'approved', 'rejected');
-
-      if (mockStatusFromDB === 'pending') {
-          badge.classList.add('pending');
-          text.textContent = 'Under Review';
-          message.textContent = 'Your data profile is currently being reviewed by our operations unit. We will coordinate with you via WhatsApp soon.';
-      } 
-      else if (mockStatusFromDB === 'approved') {
-          badge.classList.add('approved');
-          text.textContent = 'Active & Verified';
-          message.textContent = 'Your profile is approved. You are now visible to our curated list of clients for bookings.';
-          statsGrid.classList.add('unlocked'); // Unlock stats section
-      } 
-      else if (mockStatusFromDB === 'rejected') {
-          badge.classList.add('rejected');
-          text.textContent = 'Application Declined';
-          message.textContent = 'Unfortunately, your profile did not meet our strict vetting criteria at this time.';
-      }
+      badge.classList.add('pending');
+      text.textContent = 'Status Unavailable';
+      message.textContent = error.message || 'We could not load your application status right now.';
+      statsGrid.classList.remove('unlocked');
+    }
   }
-</script>
 
-</body>
+  function applyStatus(rawStatus) {
+    const status = (rawStatus || 'pending').toLowerCase();
+    const badge = document.getElementById('statusBadge');
+    const text = document.getElementById('statusText');
+    const message = document.getElementById('statusMessage');
+    const statsGrid = document.getElementById('statsGrid');
+
+    badge.style.display = 'inline-flex';
+    badge.classList.remove('pending', 'approved', 'rejected');
+    statsGrid.classList.remove('unlocked');
+
+    if (status === 'approved') {
+      badge.classList.add('approved');
+      text.textContent = 'Active & Verified';
+      message.textContent = 'Your profile is approved. You are now visible to our curated list of clients for bookings.';
+      statsGrid.classList.add('unlocked');
+    } else if (status === 'rejected') {
+      badge.classList.add('rejected');
+      text.textContent = 'Application Declined';
+      message.textContent = 'Unfortunately, your profile did not meet our strict vetting criteria at this time.';
+    } else {
+      badge.classList.add('pending');
+      text.textContent = 'Under Review';
+      message.textContent = 'Your data profile is currently being reviewed by our operations unit. We will coordinate with you via WhatsApp soon.';
+    }
+  }
+</script></body>
 </html>

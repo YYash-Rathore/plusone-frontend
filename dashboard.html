@@ -264,169 +264,187 @@
   </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let currentUser = null;
 
-    // dashboard.html ke <script> mein sabse upar yeh daalo:
-const userToken = localStorage.getItem('userToken');
-if (!userToken) {
-    // Agar token nahi hai, toh user ko bhaga do login page par
-    window.location.href = 'login.html';
-}
-  // 1. AUTHENTICATION CHECK
-  const token = localStorage.getItem('userToken');
-  if (!token) {
-      window.location.href = 'login.html'; // Agar token nahi hai toh bhaga do
-  }
+  async function requireFemaleSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const localRole = localStorage.getItem('userRole');
+    const localEmail = localStorage.getItem('userEmail');
+    const localId = localStorage.getItem('userId');
+    const localName = localStorage.getItem('userName');
 
-  // Display User Name (Agar localStorage me save kiya hai)
-  const userEmail = localStorage.getItem('userEmail');
-  if(userEmail) { 
-    document.getElementById('userNameDisplay').textContent = userEmail.split('@'); 
+    if (!session && localRole === 'female' && localEmail) {
+      currentUser = { id: localId, email: localEmail, isClientRecord: true };
+      document.getElementById('userNameDisplay').textContent = localName || localEmail.split('@')[0];
+      return currentUser;
     }
 
-  // Logout Function
-  function logout() {
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('userEmail');
+    if (!session) {
       window.location.href = 'login.html';
+      return null;
+    }
+
+    const role = localStorage.getItem('userRole') || session.user.user_metadata?.role || 'female';
+    if (role === 'companion') {
+      window.location.href = 'companion-dashboard.html';
+      return null;
+    }
+
+    currentUser = session.user;
+    localStorage.setItem('userToken', session.access_token);
+    localStorage.setItem('userEmail', session.user.email);
+    localStorage.setItem('userRole', 'female');
+    localStorage.setItem('userId', session.user.id);
+    document.getElementById('userNameDisplay').textContent = session.user.email.split('@')[0];
+    return session.user;
   }
 
-  // 2. FETCH DASHBOARD DATA (API Call)
-  function fetchDashboardData() {
-      fetch('http://localhost:8000/api/my-bookings', {
-          method: 'GET',
-          headers: {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/json'
-          }
-      })
-      .then(res => res.json())
-      .then(data => {
-          if(data.success) {
-              renderActiveBookings(data.active_bookings);
-              renderHistoryBookings(data.history);
-          }
-      })
-      .catch(err => console.error("Error fetching data: ", err));
+  async function logout() {
+    await supabaseClient.auth.signOut();
+    localStorage.clear();
+    window.location.href = 'login.html';
   }
 
-  // 3. RENDER ACTIVE BOOKINGS
+  async function fetchDashboardData() {
+    const user = currentUser || await requireFemaleSession();
+    if (!user) return;
+
+    const activeContainer = document.getElementById('activeBookingsContainer');
+    const historyContainer = document.getElementById('historyBookingsContainer');
+    activeContainer.innerHTML = '<div class="empty-state">Loading your active requests...</div>';
+
+    const { data, error } = await supabaseClient
+      .from('bookings')
+      .select('*')
+      .eq('client_email', user.email)
+      .order('meetup_date', { ascending: false });
+
+    if (error) {
+      activeContainer.innerHTML = `<div class="empty-state">${error.message}</div>`;
+      historyContainer.innerHTML = '<div class="empty-state">Past engagements will appear here.</div>';
+      return;
+    }
+
+    const bookings = data || [];
+    const active = bookings.filter(b => !['completed', 'cancelled'].includes((b.status || 'pending').toLowerCase()));
+    const history = bookings.filter(b => ['completed', 'cancelled'].includes((b.status || '').toLowerCase()));
+    renderActiveBookings(active);
+    renderHistoryBookings(history);
+  }
+
   function renderActiveBookings(bookings) {
-      const container = document.getElementById('activeBookingsContainer');
-      if(bookings.length === 0) {
-          container.innerHTML = '<div class="empty-state">No active requests at the moment.</div>';
-          return;
+    const container = document.getElementById('activeBookingsContainer');
+    if(bookings.length === 0) {
+      container.innerHTML = '<div class="empty-state">No active requests at the moment.</div>';
+      return;
+    }
+
+    let html = '';
+    bookings.forEach(b => {
+      const status = (b.status || 'pending').toLowerCase();
+      let statusHtml = '';
+      let companionHtml = '';
+
+      if (status === 'pending') {
+        statusHtml = '<span class="status-badge status-pending">Pending Review</span>';
+        companionHtml = `<p style="font-size:12px; color:var(--text-3); margin-top:12px;">We are matching your vibe with verified profiles.</p>`;
+      } else {
+        statusHtml = '<span class="status-badge status-assigned">Companion Assigned</span>';
+        companionHtml = `
+          <div class="companion-box">
+            <div class="comp-avatar">*</div>
+            <div class="comp-info">
+              <p>${b.companion_name || 'Verified PlusOne'}</p>
+              <span>ID: V-${b.companion_id || 'XXX'}</span>
+            </div>
+          </div>
+        `;
       }
 
-      let html = '';
-      bookings.forEach(b => {
-          // Status Logic
-          let statusHtml = '';
-          let companionHtml = '';
-
-          if (b.status === 'pending') {
-              statusHtml = '<span class="status-badge status-pending">Pending Review</span>';
-              companionHtml = `<p style="font-size:12px; color:var(--text-3); margin-top:12px;">We are matching your vibe with verified profiles.</p>`;
-          } else {
-              statusHtml = '<span class="status-badge status-assigned">Companion Assigned</span>';
-              companionHtml = `
-                  <div class="companion-box">
-                      <div class="comp-avatar">✦</div>
-                      <div class="comp-info">
-                          <p>${b.companion ? b.companion.full_name : 'Verified PlusOne'}</p>
-                          <span>ID: V-${b.companion_id || 'XXX'}</span>
-                      </div>
-                  </div>
-              `;
-          }
-
-          html += `
-              <div class="request-card">
-                  <div class="req-header">
-                      <div class="req-date">${formatDate(b.meetup_date)} <span style="font-size:14px; color:var(--text-2); font-family:var(--sans);">@ ${b.meetup_time}</span></div>
-                      ${statusHtml}
-                  </div>
-                  <div class="req-details">
-                      📍 ${b.location} &nbsp;&nbsp; | &nbsp;&nbsp; ⏱ ${b.duration_type.replace('_', ' ')}
-                  </div>
-                  ${companionHtml}
-              </div>
-          `;
-      });
-      container.innerHTML = html;
+      html += `
+        <div class="request-card">
+          <div class="req-header">
+            <div class="req-date">${formatDate(b.meetup_date)} <span style="font-size:14px; color:var(--text-2); font-family:var(--sans);">@ ${b.meetup_time || ''}</span></div>
+            ${statusHtml}
+          </div>
+          <div class="req-details">
+            Location: ${b.location || 'To be confirmed'} &nbsp;&nbsp; | &nbsp;&nbsp; Duration: ${(b.duration_type || '').replace('_', ' ')}
+          </div>
+          ${companionHtml}
+        </div>
+      `;
+    });
+    container.innerHTML = html;
   }
 
-  // 4. RENDER HISTORY BOOKINGS
   function renderHistoryBookings(bookings) {
-      const container = document.getElementById('historyBookingsContainer');
-      if(bookings.length === 0) {
-          container.innerHTML = '<div class="empty-state">Your past engagements will appear here.</div>';
-          return;
-      }
+    const container = document.getElementById('historyBookingsContainer');
+    if(bookings.length === 0) {
+      container.innerHTML = '<div class="empty-state">Your past engagements will appear here.</div>';
+      return;
+    }
 
-      let html = '';
-      bookings.forEach(b => {
-          html += `
-              <div class="request-card" style="opacity: 0.6;">
-                  <div class="req-header">
-                      <div class="req-date">${formatDate(b.meetup_date)}</div>
-                      <span class="status-badge status-completed">Completed</span>
-                  </div>
-                  <div class="req-details" style="margin-bottom:0;">📍 ${b.location}</div>
-              </div>
-          `;
-      });
-      container.innerHTML = html;
+    container.innerHTML = bookings.map(b => `
+      <div class="request-card" style="opacity: 0.6;">
+        <div class="req-header">
+          <div class="req-date">${formatDate(b.meetup_date)}</div>
+          <span class="status-badge status-completed">${b.status || 'Completed'}</span>
+        </div>
+        <div class="req-details" style="margin-bottom:0;">Location: ${b.location || 'Completed outing'}</div>
+      </div>
+    `).join('');
   }
 
-  // Helper: Format Date
   function formatDate(dateStr) {
-      const options = { day: 'numeric', month: 'short', year: 'numeric' };
-      return new Date(dateStr).toLocaleDateString('en-GB', options);
+    if (!dateStr) return 'Date pending';
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    return new Date(dateStr).toLocaleDateString('en-GB', options);
   }
 
-  // 5. SUBMIT NEW BOOKING
-  document.getElementById('bookingForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('submitBookingBtn');
-      btn.textContent = 'Processing...';
+  document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBookingBtn');
+    const originalText = 'Submit Secure Request ->';
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
+    try {
+      const user = currentUser || await requireFemaleSession();
+      if (!user) return;
 
       const payload = {
-          date: document.getElementById('b_date').value,
-          time: document.getElementById('b_time').value,
-          duration: document.getElementById('b_duration').value,
-          public_location: document.getElementById('b_location').value,
-          promo_code: document.getElementById('b_promo').value
+        client_email: user.email,
+        meetup_date: document.getElementById('b_date').value,
+        meetup_time: document.getElementById('b_time').value,
+        duration_type: document.getElementById('b_duration').value,
+        location: document.getElementById('b_location').value,
+        promo_code: document.getElementById('b_promo').value || null,
+        status: 'pending'
       };
 
-      fetch('http://localhost:8000/api/create-booking', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'Authorization': `Bearer ${token}` // IMPORTANT: Ye btayega ki kis user ne request ki
-          },
-          body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(data => {
-          btn.textContent = 'Submit Secure Request →';
-          if(data.success) {
-              alert('Booking request received successfully!');
-              document.getElementById('bookingForm').reset();
-              fetchDashboardData(); // Refresh lists immediately
-          } else {
-              alert('Error: ' + data.message);
-          }
-      })
-      .catch(err => {
-          btn.textContent = 'Submit Secure Request →';
-          alert('Server Error. Check terminal logs.');
-      });
+      const { error } = await supabaseClient.from('bookings').insert(payload);
+      if (error) throw error;
+
+      alert('Booking request received successfully!');
+      document.getElementById('bookingForm').reset();
+      await fetchDashboardData();
+    } catch (err) {
+      alert(err.message || 'Could not submit booking. Please try again.');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   });
 
-  // INITIAL LOAD
-  window.addEventListener('DOMContentLoaded', fetchDashboardData);
+  window.addEventListener('DOMContentLoaded', async () => {
+    await requireFemaleSession();
+    await fetchDashboardData();
+  });
 </script>
 
 </body>

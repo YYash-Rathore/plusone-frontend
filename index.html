@@ -890,7 +890,12 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -904,27 +909,34 @@
 
   async function loadLiveStats() {
     try {
-      const res = await fetch('http://localhost:8000/api/stats');
-      const data = await res.json();
+      const [
+        { count: waitlistCount },
+        { count: screenedCount },
+        { count: onboardedCount }
+      ] = await Promise.all([
+        supabaseClient.from('companions').select('id', { count: 'exact', head: true }),
+        supabaseClient.from('companions').select('id', { count: 'exact', head: true }).neq('status', 'pending'),
+        supabaseClient.from('companions').select('id', { count: 'exact', head: true }).eq('status', 'approved')
+      ]);
       
-      document.getElementById('stat-applied').textContent = data.waitlistCount || 128; 
-      document.getElementById('stat-screened').textContent = data.screenedCount || 42;
-      document.getElementById('stat-onboarded').textContent = data.onboardedCount || 3;
+      document.getElementById('stat-applied').textContent = waitlistCount || 128;
+document.getElementById('stat-screened').textContent = screenedCount || 42;
+      document.getElementById('stat-onboarded').textContent = onboardedCount || 3;
 
-      document.getElementById('hero-applied').textContent = data.waitlistCount || 128;
-      document.getElementById('hero-screened').textContent = data.screenedCount || 42;
-      document.getElementById('hero-onboarded').textContent = data.onboardedCount || 3;
+      document.getElementById('hero-applied').textContent = waitlistCount || 128;
+      document.getElementById('hero-screened').textContent = screenedCount || 42;
+      document.getElementById('hero-onboarded').textContent = onboardedCount || 3;
       
     } catch (e) {
-      console.error('Stats API Offline - using fallback numbers');
+      console.error('Stats unavailable - using fallback numbers', e);
     }
   }
 
-  function checkAuthStatus() {
-    const token = localStorage.getItem('userToken');
+  async function checkAuthStatus() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
     const authButtonsDiv = document.getElementById('auth-buttons');
     
-    if (token) {
+    if (session) {
         authButtonsDiv.innerHTML = `
             <a href="dashboard.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
             <button onclick="logoutUser()" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
@@ -937,18 +949,18 @@
     }
   }
 
-  function logoutUser() {
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('userEmail');
+  async function logoutUser() {
+      await supabaseClient.auth.signOut();
+      localStorage.clear();
       window.location.reload(); 
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
       loadLiveStats();
-      checkAuthStatus();
+      await checkAuthStatus();
       
-      const token = localStorage.getItem('userToken');
-      if (token) {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
           const joinBtns = document.querySelectorAll('a[href="register.html"]'); 
           joinBtns.forEach(btn => {
               btn.textContent = 'Go to Dashboard →';

@@ -522,8 +522,13 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let trackingStep = 1;
+  document.getElementById('companion-form').addEventListener('submit', (event) => event.preventDefault());
   const metricsPct = ['25%', '50%', '75%', '100%'];
   const processingLabels = [
     'Step 1 of 4 — Basic Details',
@@ -605,18 +610,8 @@
       
       if (!vAadhaarNum || !vPanNum) checkPass = false;
 
-      // Validate File Uploads
-      const aFile = document.getElementById('aadhaar-upload').files;
-      const pFile = document.getElementById('pan-upload').files;
-      
-      if(aFile.length === 0) { 
-        document.getElementById('err-aadhaar').classList.add('show'); 
-        checkPass = false; 
-      }
-      if(pFile.length === 0) { 
-        document.getElementById('err-pan').classList.add('show'); 
-        checkPass = false; 
-      }
+      document.getElementById('err-aadhaar').classList.remove('show');
+      document.getElementById('err-pan').classList.remove('show');
     }
 
     return checkPass;
@@ -663,7 +658,7 @@
   function processFileElement(input, contextStr) {
     const trackingFile = input.files;
     if (trackingFile.length === 0) return;
-    const file = trackingFile;
+    const file = trackingFile[0];
     const targetsBox = document.getElementById(contextStr + '-box');
     const targetNameSpan = document.getElementById(contextStr + '-name');
     document.getElementById('err-' + contextStr).classList.remove('show');
@@ -672,80 +667,71 @@
     targetNameSpan.textContent = file.name + " (" + (file.size / 1024).toFixed(1) + " KB)";
     targetNameSpan.style.display = 'block';
   }
-
-  // --- MODIFIED EXECUTIONSUBMISSION TO CONNECT WITH BACKEND API ---
+  // Supabase companion application submission
   async function executeSubmission() {
     if (!runValidationProtocols(4)) return;
 
     const submitBtn = document.getElementById('final-submit-btn');
+    submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting...';
     submitBtn.classList.add('loading');
 
-    // Create FormData object to send text and files
-    const formData = new FormData();
-    formData.append('name', document.getElementById('full-name').value);
-    formData.append('age', document.getElementById('age').value);
-    formData.append('height', document.getElementById('height').value);
-    formData.append('phone', document.getElementById('phone').value);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('password', document.getElementById('password').value);
-    formData.append('city', document.getElementById('city').value);
-    
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
     const professionalStatus = document.querySelector('input[name="professional_status"]:checked').value;
-    formData.append('professional_status', professionalStatus);
-    
-    if (professionalStatus === 'Working Professional') {
-        formData.append('company_name', document.getElementById('company-name').value);
-        formData.append('designation', document.getElementById('designation').value);
-    } else {
-        formData.append('college_name', document.getElementById('college-name').value);
-        formData.append('degree', document.getElementById('degree').value);
-    }
-
-    formData.append('vibe_answer', document.getElementById('vibe-answer').value);
-    
-    // Append Manual ID Numbers
-    formData.append('aadhaar_number', document.getElementById('aadhaar-number').value);
-    formData.append('pan_number', document.getElementById('pan-number').value.toUpperCase());
-
-    // Append Files
-    const aadhaarFile = document.getElementById('aadhaar-upload').files;
-    const panFile = document.getElementById('pan-upload').files;
-    formData.append('aadhaar_file', aadhaarFile);
-    formData.append('pan_file', panFile);
 
     try {
-        // Send to Laravel Backend
-        const response = await fetch('http://localhost:8000/api/companion-register', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+      const payload = {
+        full_name: document.getElementById('full-name').value,
+        email,
+        phone: document.getElementById('phone').value,
+        password,
+        age: Number(document.getElementById('age').value),
+        height: document.getElementById('height').value,
+        city: document.getElementById('city').value,
+        professional_status: professionalStatus,
+        company_or_college: professionalStatus === 'Working Professional'
+          ? document.getElementById('company-name').value
+          : document.getElementById('college-name').value,
+        designation_or_degree: professionalStatus === 'Working Professional'
+          ? document.getElementById('designation').value
+          : document.getElementById('degree').value,
+        vibe_answer: document.getElementById('vibe-answer').value,
+        aadhaar_number: document.getElementById('aadhaar-number').value,
+        pan_number: document.getElementById('pan-number').value.toUpperCase(),
+        status: 'pending'
+      };
 
-        if (response.ok) {
-            // Success Logic
-            document.getElementById('companion-form').style.display = 'none';
-            document.querySelector('.progress-header').style.display = 'none';
-            document.getElementById('success-screen').style.display = 'block';
+      const { data: existingCompanion } = await supabaseClient
+        .from('companions')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
 
-            document.querySelectorAll('.step-ind').forEach(indicator => {
-              indicator.classList.remove('active');
-              indicator.classList.add('done');
-              indicator.querySelector('.step-ind-num').innerHTML = '✓';
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            const errorData = await response.json();
-            alert('Error submitting form: ' + (errorData.message || 'Please try again.'));
-        }
+      const companionQuery = existingCompanion
+        ? supabaseClient.from('companions').update(payload).eq('id', existingCompanion.id)
+        : supabaseClient.from('companions').insert(payload);
+
+      const { error: companionError } = await companionQuery;
+      if (companionError) throw companionError;
+
+      document.getElementById('companion-form').style.display = 'none';
+      document.querySelector('.progress-header').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+
+      document.querySelectorAll('.step-ind').forEach(indicator => {
+        indicator.classList.remove('active');
+        indicator.classList.add('done');
+        indicator.querySelector('.step-ind-num').innerHTML = '*';
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
-        console.error('API Error:', error);
-        alert('Network error. Make sure your backend server is running (php artisan serve).');
+      console.error('Supabase submission error:', error);
+      alert(error.message || 'Error submitting form. Please try again.');
     } finally {
-        submitBtn.textContent = 'Submit Application →';
-        submitBtn.classList.remove('loading');
+      submitBtn.textContent = 'Submit Application ->';
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
     }
   }
 </script>
