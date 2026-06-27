@@ -137,6 +137,42 @@
   }
   .form-input:focus, .form-select:focus { outline: none; border-color: var(--gold-dim); }
 
+  input[type="date"], input[type="time"] {
+    padding-right: 16px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-sm);
+    color: var(--text-1);
+    cursor: pointer;
+  }
+  .icon-input {
+    position: relative;
+  }
+  .icon-input input[type="date"],
+  .icon-input input[type="time"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 48px;
+  }
+  .icon-input::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  .icon-input.date::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F4F4F6' d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z'/%3E%3Cpath fill='%23F4F4F6' d='M7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z'/%3E%3C/svg%3E");
+  }
+  .icon-input.time::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F4F4F6' d='M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 11.5V7h-2v6.5l4.75 2.85.9-1.5-3.65-2.35z'/%3E%3C/svg%3E");
+  }
+
   .btn-submit {
     width: 100%;
     padding: 16px;
@@ -381,7 +417,7 @@
     activeContainer.innerHTML = '<div class="empty-state">Loading your active requests...</div>';
     historyContainer.innerHTML = '<div class="empty-state">Past engagements will appear here.</div>';
 
-    const [{ data: bookingData, error: bookingError }, { data: companionData, error: companionError }] = await Promise.all([
+    const [{ data: bookingData, error: bookingError }, { data: companionData, error: companionError }, { data: availabilityData, error: availabilityError }] = await Promise.all([
       supabaseClient
         .from('bookings')
         .select('*')
@@ -389,8 +425,11 @@
         .order('meetup_date', { ascending: false }),
       supabaseClient
         .from('companions')
-        .select('id, full_name, age, profile_picture_url')
-        .eq('status', 'approved')
+        .select('id, full_name, age, profile_picture_url, email')
+        .eq('status', 'approved'),
+      supabaseClient
+        .from('companion_availability')
+        .select('companion_email, availability_type, specific_days, time_type, start_time, end_time')
     ]);
 
     if (bookingError) {
@@ -402,7 +441,21 @@
     }
 
     const bookings = bookingData || [];
-    const approvedCompanions = companionData || [];
+    const availabilityRows = availabilityData || [];
+    const availabilityMap = availabilityRows.reduce((map, row) => {
+      if (row.companion_email) {
+        map[row.companion_email] = row;
+      }
+      return map;
+    }, {});
+    const approvedCompanions = (companionData || []).map(companion => ({
+      ...companion,
+      availability_type: availabilityMap[companion.email]?.availability_type,
+      specific_days: availabilityMap[companion.email]?.specific_days,
+      time_type: availabilityMap[companion.email]?.time_type,
+      start_time: availabilityMap[companion.email]?.start_time,
+      end_time: availabilityMap[companion.email]?.end_time
+    }));
     const active = bookings.filter(b => !['completed', 'cancelled'].includes((b.status || 'pending').toLowerCase()));
     const history = bookings.filter(b => ['completed', 'cancelled'].includes((b.status || '').toLowerCase()));
     renderActiveBookings(active, approvedCompanions);
@@ -424,7 +477,10 @@
 
       if (status === 'pending') {
         statusHtml = '<span class="status-badge status-pending">Pending Review</span>';
-        companionHtml = renderCompanionFlashcardGrid(approvedCompanions, b.id);
+        companionHtml = renderCompanionFlashcardGrid(
+          approvedCompanions.filter(companion => companionMatchesAvailability(companion, b.meetup_date, b.meetup_time)),
+          b.id
+        );
       } else {
         statusHtml = '<span class="status-badge status-assigned">Companion Assigned</span>';
         const assignedCompanion = approvedCompanions.find(c => c.id === b.companion_id);
@@ -471,7 +527,7 @@
 
   function renderCompanionFlashcardGrid(companions, bookingId) {
     if (!companions || companions.length === 0) {
-      return '<div class="empty-state">No approved profiles are available yet. Please check again soon.</div>';
+      return '<div class="empty-state">No approved companions match your requested date and time. Try adjusting your meetup details.</div>';
     }
 
     return `
@@ -555,10 +611,21 @@
       const user = currentUser || await requireFemaleSession();
       if (!user) return;
 
+      const requestedDate = document.getElementById('b_date').value;
+      const requestedTime = document.getElementById('b_time').value;
+      const availableCompanions = await loadMatchingCompanions(requestedDate, requestedTime);
+
+      if (availableCompanions.length === 0) {
+        alert('No approved companions match your requested date and time. Please try a different date or time.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
+      }
+
       const payload = {
         client_email: user.email,
-        meetup_date: document.getElementById('b_date').value,
-        meetup_time: document.getElementById('b_time').value,
+        meetup_date: requestedDate,
+        meetup_time: requestedTime,
         duration_type: document.getElementById('b_duration').value,
         location: document.getElementById('b_location').value,
         promo_code: document.getElementById('b_promo').value || null,
@@ -578,6 +645,71 @@
       btn.disabled = false;
     }
   });
+
+  function companionMatchesAvailability(companion, date, time) {
+    if (!companion || !companion.availability_type) return true;
+    const bookingDate = new Date(`${date}T${time}`);
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const bookingDay = dayNames[bookingDate.getDay()];
+    const type = companion.availability_type.toLowerCase();
+
+    if (type === 'everyday') return true;
+    if (type === 'weekends') {
+      return bookingDay === 'Saturday' || bookingDay === 'Sunday';
+    }
+    if (type === 'specific_days') {
+      const specificDays = (companion.specific_days || '').split(',').map(d => d.trim().toLowerCase());
+      if (specificDays.length === 0) return true;
+      return specificDays.includes(bookingDay.toLowerCase());
+    }
+
+    const timeType = (companion.time_type || 'all_day').toLowerCase();
+    if (timeType === 'specific_time') {
+      const start = companion.start_time;
+      const end = companion.end_time;
+      if (!start || !end) return true;
+      return time >= start && time <= end;
+    }
+
+    return true;
+  }
+
+  async function loadMatchingCompanions(date, time) {
+    const [companionsResponse, availabilityResponse] = await Promise.all([
+      supabaseClient
+        .from('companions')
+        .select('id, full_name, age, profile_picture_url, email')
+        .eq('status', 'approved'),
+      supabaseClient
+        .from('companion_availability')
+        .select('companion_email, availability_type, specific_days, time_type, start_time, end_time')
+    ]);
+
+    if (companionsResponse.error) {
+      console.error('Companion fetch error:', companionsResponse.error);
+      return [];
+    }
+    if (availabilityResponse.error) {
+      console.error('Availability fetch error:', availabilityResponse.error);
+      return companionsResponse.data || [];
+    }
+
+    const availabilityMap = (availabilityResponse.data || []).reduce((map, row) => {
+      if (row.companion_email) {
+        map[row.companion_email] = row;
+      }
+      return map;
+    }, {});
+
+    return (companionsResponse.data || []).map(companion => ({
+      ...companion,
+      availability_type: availabilityMap[companion.email]?.availability_type,
+      specific_days: availabilityMap[companion.email]?.specific_days,
+      time_type: availabilityMap[companion.email]?.time_type,
+      start_time: availabilityMap[companion.email]?.start_time,
+      end_time: availabilityMap[companion.email]?.end_time
+    })).filter(companion => companionMatchesAvailability(companion, date, time));
+  }
 
   window.addEventListener('DOMContentLoaded', async () => {
     await requireFemaleSession();

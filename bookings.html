@@ -27,6 +27,37 @@
   .field-group { display: flex; flex-direction: column; gap: 6px; }
   label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); font-weight: 600; }
   input, select { background: rgba(255, 255, 255, 0.015); border: 0.5px solid var(--rule-hi); border-radius: var(--r-sm); padding: 14px 16px; font-family: var(--sans); color: var(--text-1); outline: none; transition: 0.3s; width: 100%;}
+  input[type="date"], input[type="time"] {
+    padding-right: 16px;
+    cursor: pointer;
+  }
+  .field-group.icon-input {
+    position: relative;
+  }
+  .field-group.icon-input input[type="date"],
+  .field-group.icon-input input[type="time"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 48px;
+  }
+  .field-group.icon-input::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  .field-group.icon-input.date::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F4F4F6' d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z'/%3E%3Cpath fill='%23F4F4F6' d='M7 11h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z'/%3E%3C/svg%3E");
+  }
+  .field-group.icon-input.time::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F4F4F6' d='M12 4.5a7.5 7.5 0 1 0 7.5 7.5A7.508 7.508 0 0 0 12 4.5zm.75 3.5h-1.5v5.25l4.5 2.7.75-1.23-3.75-2.25z'/%3E%3C/svg%3E");
+  }
   select {
     color: var(--text-1);
     appearance: none;
@@ -101,6 +132,7 @@
             <option value="Intellectual Talks">Intellectual Talks</option>
           </select>
         </div>
+        <div class="field-group full"><label>Profile Picture</label><input type="file" id="profilePicture" accept="image/*" required></div>
       </div>
       <div id="res1" class="response-msg"></div>
       <button type="submit" id="btn1" class="btn-primary" style="margin-top: 24px;">Create Profile & Continue →</button>
@@ -126,8 +158,8 @@
     <p class="step-desc">Enter your meetup details. We will send curated profiles matching your vibe.</p>
     <form id="formBooking">
       <div class="form-grid">
-        <div class="field-group"><label>Date</label><input type="date" name="meetup_date" required></div>
-        <div class="field-group"><label>Time</label><input type="time" name="meetup_time" required></div>
+        <div class="field-group icon-input date"><label>Date</label><input type="date" name="meetup_date" required></div>
+        <div class="field-group icon-input time"><label>Time</label><input type="time" name="meetup_time" required></div>
         <div class="field-group"><label>Duration</label>
           <select name="duration_type" required>
             <option value="hourly">Hourly (₹259)</option>
@@ -167,6 +199,27 @@
     return Object.fromEntries(new FormData(form).entries());
   }
 
+  async function uploadProfileImage(file, email) {
+    if (!file) {
+      throw new Error('Please select a profile image to continue.');
+    }
+
+    const extension = file.name.split('.').pop();
+    const fileName = `client_${email}_${Date.now()}.${extension}`;
+    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+      .from('client_profiles')
+      .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+    if (uploadError) throw uploadError;
+
+    const { data: urlData, error: urlError } = await supabaseClient.storage
+      .from('client_profiles')
+      .createSignedUrl(fileName, 60 * 60);
+
+    if (urlError) throw urlError;
+    return urlData.signedUrl;
+  }
+
   document.getElementById('formAccount').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('btn1');
@@ -187,7 +240,8 @@
         password: form.password,
         emergency_contact: form.emergency_contact,
         emergency_contact_relation: form.emergency_contact_relation,
-        vibe_tags: form.vibe_tags
+        vibe_tags: form.vibe_tags,
+        profile_picture_url: await uploadProfileImage(document.getElementById('profilePicture').files[0], form.email)
       };
 
       const { data: existingClient } = await supabaseClient

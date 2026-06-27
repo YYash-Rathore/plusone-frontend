@@ -144,6 +144,170 @@
     backdrop-filter: blur(10px);
   }
 
+  .settings-card,
+  .upcoming-card {
+    background: rgba(255,255,255,0.02);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-md);
+    padding: 32px 40px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+  }
+
+  .settings-card h3,
+  .upcoming-card h3 {
+    font-family: var(--serif);
+    margin-bottom: 18px;
+  }
+
+  .availability-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: flex-end;
+    margin-bottom: 18px;
+  }
+
+  .availability-row.full {
+    grid-column: 1 / -1;
+  }
+
+  .availability-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .availability-input,
+  .availability-select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.015);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    color: var(--text-1);
+    font-family: var(--sans);
+    font-size: 14px;
+  }
+  .availability-input:focus,
+  .availability-select:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+  }
+  .availability-field.icon-input {
+    position: relative;
+  }
+  .availability-field.icon-input input[type="time"],
+  .availability-field.icon-input input[type="date"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 48px;
+  }
+  .availability-field.icon-input::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  .availability-field.icon-input.time::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F4F4F6' d='M12 4.5a7.5 7.5 0 1 0 7.5 7.5A7.508 7.508 0 0 0 12 4.5zm.75 3.5h-1.5v5.25l4.5 2.7.75-1.23-3.75-2.25z'/%3E%3C/svg%3E");
+  }
+  .availability-select option {
+    background: #0f0f14;
+    color: #f4f4f6;
+  }
+  .day-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .day-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-sm);
+    background: rgba(255,255,255,0.02);
+  }
+  .day-checkbox input[type="checkbox"] {
+    accent-color: var(--gold);
+  }
+
+  .btn-update {
+    padding: 14px 18px;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .btn-update:hover {
+    background: #f1cc5b;
+  }
+
+  .availability-note {
+    color: var(--text-2);
+    font-size: 12px;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  .booking-item {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  }
+
+  .client-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--rule);
+    flex-shrink: 0;
+  }
+
+  .client-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .booking-details {
+    font-size: 14px;
+    color: var(--text-1);
+    line-height: 1.6;
+  }
+
+  .booking-details strong {
+    display: block;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .small-text {
+    color: var(--text-2);
+    font-size: 13px;
+  }
+
   .status-info h3 {
     font-size: 13px;
     text-transform: uppercase;
@@ -277,7 +441,7 @@
   <div class="stats-grid" id="statsGrid">
     <div class="stat-card">
       <div class="stat-label">Total Bookings</div>
-      <div class="stat-value">0</div>
+      <div class="stat-value" id="totalBookingsValue">0</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Profile Rating</div>
@@ -286,6 +450,70 @@
     <div class="stat-card">
       <div class="stat-label">Total Earnings</div>
       <div class="stat-value">₹0</div>
+    </div>
+  </div>
+
+  <div class="settings-card">
+    <h3>Availability Settings</h3>
+    <form id="availabilityForm">
+      <div class="availability-row">
+        <div>
+          <label class="availability-label" for="availabilityType">Availability Slot</label>
+          <select id="availabilityType" class="availability-select" required>
+            <option value="everyday">Everyday</option>
+            <option value="weekends">Weekends</option>
+            <option value="specific_days">Specific Days</option>
+          </select>
+        </div>
+        <div>
+          <label class="availability-label" for="timeType">Time Preference</label>
+          <select id="timeType" class="availability-select" required>
+            <option value="all_day">All Day</option>
+            <option value="specific_time">Specific Time Slot</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="specificDaysContainer" class="availability-row full" style="display:none;">
+        <div class="day-checkbox-grid">
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Monday"> Monday</label>
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Tuesday"> Tuesday</label>
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Wednesday"> Wednesday</label>
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Thursday"> Thursday</label>
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Friday"> Friday</label>
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Saturday"> Saturday</label>
+          <label class="day-checkbox"><input type="checkbox" name="specific_days" value="Sunday"> Sunday</label>
+        </div>
+      </div>
+
+      <div id="timeSlotContainer" class="availability-row full" style="display:none;">
+        <div class="availability-field icon-input time">
+          <label class="availability-label" for="startTime">Start Time</label>
+          <input type="time" id="startTime" class="availability-input">
+        </div>
+        <div class="availability-field icon-input time">
+          <label class="availability-label" for="endTime">End Time</label>
+          <input type="time" id="endTime" class="availability-input">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-update">Save Availability</button>
+      <p class="availability-note">If you do not set availability, your profile is treated as Always Available for matching.</p>
+      <p id="availabilityStatus" class="small-text"></p>
+    </form>
+  </div>
+
+  <div class="upcoming-card">
+    <h3>Upcoming Bookings</h3>
+    <div id="upcomingBookingsContainer">
+      <div class="small-text">Loading upcoming assigned bookings...</div>
+    </div>
+  </div>
+
+  <div class="upcoming-card">
+    <h3>Past Bookings</h3>
+    <div id="pastBookingsContainer">
+      <div class="small-text">Loading past bookings...</div>
     </div>
   </div>
 
@@ -308,6 +536,7 @@
       currentUser = { id: localId, email: localEmail, isCompanionRecord: true };
       document.getElementById('displayEmail').textContent = localEmail;
       await fetchCompanionStatus();
+      await fetchAvailabilityAndBookings();
       return;
     }
 
@@ -323,6 +552,7 @@
     localStorage.setItem('userId', session.user.id);
     document.getElementById('displayEmail').textContent = session.user.email;
     await fetchCompanionStatus();
+    await fetchAvailabilityAndBookings();
   });
 
   async function logout() {
@@ -340,13 +570,16 @@
     try {
       const { data, error } = await supabaseClient
         .from('companions')
-        .select('status, full_name')
+        .select('id, status, full_name')
         .eq('email', currentUser.email)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (error) throw error;
+      if (data) {
+        currentUser.companion_id = data.id;
+      }
       applyStatus(data?.status || 'pending');
     } catch (error) {
       console.error('Status fetch error:', error);
@@ -385,5 +618,229 @@
       message.textContent = 'Your data profile is currently being reviewed by our operations unit. We will coordinate with you via WhatsApp soon.';
     }
   }
+
+  function getSelectedSpecificDays() {
+    const checkboxes = document.querySelectorAll('input[name="specific_days"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+  }
+
+  function setSelectedSpecificDays(daysString) {
+    const checkboxes = document.querySelectorAll('input[name="specific_days"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    if (daysString) {
+      const daysArr = daysString.split(',').map(d => d.trim());
+      checkboxes.forEach(cb => {
+        if (daysArr.includes(cb.value)) cb.checked = true;
+      });
+    }
+  }
+
+  async function fetchAvailabilityAndBookings() {
+    if (!currentUser) return;
+
+    const availabilityStatus = document.getElementById('availabilityStatus');
+    const upcomingContainer = document.getElementById('upcomingBookingsContainer');
+    const totalBookingsValue = document.getElementById('totalBookingsValue');
+
+    try {
+      let companionId = currentUser.companion_id;
+      if (!companionId) {
+        const { data: companionRecord, error: companionError } = await supabaseClient
+          .from('companions')
+          .select('id')
+          .eq('email', currentUser.email)
+          .limit(1)
+          .maybeSingle();
+
+        if (companionError) {
+          console.error('Error fetching companion_id from companions table:', companionError);
+        }
+
+        companionId = companionRecord?.id ?? -1;
+        currentUser.companion_id = companionId;
+      }
+
+      const [{ data: availabilityData, error: availabilityError }, { data: upcomingBookings, error: bookingsError }, { data: assignedCount, error: countError }, { data: pastBookings, error: pastError }] = await Promise.all([
+        supabaseClient
+          .from('companion_availability')
+          .select('*')
+          .eq('companion_email', currentUser.email)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabaseClient
+          .from('bookings')
+          .select('*')
+          .eq('status', 'assigned')
+          .eq('companion_id', companionId)
+          .order('meetup_date', { ascending: true }),
+        supabaseClient
+          .from('bookings')
+          .select('id', { count: 'exact', head: true })
+          .eq('companion_id', companionId),
+        supabaseClient
+          .from('bookings')
+          .select('*')
+          .in('status', ['completed', 'cancelled'])
+          .eq('companion_id', companionId)
+          .order('meetup_date', { ascending: false })
+      ]);
+
+      if (availabilityError) {
+        console.error('Error fetching companion_availability:', availabilityError);
+      }
+      if (bookingsError) {
+        console.error('Error fetching assigned bookings:', bookingsError);
+      }
+      if (countError) {
+        console.error('Error counting assigned bookings:', countError);
+      }
+
+      document.getElementById('availabilityType').value = availabilityData?.availability_type || 'everyday';
+      const isSpecificDays = availabilityData?.availability_type === 'specific_days';
+      document.getElementById('specificDaysContainer').style.display = isSpecificDays ? 'grid' : 'none';
+      setSelectedSpecificDays(availabilityData?.specific_days);
+
+      document.getElementById('timeType').value = availabilityData?.time_type || 'all_day';
+      const isSpecificTime = availabilityData?.time_type === 'specific_time';
+      document.getElementById('timeSlotContainer').style.display = isSpecificTime ? 'grid' : 'none';
+      document.getElementById('startTime').value = availabilityData?.start_time || '';
+      document.getElementById('endTime').value = availabilityData?.end_time || '';
+
+      availabilityStatus.textContent = availabilityData
+        ? `Current availability: ${availabilityData.availability_type.replace('_', ' ')}${availabilityData.specific_days ? ` on ${availabilityData.specific_days}` : ''}${availabilityData.time_type === 'specific_time' && availabilityData.start_time && availabilityData.end_time ? ` from ${availabilityData.start_time} to ${availabilityData.end_time}` : ''}`
+        : 'No availability settings saved. Defaulting to Always Available.';
+
+      const allBookingEmails = [...new Set([...(upcomingBookings || []), ...(pastBookings || [])].map(b => b.client_email).filter(Boolean))];
+      let clientMap = {};
+      if (allBookingEmails.length) {
+        const { data: clientRecords, error: clientError } = await supabaseClient
+          .from('clients')
+          .select('email, name, profile_picture_url')
+          .in('email', allBookingEmails);
+        if (clientError) {
+          console.error('Error fetching client records for bookings:', clientError);
+        } else if (clientRecords) {
+          clientMap = clientRecords.reduce((map, client) => {
+            map[client.email] = client;
+            return map;
+          }, {});
+        }
+      }
+
+      const bookingsWithClient = (upcomingBookings || []).map(b => ({
+        ...b,
+        client: clientMap[b.client_email] || null
+      }));
+      const pastBookingsWithClient = (pastBookings || []).map(b => ({
+        ...b,
+        client: clientMap[b.client_email] || null
+      }));
+
+      renderUpcomingBookings(bookingsWithClient);
+      renderPastBookings(pastBookingsWithClient);
+      totalBookingsValue.textContent = assignedCount?.count || 0;
+    } catch (error) {
+      console.error('Fetch companion availability and bookings caught exception:', error);
+      upcomingContainer.innerHTML = `<div class="small-text">Could not load upcoming bookings.</div>`;
+      document.getElementById('pastBookingsContainer').innerHTML = `<div class="small-text">Could not load past bookings.</div>`;
+      availabilityStatus.textContent = 'Unable to load availability settings.';
+    }
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return 'Date pending';
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    return new Date(dateStr).toLocaleDateString('en-GB', options);
+  }
+
+  function renderUpcomingBookings(bookings) {
+    const container = document.getElementById('upcomingBookingsContainer');
+    if (!bookings || bookings.length === 0) {
+      container.innerHTML = '<div class="small-text">You have no upcoming assigned bookings.</div>';
+      return;
+    }
+
+    container.innerHTML = bookings.map(b => `
+      <div class="booking-item">
+        <div class="client-avatar">
+          <img src="${(b.client || b.clients)?.profile_picture_url || 'https://via.placeholder.com/60?text=No+Photo'}" alt="${(b.client || b.clients)?.name || 'Client'}">
+        </div>
+        <div class="booking-details">
+          <strong>${(b.client || b.clients)?.name || 'Client Name'}</strong>
+          <span>Venue: ${b.location || 'N/A'}</span><br>
+          <span class="small-text">${formatDate(b.meetup_date)} @ ${b.meetup_time || 'N/A'}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderPastBookings(bookings) {
+    const container = document.getElementById('pastBookingsContainer');
+    if (!bookings || bookings.length === 0) {
+      container.innerHTML = '<div class="small-text">You have no past bookings yet.</div>';
+      return;
+    }
+
+    container.innerHTML = bookings.map(b => {
+      const clientName = b.client?.name || b.client_email || 'Client Name';
+      const statusLabel = (b.status || 'Completed').toString().replace(/^(.)/, s => s.toUpperCase());
+      const statusColor = statusLabel.toLowerCase() === 'completed' ? '#10b981' : '#f59e0b';
+      return `
+      <div class="booking-item">
+        <div class="client-avatar">
+          <img src="${b.client?.profile_picture_url || 'https://via.placeholder.com/60?text=No+Photo'}" alt="${clientName}">
+        </div>
+        <div class="booking-details">
+          <strong>${clientName}</strong>
+          <span>Venue: ${b.location || 'N/A'}</span><br>
+          <span class="small-text">${formatDate(b.meetup_date)} @ ${b.meetup_time || 'N/A'} • <span style="color: ${statusColor};">${statusLabel}</span></span>
+        </div>
+      </div>
+    `;
+    }).join('');
+  }
+
+  document.getElementById('availabilityType').addEventListener('change', function() {
+    const showDays = this.value === 'specific_days';
+    document.getElementById('specificDaysContainer').style.display = showDays ? 'grid' : 'none';
+  });
+
+  document.getElementById('timeType').addEventListener('change', function() {
+    const showTimeSlot = this.value === 'specific_time';
+    document.getElementById('timeSlotContainer').style.display = showTimeSlot ? 'grid' : 'none';
+  });
+
+  document.getElementById('availabilityForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const availabilityType = document.getElementById('availabilityType').value;
+    const timeType = document.getElementById('timeType').value;
+    const specificDays = availabilityType === 'specific_days' ? getSelectedSpecificDays() : [];
+    const startTime = timeType === 'specific_time' ? document.getElementById('startTime').value || null : null;
+    const endTime = timeType === 'specific_time' ? document.getElementById('endTime').value || null : null;
+    const availabilityStatus = document.getElementById('availabilityStatus');
+
+    try {
+      const upsertPayload = {
+        companion_email: currentUser.email,
+        availability_type: availabilityType,
+        specific_days: specificDays.length ? specificDays.join(', ') : null,
+        time_type: timeType,
+        start_time: startTime,
+        end_time: endTime,
+      };
+
+      const { error } = await supabaseClient
+        .from('companion_availability')
+        .upsert(upsertPayload, { onConflict: ['companion_email'] });
+      if (error) throw error;
+
+      availabilityStatus.textContent = `Availability saved: ${availabilityType.replace('_', ' ')}${specificDays.length ? ` on ${specificDays.join(', ')}` : ''}${timeType === 'specific_time' && startTime && endTime ? ` from ${startTime} to ${endTime}` : ''}`;
+      await fetchAvailabilityAndBookings();
+    } catch (err) {
+      console.error('Availability save error:', err);
+      availabilityStatus.textContent = err.message || 'Could not save availability settings.';
+    }
+  });
 </script></body>
 </html>
