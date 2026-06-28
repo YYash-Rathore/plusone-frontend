@@ -52,8 +52,13 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 0.5px solid var(--rule);
-    position: relative;
-    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(8, 8, 10, 0.92);
+    backdrop-filter: blur(16px);
+    z-index: 50;
   }
 
   .nav-logo {
@@ -80,7 +85,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 6%;
+    padding: 100px 6% 40px;
     position: relative;
     z-index: 1;
   }
@@ -204,6 +209,35 @@
     transform: translateY(-2px);
   }
 
+  .forgot-link {
+    display: inline-block;
+    color: var(--gold);
+    font-size: 13px;
+    text-decoration: none;
+    margin-bottom: 18px;
+  }
+  .forgot-link:hover { text-decoration: underline; }
+
+  .form-secondary {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-back {
+    width: 100%;
+    padding: 14px 16px;
+    border: 0.5px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: var(--text-1);
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 13px;
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.04); }
+
   .error-message {
     color: #ff4d4d;
     font-size: 13px;
@@ -237,6 +271,10 @@
     .tab-btn { font-size: 11px; padding: 10px; }
   }
 
+  #resetForm { display: none; }
+  .reset-heading { font-family: var(--serif); font-size: 24px; line-height: 1.2; margin-bottom: 16px; }
+  .reset-note { font-size: 13px; color: var(--text-2); margin-bottom: 24px; line-height: 1.6; }
+
 </style>
 </head>
 <body>
@@ -268,8 +306,26 @@
         <input type="password" id="password" class="form-input" required placeholder="••••••••">
       </div>
 
+      <div class="form-group">
+        <a href="#" class="forgot-link" onclick="showResetForm(); return false;">Forgot Password?</a>
+      </div>
+
       <button type="submit" class="btn-submit" id="submitBtn">Secure Login →</button>
       <p id="errorMsg" class="error-message">Invalid credentials. Please try again.</p>
+    </form>
+
+    <form id="resetForm">
+      <h2 class="reset-heading">Password Reset</h2>
+      <p class="reset-note">Enter your registered email address. If it exists, a reset link will be sent.</p>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="resetEmail" class="form-input" required placeholder="you@example.com">
+      </div>
+      <button type="submit" class="btn-submit">Send Reset Link</button>
+      <div class="form-secondary">
+        <button type="button" class="btn-back" onclick="showLoginForm()">Back to Login</button>
+      </div>
+      <p id="resetMessage" class="error-message" style="display:none;"></p>
     </form>
   </div>
 </main>
@@ -354,6 +410,42 @@
     localStorage.setItem('companionStatus', data.status || 'pending');
     window.location.href = 'companion-dashboard.html';
   }
+
+  function showResetForm() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('resetForm').style.display = 'block';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('resetMessage').style.display = 'none';
+  }
+
+  function showLoginForm() {
+    document.getElementById('resetForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('resetMessage').style.display = 'none';
+  }
+
+  document.getElementById('resetForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('resetEmail').value.trim();
+    const resetMessage = document.getElementById('resetMessage');
+    resetMessage.style.display = 'none';
+
+    try {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login.html`
+      });
+
+      if (error) throw error;
+      resetMessage.textContent = 'If this email exists, a reset link has been sent. Check your inbox.';
+      resetMessage.style.color = '#9aedc3';
+      resetMessage.style.display = 'block';
+    } catch (error) {
+      console.error('Password reset error:', error);
+      resetMessage.textContent = 'Unable to send reset link right now. Please try again later.';
+      resetMessage.style.color = '#f4f4f6';
+      resetMessage.style.display = 'block';
+    }
+  });
 
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();

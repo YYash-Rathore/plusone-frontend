@@ -67,20 +67,237 @@
   .welcome-text { font-size: 14px; color: var(--text-2); }
   .welcome-text span { color: var(--gold); }
   
-  .btn-logout {
+  .btn-logout,
+  .btn-profile {
     font-size: 12px;
     color: var(--text-2);
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     cursor: pointer;
-    background: none;
+    background: transparent;
     border: 0.5px solid var(--rule-hi);
-    padding: 8px 16px;
+    padding: 10px 18px;
     border-radius: var(--r-sm);
-    transition: all 0.2s;
+    transition: all 0.2s ease;
   }
-  .btn-logout:hover { color: var(--text-1); border-color: var(--text-1); }
+  .btn-logout:hover,
+  .btn-profile:hover { color: var(--text-1); border-color: var(--text-1); background: rgba(255,255,255,0.04); }
+  body.modal-open { overflow: hidden; }
+
+  .profile-modal {
+    position: fixed;
+    inset: 0;
+    min-height: 100vh;
+    background: rgba(1, 1, 2, 0.92);
+    backdrop-filter: blur(26px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 20px;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  .profile-modal.open { display: flex; }
+
+  .modal-container {
+    width: min(100%, 580px);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: rgba(12, 12, 20, 0.98);
+    backdrop-filter: blur(28px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 30px;
+    padding: 38px 34px 28px;
+    box-shadow: 0 48px 140px rgba(0,0,0,0.55);
+    position: relative;
+    animation: modalFade 0.28s ease forwards;
+    margin: auto 0;
+  }
+
+  .modal-container h2 {
+    margin-bottom: 10px;
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  @media (max-width: 560px) {
+    .modal-container {
+      padding: 28px 20px 24px;
+    }
+    .modal-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+    }
+    .modal-actions .btn-logout,
+    .modal-actions .btn-gold {
+      width: 100%;
+    }
+  }
+
+  .close-panel {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-1);
+    font-size: 22px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .close-panel:hover {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.03);
+  }
+
+  .btn-logout {
+    min-width: 130px;
+    padding: 12px 22px;
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text-2);
+    transition: all 0.2s ease;
+  }
+
+  .btn-gold {
+    min-width: 150px;
+    padding: 16px 28px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f6d87a 0%, #d4af37 100%);
+    color: #090809;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 0 14px 30px rgba(212, 175, 55, 0.26);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px rgba(212, 175, 55, 0.3);
+  }
+
+  @keyframes modalFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .form-input {
+    width: 100%;
+    min-height: 52px;
+    background: rgba(255,255,255,0.03);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    color: var(--text-1);
+    font-family: var(--sans);
+    font-size: 14px;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.14);
+    background: rgba(255,255,255,0.06);
+  }
+  .form-input textarea {
+    min-height: 132px;
+    resize: vertical;
+  }
+  .form-input::placeholder {
+    color: rgba(244,244,246,0.65);
+  }
+  .profile-panel h2 {
+    margin-bottom: 12px;
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 300;
+  }
+  .profile-panel .profile-note {
+    margin-bottom: 24px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  .profile-panel .profile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .profile-panel .profile-row.full { grid-column: 1 / -1; }
+  .profile-panel .close-panel {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    background: transparent;
+    border: none;
+    color: var(--text-1);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  .profile-panel .close-panel:hover { opacity: 1; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+
+  .file-upload-area { position: relative; margin-top: 8px; }
+  .file-input-hidden { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
+  .file-label-box {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    padding: 26px 20px; border: 1px dashed rgba(255,255,255,0.18);
+    border-radius: 20px; background: rgba(255,255,255,0.02);
+    transition: all 0.25s ease;
+    text-align: center;
+    min-height: 150px;
+    cursor: pointer;
+  }
+  .file-label-box:hover { border-color: var(--gold-dim); background: rgba(212,175,55,0.04); }
+  .file-label-box.has-file { border-color: var(--gold); background: rgba(212,175,55,0.06); border-style: solid; }
+  .file-label-box:hover { border-color: var(--gold-dim); background: rgba(212,175,55,0.04); }
+  .file-label-box.has-file { border-color: var(--gold); background: rgba(212,175,55,0.06); border-style: solid; }
+  .file-icon { font-size: 26px; color: var(--text-2); transition: color 0.25s ease; }
+  .file-label-box:hover .file-icon { color: var(--gold-dim); }
+  .file-label-box.has-file .file-icon { color: var(--gold); }
+  .file-upload-title { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+  .file-upload-title strong { color: var(--text-1); }
+  .file-name-display { display: none; margin-top: 10px; font-size: 13px; color: var(--gold); font-weight: 600; word-break: break-word; }
+
+  @media (max-width: 768px) {
+    .profile-panel { padding: 24px; }
+    .profile-panel .profile-row { grid-template-columns: 1fr; }
+  }
 
   /* ── MAIN DASHBOARD LAYOUT ── */
   main {
@@ -189,6 +406,25 @@
     transition: all 0.3s;
   }
   .btn-submit:hover { background: #f1cc5b; transform: translateY(-2px); }
+
+  .file-upload-area { position: relative; margin-top: 8px; }
+  .file-input-hidden { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
+  .file-label-box {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    padding: 22px 18px; border: 1px dashed rgba(255,255,255,0.18);
+    border-radius: var(--r-sm); background: rgba(255,255,255,0.02);
+    transition: all 0.25s ease;
+    text-align: center;
+    min-height: 110px;
+  }
+  .file-label-box:hover { border-color: var(--gold-dim); background: rgba(212,175,55,0.04); }
+  .file-label-box.has-file { border-color: var(--gold); background: rgba(212,175,55,0.06); border-style: solid; }
+  .file-icon { font-size: 26px; color: var(--text-2); transition: color 0.25s ease; }
+  .file-label-box:hover .file-icon { color: var(--gold-dim); }
+  .file-label-box.has-file .file-icon { color: var(--gold); }
+  .file-upload-title { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+  .file-upload-title strong { color: var(--text-1); }
+  .file-name-display { display: none; margin-top: 10px; font-size: 13px; color: var(--gold); font-weight: 600; word-break: break-word; }
 
   /* ── REQUESTS & HISTORY UI ── */
   .status-badge {
@@ -341,9 +577,60 @@
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>
   <div class="nav-right">
     <div class="welcome-text">Welcome, <span id="userNameDisplay">Member</span></div>
+    <button class="btn-profile" onclick="openProfileModal()">My Profile</button>
     <button onclick="logout()" class="btn-logout">Logout</button>
   </div>
 </nav>
+
+<div id="profileModal" class="profile-modal" onclick="closeProfileModal(event)">
+  <section class="profile-panel modal-container" onclick="event.stopPropagation()">
+    <button class="close-panel" onclick="closeProfileModal(event)">&times;</button>
+    <h2>My Profile</h2>
+    <p class="profile-note">Review and update your client profile details. Your full name will be used within booking requests.</p>
+    <form id="profileForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="profileName">Full Name</label>
+          <input class="form-input" type="text" id="profileName" placeholder="Jane Doe" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="profileEmail">Email Address</label>
+          <input class="form-input" type="email" id="profileEmail" readonly>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="profilePhone">Phone</label>
+          <input class="form-input" type="text" id="profilePhone" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="profileCity">City</label>
+          <input class="form-input" type="text" id="profileCity" placeholder="Mumbai">
+        </div>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="profileNotes">About You</label>
+        <textarea class="form-input" id="profileNotes" placeholder="Share your preferences or a short profile summary."></textarea>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="profilePhoto">Profile Photo</label>
+        <div class="file-upload-area">
+          <input type="file" class="file-input-hidden" id="profilePhoto" accept="image/*" onchange="processProfilePhotoInput(this)">
+          <div class="file-label-box" id="profilePhoto-box">
+            <div class="file-icon">📷</div>
+            <div class="file-upload-title">Click to upload a refined profile photo for your booking requests.</div>
+            <div class="file-name-display" id="profilePhoto-name"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-logout" onclick="closeProfileModal(event)">Cancel</button>
+        <button type="submit" class="btn-submit btn-gold">Update Profile</button>
+      </div>
+      <p id="profileMessage" class="error-message" style="display:none; margin-top: 16px;"></p>
+    </form>
+  </section>
+</div>
 
 <main>
   <div>
@@ -441,6 +728,88 @@
     await supabaseClient.auth.signOut();
     localStorage.clear();
     window.location.href = 'login.html';
+  }
+
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+    loadClientProfile();
+  }
+
+  function closeProfileModal(event) {
+    if (event) event.preventDefault();
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  }
+
+  function processProfilePhotoInput(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const targetsBox = document.getElementById('profilePhoto-box');
+    const targetName = document.getElementById('profilePhoto-name');
+    if (!targetsBox || !targetName) return;
+
+    targetsBox.classList.add('has-file');
+    targetName.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+    targetName.style.display = 'block';
+  }
+
+  async function loadClientProfile() {
+    const user = currentUser || await requireFemaleSession();
+    if (!user) return;
+
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profilePhone = document.getElementById('profilePhone');
+    const profileCity = document.getElementById('profileCity');
+    const profileNotes = document.getElementById('profileNotes');
+
+    profileEmail.value = user.email;
+    profileName.value = localStorage.getItem('userName') || user.email.split('@')[0] || '';
+
+    const savedProfile = JSON.parse(localStorage.getItem('clientProfile') || '{}');
+    profilePhone.value = savedProfile.phone || '';
+    profileCity.value = savedProfile.city || '';
+    profileNotes.value = savedProfile.notes || '';
+  }
+
+  async function saveClientProfile(event) {
+    event.preventDefault();
+    const profileMessage = document.getElementById('profileMessage');
+    profileMessage.style.display = 'none';
+
+    const name = document.getElementById('profileName').value.trim();
+    const email = document.getElementById('profileEmail').value.trim();
+    const phone = document.getElementById('profilePhone').value.trim();
+    const city = document.getElementById('profileCity').value.trim();
+    const notes = document.getElementById('profileNotes').value.trim();
+
+    localStorage.setItem('userName', name);
+    document.getElementById('userNameDisplay').textContent = name;
+    localStorage.setItem('clientProfile', JSON.stringify({ phone, city, notes }));
+
+    try {
+      const { error } = await supabaseClient
+        .from('clients')
+        .update({ name })
+        .eq('email', email);
+
+      if (error) throw error;
+      profileMessage.textContent = 'Profile saved successfully.';
+      profileMessage.style.color = '#9aedc3';
+      profileMessage.style.display = 'block';
+      setTimeout(() => closeProfileModal(), 900);
+    } catch (error) {
+      console.warn('Client profile save fallback:', error.message || error);
+      profileMessage.textContent = 'Profile saved locally. Server update is unavailable.';
+      profileMessage.style.color = '#f4f4f6';
+      profileMessage.style.display = 'block';
+    }
   }
 
   async function fetchDashboardData() {
@@ -635,6 +1004,8 @@
     }
   }
 
+  document.getElementById('profileForm').addEventListener('submit', saveClientProfile);
+
   document.getElementById('bookingForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBookingBtn');
@@ -748,6 +1119,7 @@
 
   window.addEventListener('DOMContentLoaded', async () => {
     await requireFemaleSession();
+    await loadClientProfile();
     await fetchDashboardData();
   });
 </script>

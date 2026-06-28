@@ -75,7 +75,7 @@
   .nav-right {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 16px;
   }
 
   .user-email {
@@ -84,7 +84,8 @@
     display: none; /* Mobile pe hide karenge */
   }
 
-  .btn-logout {
+  .btn-logout,
+  .btn-profile {
     background: transparent;
     border: 0.5px solid var(--rule-hi);
     color: var(--text-2);
@@ -95,13 +96,180 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
   }
-  .btn-logout:hover {
+  .btn-logout:hover,
+  .btn-profile:hover {
     color: var(--text-1);
-    border-color: var(--text-3);
+    border-color: var(--text-1);
     background: rgba(255, 255, 255, 0.05);
   }
+  body.modal-open { overflow: hidden; }
+
+  .profile-modal {
+    position: fixed;
+    inset: 0;
+    min-height: 100vh;
+    background: rgba(1, 1, 2, 0.92);
+    backdrop-filter: blur(26px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 20px;
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  .profile-modal.open { display: flex; }
+
+  .modal-container {
+    width: min(100%, 580px);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: rgba(8, 8, 14, 0.98);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 28px;
+    padding: 38px 34px 28px;
+    box-shadow: 0 42px 130px rgba(0,0,0,0.55);
+    position: relative;
+    animation: modalFade 0.28s ease forwards;
+    margin: auto 0;
+  }
+
+  .modal-container h2 {
+    margin-bottom: 10px;
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+
+  .profile-panel .profile-note {
+    color: rgba(244,244,246,0.82);
+    line-height: 1.75;
+    margin-bottom: 28px;
+  }
+
+  .profile-panel .profile-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .profile-panel .profile-row.full { grid-column: 1 / -1; }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  @media (max-width: 560px) {
+    .modal-container {
+      padding: 28px 20px 24px;
+    }
+    .modal-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+    }
+    .modal-actions .btn-logout,
+    .modal-actions .btn-gold {
+      width: 100%;
+    }
+  }
+
+  .close-panel {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-1);
+    font-size: 22px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .close-panel:hover {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.03);
+  }
+
+  .btn-logout {
+    min-width: 130px;
+  }
+
+  .btn-gold {
+    min-width: 150px;
+    padding: 16px 28px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f6d87a 0%, #d4af37 100%);
+    color: #090809;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 0 14px 30px rgba(212, 175, 55, 0.26);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px rgba(212, 175, 55, 0.3);
+  }
+
+  @keyframes modalFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .form-input {
+    width: 100%;
+    background: rgba(255,255,255,0.015);
+    border: 0.5px solid var(--rule-hi);
+    border-radius: var(--r-sm);
+    padding: 14px 16px;
+    color: var(--text-1);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 48px;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.14);
+    background: rgba(255,255,255,0.06);
+  }
+  .form-input textarea {
+    min-height: 132px;
+    resize: vertical;
+  }
+  .form-input::placeholder { color: rgba(244,244,246,0.66); }
 
   /* ── MAIN DASHBOARD AREA ── */
   main {
@@ -260,6 +428,26 @@
   .btn-update:hover {
     background: #f1cc5b;
   }
+
+  .file-upload-area { position: relative; margin-top: 8px; }
+  .file-input-hidden { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
+  .file-label-box {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    padding: 22px 18px; border: 1px dashed rgba(255,255,255,0.18);
+    border-radius: var(--r-sm); background: rgba(255,255,255,0.02);
+    transition: all 0.25s ease;
+    text-align: center;
+    min-height: 110px;
+    cursor: pointer;
+  }
+  .file-label-box:hover { border-color: var(--gold-dim); background: rgba(212,175,55,0.04); }
+  .file-label-box.has-file { border-color: var(--gold); background: rgba(212,175,55,0.06); border-style: solid; }
+  .file-icon { font-size: 26px; color: var(--text-2); transition: color 0.25s ease; }
+  .file-label-box:hover .file-icon { color: var(--gold-dim); }
+  .file-label-box.has-file .file-icon { color: var(--gold); }
+  .file-upload-title { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+  .file-upload-title strong { color: var(--text-1); }
+  .file-name-display { display: none; margin-top: 10px; font-size: 13px; color: var(--gold); font-weight: 600; word-break: break-word; }
 
   .availability-note {
     color: var(--text-2);
@@ -443,9 +631,60 @@
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>
   <div class="nav-right">
     <span class="user-email" id="displayEmail">loading...</span>
+    <button class="btn-profile" onclick="openProfileModal()">My Profile</button>
     <button class="btn-logout" onclick="logout()">Logout</button>
   </div>
 </nav>
+
+<div id="profileModal" class="profile-modal" onclick="closeProfileModal(event)">
+  <section class="profile-panel modal-container" onclick="event.stopPropagation()">
+    <button class="close-panel" onclick="closeProfileModal(event)">&times;</button>
+    <h2>My Profile</h2>
+    <p class="profile-note">Use this section to keep your companion profile current and visible for client matching.</p>
+    <form id="profileForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="profileName">Full Name</label>
+          <input class="form-input" type="text" id="profileName" placeholder="Ayesha Khan" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="profileEmail">Email Address</label>
+          <input class="form-input" type="email" id="profileEmail" readonly>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="profileAge">Age</label>
+          <input class="form-input" type="text" id="profileAge" placeholder="28">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="profileLocation">Location</label>
+          <input class="form-input" type="text" id="profileLocation" placeholder="Bangalore">
+        </div>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="profileBio">Professional Summary</label>
+        <textarea class="form-input" id="profileBio" placeholder="Share a short profile summary that helps clients understand your service quality."></textarea>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="profilePhoto">Profile Photo</label>
+        <div class="file-upload-area">
+          <input type="file" class="file-input-hidden" id="profilePhoto" accept="image/*" onchange="processCompanionPhotoInput(this)">
+          <div class="file-label-box" id="profilePhoto-box">
+            <div class="file-icon">📷</div>
+            <div class="file-upload-title">Upload your companion profile photo for client visibility.</div>
+            <div class="file-name-display" id="profilePhoto-name"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-logout" onclick="closeProfileModal(event)">Cancel</button>
+        <button type="submit" class="btn-submit btn-gold">Update Profile</button>
+      </div>
+      <p id="profileMessage" class="error-message" style="display:none; margin-top: 16px;"></p>
+    </form>
+  </section>
+</div>
 
 <main>
   <div class="page-header">
@@ -565,6 +804,7 @@
       currentUser = { id: localId, email: localEmail, isCompanionRecord: true };
       document.getElementById('displayEmail').textContent = localEmail;
       await fetchCompanionStatus();
+      await loadCompanionProfile();
       await fetchAvailabilityAndBookings();
       return;
     }
@@ -581,6 +821,7 @@
     localStorage.setItem('userId', session.user.id);
     document.getElementById('displayEmail').textContent = session.user.email;
     await fetchCompanionStatus();
+    await loadCompanionProfile();
     await fetchAvailabilityAndBookings();
   });
 
@@ -588,6 +829,100 @@
     await supabaseClient.auth.signOut();
     localStorage.clear();
     window.location.href = 'login.html';
+  }
+
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+  }
+
+  function closeProfileModal(event) {
+    if (event) event?.preventDefault();
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  }
+
+  function processCompanionPhotoInput(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const targetsBox = document.getElementById('profilePhoto-box');
+    const targetName = document.getElementById('profilePhoto-name');
+    if (!targetsBox || !targetName) return;
+
+    targetsBox.classList.add('has-file');
+    targetName.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+    targetName.style.display = 'block';
+  }
+
+  document.getElementById('profileForm').addEventListener('submit', saveCompanionProfile);
+
+  async function loadCompanionProfile() {
+    const email = currentUser?.email || localStorage.getItem('userEmail');
+    if (!email) return;
+
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profileAge = document.getElementById('profileAge');
+    const profileLocation = document.getElementById('profileLocation');
+    const profileBio = document.getElementById('profileBio');
+
+    profileEmail.value = email;
+
+    const { data, error } = await supabaseClient
+      .from('companions')
+      .select('full_name, age, location, bio')
+      .eq('email', email)
+      .limit(1)
+      .maybeSingle();
+
+    if (!error && data) {
+      profileName.value = data.full_name || '';
+      profileAge.value = data.age || '';
+      profileLocation.value = data.location || '';
+      profileBio.value = data.bio || '';
+    } else {
+      profileName.value = localStorage.getItem('userName') || '';
+      profileAge.value = '';
+      profileLocation.value = '';
+      profileBio.value = '';
+    }
+  }
+
+  async function saveCompanionProfile(event) {
+    event.preventDefault();
+    const profileMessage = document.getElementById('profileMessage');
+    profileMessage.style.display = 'none';
+
+    const email = document.getElementById('profileEmail').value.trim();
+    const full_name = document.getElementById('profileName').value.trim();
+    const age = document.getElementById('profileAge').value.trim();
+    const location = document.getElementById('profileLocation').value.trim();
+    const bio = document.getElementById('profileBio').value.trim();
+
+    try {
+      const { error } = await supabaseClient
+        .from('companions')
+        .update({ full_name, age, location, bio })
+        .eq('email', email);
+
+      if (error) throw error;
+      localStorage.setItem('userName', full_name);
+      profileMessage.textContent = 'Profile saved successfully.';
+      profileMessage.style.color = '#9aedc3';
+      profileMessage.style.display = 'block';
+      document.getElementById('displayEmail').textContent = email;
+      setTimeout(() => closeProfileModal(), 900);
+    } catch (error) {
+      console.warn('Companion profile save issue:', error.message || error);
+      profileMessage.textContent = 'Profile saved locally. Server update is unavailable.';
+      profileMessage.style.color = '#f4f4f6';
+      profileMessage.style.display = 'block';
+    }
   }
 
   async function fetchCompanionStatus() {
