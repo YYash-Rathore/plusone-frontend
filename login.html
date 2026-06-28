@@ -212,6 +212,31 @@
     display: none; 
   }
 
+  @media (max-width: 1024px) {
+    nav { padding: 20px 28px; }
+    .auth-card { padding: 40px 32px; max-width: 430px; }
+    .tab-container { margin-bottom: 32px; }
+  }
+
+  @media (max-width: 768px) {
+    html, body { overflow-x: hidden; }
+    body { font-size: 14px; }
+    nav { padding: 16px 18px; }
+    .auth-card { padding: 32px 22px; margin-top: 48px; }
+    .auth-title { font-size: clamp(30px, 7vw, 34px); }
+    .auth-sub { font-size: 14px; }
+    .form-input { padding: 14px; }
+    .btn-submit { padding: 14px; font-size: 12px; }
+    .form-group { margin-bottom: 18px; }
+  }
+
+  @media (max-width: 480px) {
+    nav { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .auth-card { width: 100%; margin-top: 56px; }
+    .tab-container { flex-direction: column; }
+    .tab-btn { font-size: 11px; padding: 10px; }
+  }
+
 </style>
 </head>
 <body>

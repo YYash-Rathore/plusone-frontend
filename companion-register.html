@@ -302,12 +302,39 @@
   .btn-home { display: inline-block; padding: 16px 40px; background: rgba(255,255,255,0.05); color: var(--text-1); text-decoration: none; border: 0.5px solid var(--rule-hi); border-radius: var(--r-sm); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.3s; }
   .btn-home:hover { background: rgba(255,255,255,0.1); border-color: var(--text-3); }
 
+  html, body { overflow-x: hidden; }
+
   @media (max-width: 960px) {
     .page-wrap { grid-template-columns: 1fr; }
     .sidebar { position: static; height: auto; padding: 100px 6% 40px; border-right: none; border-bottom: 0.5px solid var(--rule); overflow: visible; }
     .step-indicators, .sidebar-privacy { display: none; }
     .form-area { padding: 60px 6% 100px; }
     .form-grid, .radio-cards { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 18px; }
+    .sidebar { padding: 80px 6% 28px; }
+    .form-area { padding: 60px 6% 80px; }
+    .step-title { font-size: clamp(30px, 6vw, 36px); }
+    .step-desc { font-size: 14px; margin-bottom: 28px; }
+    .file-label-box { padding: 32px 18px; }
+    .form-nav { flex-direction: column; gap: 16px; align-items: stretch; }
+    .btn-prev, .btn-next { width: 100%; }
+    .radio-cards { gap: 16px; }
+    .form-grid { gap: 16px; }
+    .step-item { grid-template-columns: 1fr; gap: 12px; }
+  }
+
+  @media (max-width: 480px) {
+    nav { padding: 14px 14px; }
+    .page-wrap { padding-top: 0; }
+    .sidebar { padding: 60px 5% 20px; }
+    .form-area { padding: 40px 5% 60px; }
+    .step-title { font-size: clamp(26px, 8vw, 32px); }
+    .step-desc, .step-content-body, .file-upload-title { font-size: 13px; }
+    .field-group input, .field-group textarea { padding: 12px 14px; }
+    .btn-next, .btn-prev { padding: 14px 16px; }
   }
 </style>
 </head>
@@ -502,7 +529,7 @@
 
           <div class="field-group full" style="margin-top: 20px;">
             <label>Profile Picture</label>
-            <div class="file-upload-area">
+            <div class="file-upload-area">  
               <input type="file" class="file-input-hidden" id="profile-picture-upload" accept="image/jpeg,image/png,image/webp" onchange="processFileElement(this, 'profile-picture')">
               <div class="file-label-box" id="profile-picture-box">
                 <div class="file-icon">📸</div>

@@ -400,10 +400,39 @@
     font-weight: 300;
   }
 
+  html, body { overflow-x: hidden; }
+
+  @media (max-width: 1024px) {
+    nav { padding: 20px 28px; }
+    main { padding: 45px 5%; }
+    .page-header { margin-bottom: 28px; }
+    .greeting { font-size: clamp(34px, 6vw, 40px); }
+    .status-card, .settings-card, .upcoming-card { padding: 28px; }
+    .availability-row { grid-template-columns: 1fr; }
+    .day-checkbox-grid { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+  }
+
   @media (max-width: 768px) {
-    .status-card { flex-direction: column; align-items: flex-start; gap: 24px; padding: 24px; }
+    nav { padding: 16px 18px; }
+    .nav-right { gap: 14px; }
+    .user-email { display: block; }
+    .status-card { flex-direction: column; align-items: stretch; gap: 18px; padding: 22px; }
     .stats-grid { grid-template-columns: 1fr; }
-    @media (min-width: 768px) { .user-email { display: block; } }
+    .day-checkbox-grid { grid-template-columns: 1fr; }
+    .availability-row { grid-template-columns: 1fr; }
+    .booking-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .btn-update { width: 100%; }
+    .upcoming-card, .settings-card { padding: 24px; }
+  }
+
+  @media (max-width: 480px) {
+    main { padding: 28px 4%; }
+    .greeting { font-size: clamp(28px, 8vw, 32px); }
+    .subtitle { font-size: 13px; }
+    .status-card, .settings-card, .upcoming-card { padding: 20px; }
+    .availability-row { gap: 12px; }
+    .day-checkbox { padding: 10px; }
+    .booking-details { font-size: 13px; }
   }
 
 </style>
