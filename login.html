@@ -396,13 +396,15 @@
           <input type="email" id="email" class="form-input" required placeholder="you@example.com">
         </div>
 
-        <div class="form-group" id="otp-group" style="display: none;">
-          <label class="form-label">Enter OTP</label>
-          <input type="text" id="otpCode" class="form-input" placeholder="- - - - - - - -"
-            style="letter-spacing: 0.5em; text-align: center;" maxlength="8">
+        <div class="form-group" id="password-group">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+            <label class="form-label" style="margin-bottom: 0;">Password</label>
+            <a href="#" class="forgot-link" style="margin-bottom: 0;">Forgot Password?</a>
+          </div>
+          <input type="password" id="password" class="form-input" required placeholder="••••••••">
         </div>
 
-        <button type="submit" class="btn-submit" id="submitBtn">Send OTP →</button>
+        <button type="submit" class="btn-submit" id="submitBtn">Login →</button>
         <p id="errorMsg" class="error-message">Invalid credentials. Please try again.</p>
       </form>
     </div>
@@ -433,108 +435,66 @@
       }
     }
 
-    async function sendOTP(email) {
-      const { error } = await supabaseClient.auth.signInWithOtp({
-        email: email,
-        options: { shouldCreateUser: true }
-      });
-      if (error) throw error;
-    }
 
-    async function verifyOTP(email, otp) {
-      const { data, error } = await supabaseClient.auth.verifyOtp({
-        email: email,
-        token: otp,
-        type: 'email'
-      });
-      if (error) return { valid: false, error: error.message };
-      return { valid: true, user: data.user, session: data.session };
-    }
-
-    let isOtpSent = false;
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
       const errorMsg = document.getElementById('errorMsg');
       const submitBtn = document.getElementById('submitBtn');
 
       errorMsg.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.style.opacity = '0.7';
+      submitBtn.textContent = 'Logging in...';
 
-      if (!isOtpSent) {
-        submitBtn.textContent = 'Sending OTP...';
-        try {
-          await sendOTP(email);
-          isOtpSent = true;
-          document.getElementById('otp-group').style.display = 'block';
-          submitBtn.textContent = 'Verify OTP →';
-          submitBtn.disabled = false;
-          submitBtn.style.opacity = '1';
-          document.getElementById('email').readOnly = true;
-        } catch (error) {
-          errorMsg.style.display = 'block';
-          errorMsg.textContent = error.message || 'Could not send OTP. Please try again.';
-          submitBtn.textContent = 'Send OTP →';
-          submitBtn.style.opacity = '1';
-          submitBtn.disabled = false;
+      try {
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (authError) throw authError;
+
+        if (currentLoginType === 'female') {
+          const { data, error: dbError } = await supabaseClient
+            .from('clients')
+            .select('id, name, email')
+            .eq('email', email)
+            .maybeSingle();
+          if (dbError || !data) throw new Error('Account not found in clients database.');
+
+          localStorage.setItem('userToken', authData.session.access_token);
+          localStorage.setItem('userEmail', data.email);
+          localStorage.setItem('userRole', 'female');
+          localStorage.setItem('userId', String(data.id));
+          localStorage.setItem('userName', data.name);
+          window.location.href = 'dashboard.html';
+        } else {
+          const { data, error: dbError } = await supabaseClient
+            .from('companions')
+            .select('id, full_name, email, status')
+            .eq('email', email)
+            .maybeSingle();
+          if (dbError || !data) throw new Error('Account not found in companions database.');
+
+          localStorage.setItem('userToken', authData.session.access_token);
+          localStorage.setItem('userEmail', data.email);
+          localStorage.setItem('userRole', 'companion');
+          localStorage.setItem('userId', String(data.id));
+          localStorage.setItem('userName', data.full_name);
+          localStorage.setItem('companionStatus', data.status || 'pending');
+          window.location.href = 'companion-dashboard.html';
         }
-      } else {
-        submitBtn.textContent = 'Verifying...';
-        const otp = document.getElementById('otpCode').value.trim();
-        if (!otp) {
-          errorMsg.style.display = 'block';
-          errorMsg.textContent = 'Please enter the OTP.';
-          submitBtn.textContent = 'Verify OTP →';
-          submitBtn.style.opacity = '1';
-          submitBtn.disabled = false;
-          return;
-        }
-
-        try {
-          const verifyRes = await verifyOTP(email, otp);
-          if (!verifyRes.valid) throw new Error(verifyRes.error);
-
-          if (currentLoginType === 'female') {
-            const { data, error: dbError } = await supabaseClient
-              .from('clients')
-              .select('id, name, email')
-              .eq('email', email)
-              .maybeSingle();
-            if (dbError || !data) throw new Error('Account not found in clients database.');
-
-            localStorage.setItem('userToken', verifyRes.session.access_token);
-            localStorage.setItem('userEmail', data.email);
-            localStorage.setItem('userRole', 'female');
-            localStorage.setItem('userId', String(data.id));
-            localStorage.setItem('userName', data.name);
-            window.location.href = 'dashboard.html';
-          } else {
-            const { data, error: dbError } = await supabaseClient
-              .from('companions')
-              .select('id, full_name, email, status')
-              .eq('email', email)
-              .maybeSingle();
-            if (dbError || !data) throw new Error('Account not found in companions database.');
-
-            localStorage.setItem('userToken', verifyRes.session.access_token);
-            localStorage.setItem('userEmail', data.email);
-            localStorage.setItem('userRole', 'companion');
-            localStorage.setItem('userId', String(data.id));
-            localStorage.setItem('userName', data.full_name);
-            localStorage.setItem('companionStatus', data.status || 'pending');
-            window.location.href = 'companion-dashboard.html';
-          }
-        } catch (error) {
-          console.error('Login error:', error);
-          errorMsg.style.display = 'block';
-          errorMsg.textContent = error.message || 'Invalid OTP. Please try again.';
-          submitBtn.textContent = 'Verify OTP →';
-          submitBtn.style.opacity = '1';
-          submitBtn.disabled = false;
-        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = error.message || 'Invalid email or password. Please try again.';
+        submitBtn.textContent = 'Login →';
+        submitBtn.style.opacity = '1';
+        submitBtn.disabled = false;
       }
     });
 

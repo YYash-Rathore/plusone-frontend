@@ -600,7 +600,7 @@
       targetName.style.display = 'block';
     }
 
-    async function sendOTP(email) {
+    async function sendVerificationOTP(email) {
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: email,
         options: { shouldCreateUser: true }
@@ -666,7 +666,7 @@
           about_me: form.about_me
         };
 
-        await sendOTP(form.email);
+        await sendVerificationOTP(form.email);
 
         document.getElementById('step-1-register').style.display = 'none';
         document.getElementById('step-1-otp').style.display = 'block';
@@ -690,6 +690,12 @@
       try {
         const verifyRes = await verifyOTP(registeredEmail, otp);
         if (!verifyRes.valid) throw new Error(verifyRes.error);
+
+        const { error: passwordError } = await supabaseClient.auth.updateUser({
+          password: tempClientPayload.password,
+          data: { full_name: tempClientPayload.name, role: 'female' }
+        });
+        if (passwordError) console.error("Could not set password:", passwordError);
 
         tempClientPayload.profile_picture_url = await uploadProfileImage(tempProfileFile, registeredEmail);
 

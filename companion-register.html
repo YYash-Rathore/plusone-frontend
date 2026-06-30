@@ -1327,7 +1327,7 @@
       targetNameSpan.style.display = 'block';
     }
     // Supabase companion application submission
-    async function sendOTP(email) {
+    async function sendVerificationOTP(email) {
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: email,
         options: { shouldCreateUser: true }
@@ -1363,7 +1363,7 @@
       const email = document.getElementById('email').value.trim();
 
       try {
-        await sendOTP(email);
+        await sendVerificationOTP(email);
         document.querySelectorAll('.form-step').forEach(panel => panel.classList.remove('active'));
         document.getElementById('step-otp').classList.add('active');
       } catch (error) {
@@ -1389,6 +1389,13 @@
       try {
         const verifyRes = await verifyOTP(email, otp);
         if (!verifyRes.valid) throw new Error(verifyRes.error);
+
+        const { error: passwordError } = await supabaseClient.auth.updateUser({
+          password: password,
+          data: { full_name: document.getElementById('full-name').value, role: 'companion' }
+        });
+        if (passwordError) console.error("Could not set password:", passwordError);
+
         const profileFileInput = document.getElementById('profile-picture-upload');
         const aadhaarFileInput = document.getElementById('aadhaar-upload');
         const panFileInput = document.getElementById('pan-upload');
