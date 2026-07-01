@@ -352,8 +352,16 @@
       }
     }
 
-    #resetForm {
+    #resetFormContainer {
       display: none;
+    }
+
+    .reset-step {
+      display: none;
+    }
+
+    .reset-step.active {
+      display: block;
     }
 
     .reset-heading {
@@ -368,6 +376,16 @@
       color: var(--text-2);
       margin-bottom: 24px;
       line-height: 1.6;
+    }
+
+    .reset-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #resetFormContainer .btn-back {
+      margin-top: 18px;
     }
 
     .toast-container { position: fixed; top: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 99999; pointer-events: none; }
@@ -410,7 +428,7 @@
         <div class="form-group" id="password-group">
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
             <label class="form-label" style="margin-bottom: 0;">Password</label>
-            <a href="#" class="forgot-link" style="margin-bottom: 0;">Forgot Password?</a>
+            <a href="#" class="forgot-link" id="forgotPasswordLink" style="margin-bottom: 0;">Forgot Password?</a>
           </div>
           <input type="password" id="password" class="form-input" required placeholder="••••••••">
         </div>
@@ -418,6 +436,51 @@
         <button type="submit" class="btn-submit" id="submitBtn">Login →</button>
         <p id="errorMsg" class="error-message">Invalid credentials. Please try again.</p>
       </form>
+
+      <div id="resetFormContainer">
+        <div class="reset-step active" data-step="1">
+          <form id="resetRequestForm">
+            <h2 class="reset-heading">Reset Password</h2>
+            <p class="reset-note">Enter your email address to receive a 6-digit OTP for password reset.</p>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="resetEmail" class="form-input" placeholder="you@example.com" required>
+            </div>
+            <button type="submit" class="btn-submit" id="sendOtpBtn">Send OTP</button>
+          </form>
+        </div>
+
+        <div class="reset-step" data-step="2">
+          <form id="verifyOtpForm">
+            <h2 class="reset-heading">Verify OTP</h2>
+            <p class="reset-note">Enter the 6-digit code delivered to your email.</p>
+            <div class="form-group">
+              <label class="form-label">OTP Code</label>
+              <input type="text" id="resetOtp" class="form-input" placeholder="123456" required>
+            </div>
+            <button type="submit" class="btn-submit" id="verifyOtpBtn">Verify OTP</button>
+          </form>
+        </div>
+
+        <div class="reset-step" data-step="3">
+          <form id="savePasswordForm">
+            <h2 class="reset-heading">Create New Password</h2>
+            <p class="reset-note">Set a new password and confirm it to complete the reset.</p>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" id="newPassword" class="form-input" placeholder="••••••••" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit" id="savePasswordBtn">Save Password</button>
+          </form>
+        </div>
+
+        <p id="resetFlowError" class="error-message"></p>
+        <button type="button" class="btn-back" id="backToLoginBtn">← Back to Login</button>
+      </div>
     </div>
   </main>
 
@@ -427,6 +490,7 @@
     const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentLoginType = 'female';
+    let resetEmail = '';
 
     function showToast(message, type = 'success', duration = 2500) {
       const container = document.getElementById('toastContainer');
@@ -465,6 +529,156 @@
     }
 
 
+
+    function toggleResetFlow(showLogin = false) {
+      const loginForm = document.getElementById('loginForm');
+      const resetContainer = document.getElementById('resetFormContainer');
+      const tabContainer = document.querySelector('.tab-container');
+      const authTitle = document.getElementById('auth-title');
+      const authSub = document.getElementById('auth-sub');
+
+      loginForm.style.display = showLogin ? 'block' : 'none';
+      resetContainer.style.display = showLogin ? 'none' : 'block';
+      if (tabContainer) tabContainer.style.display = showLogin ? 'flex' : 'none';
+      authTitle.style.display = showLogin ? 'block' : 'none';
+      authSub.style.display = showLogin ? 'block' : 'none';
+      document.getElementById('errorMsg').style.display = 'none';
+      document.getElementById('resetFlowError').style.display = 'none';
+      if (!showLogin) {
+        setResetStep(1);
+      }
+    }
+
+    function setResetStep(step) {
+      const steps = document.querySelectorAll('#resetFormContainer .reset-step');
+      steps.forEach((block) => {
+        block.classList.toggle('active', Number(block.dataset.step) === step);
+      });
+      document.getElementById('resetFlowError').style.display = 'none';
+    }
+
+    function displayResetError(message) {
+      const error = document.getElementById('resetFlowError');
+      error.textContent = message;
+      error.style.display = 'block';
+    }
+
+    function resetToLogin() {
+      resetEmail = '';
+      document.getElementById('resetRequestForm').reset();
+      document.getElementById('verifyOtpForm').reset();
+      document.getElementById('savePasswordForm').reset();
+      toggleResetFlow(true);
+    }
+
+    async function sendOtpSubmit(e) {
+      e.preventDefault();
+      console.log('Forgot Password form submitted');
+      const email = document.getElementById('resetEmail').value.trim();
+      if (!email) {
+        displayResetError('Please enter your email address.');
+        return;
+      }
+
+      const sendBtn = document.getElementById('sendOtpBtn');
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+      try {
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        console.log('Supabase response:', data, error);
+        if (error) throw error;
+
+        resetEmail = email;
+        console.log('OTP Sent successfully');
+        showToast('OTP sent. Please check your email.', 'success');
+        setResetStep(2);
+      } catch (err) {
+        console.error('OTP Send Error:', err.message || err);
+        displayResetError(err.message || 'Unable to send OTP.');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send OTP';
+      }
+    }
+
+    async function verifyOtpSubmit(e) {
+      e.preventDefault();
+      console.log('Verify OTP form submitted');
+      const otp = document.getElementById('resetOtp').value.trim();
+      if (!otp) {
+        displayResetError('Please enter the OTP.');
+        return;
+      }
+
+      const verifyBtn = document.getElementById('verifyOtpBtn');
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = 'Verifying...';
+      try {
+        const { data, error } = await supabaseClient.auth.verifyOtp({
+          email: resetEmail,
+          token: otp,
+          type: 'recovery'
+        });
+        console.log('Supabase response:', data, error);
+        if (error) throw error;
+
+        console.log('OTP verified successfully');
+        showToast('OTP verified. Please choose a new password.', 'success');
+        setResetStep(3);
+      } catch (err) {
+        console.error('OTP Verification Error:', err.message || err);
+        displayResetError(err.message || 'OTP verification failed.');
+      } finally {
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify OTP';
+      }
+    }
+
+    async function savePasswordSubmit(e) {
+      e.preventDefault();
+      console.log('Save Password form submitted');
+      const password = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (!password || !confirmPassword) {
+        displayResetError('Please enter and confirm your new password.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        displayResetError('Passwords do not match.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('savePasswordBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+      try {
+        const { data, error } = await supabaseClient.auth.updateUser({ password });
+        console.log('Supabase response:', data, error);
+        if (error) throw error;
+
+        console.log('Password updated successfully');
+        showToast('Password updated successfully!', 'success');
+        resetToLogin();
+      } catch (err) {
+        console.error('Password Update Error:', err.message || err);
+        displayResetError(err.message || 'Unable to update password.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Password';
+      }
+    }
+
+    document.getElementById('forgotPasswordLink').addEventListener('click', function (event) {
+      event.preventDefault();
+      toggleResetFlow(false);
+      document.getElementById('resetEmail').value = document.getElementById('email').value.trim();
+      setResetStep(1);
+    });
+
+    document.getElementById('resetRequestForm').addEventListener('submit', sendOtpSubmit);
+    document.getElementById('verifyOtpForm').addEventListener('submit', verifyOtpSubmit);
+    document.getElementById('savePasswordForm').addEventListener('submit', savePasswordSubmit);
+    document.getElementById('backToLoginBtn').addEventListener('click', resetToLogin);
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
