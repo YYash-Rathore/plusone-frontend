@@ -756,17 +756,17 @@
   <section id="counters">
     <div class="counters-grid reveal">
       <div class="counter-item">
-        <div class="counter-num" id="stat-applied">128</div>
+        <div class="counter-num" id="count-applications">0</div>
         <div class="counter-label">Applications Received</div>
         <div class="counter-status">From working professionals & students</div>
       </div>
       <div class="counter-item">
-        <div class="counter-num" id="stat-screened">42</div>
+        <div class="counter-num" id="count-interviews">0</div>
         <div class="counter-label">Interviews Conducted</div>
         <div class="counter-status">Checking behavior & communication skills</div>
       </div>
       <div class="counter-item">
-        <div class="counter-num" id="stat-onboarded">3</div>
+        <div class="counter-num" id="count-approved">0</div>
         <div class="counter-label">Verified Companions</div>
         <div class="counter-status">Ready to accompany you respectfully</div>
       </div>
@@ -924,24 +924,32 @@
   reveals.forEach(el => io.observe(el));
 
   async function loadLiveStats() {
+    const applicationsEl = document.getElementById('count-applications');
+    const interviewsEl = document.getElementById('count-interviews');
+    const approvedEl = document.getElementById('count-approved');
+
+    if (applicationsEl) applicationsEl.innerText = '0';
+    if (interviewsEl) interviewsEl.innerText = '0';
+    if (approvedEl) approvedEl.innerText = '0';
+
     try {
       const [
-        { count: waitlistCount },
-        { count: screenedCount },
-        { count: onboardedCount }
+        { count: totalCount },
+        { count: interviewedCount },
+        { count: approvedCount }
       ] = await Promise.all([
-        supabaseClient.from('companions').select('id', { count: 'exact', head: true }),
-        supabaseClient.from('companions').select('id', { count: 'exact', head: true }).neq('status', 'pending'),
-        supabaseClient.from('companions').select('id', { count: 'exact', head: true }).eq('status', 'approved')
+        supabaseClient.from('companions').select('*', { count: 'exact', head: true }),
+        supabaseClient.from('companions').select('*', { count: 'exact', head: true }).neq('status', 'pending'),
+        supabaseClient.from('companions').select('*', { count: 'exact', head: true }).eq('status', 'approved')
       ]);
-      
-      document.getElementById('stat-applied').textContent = waitlistCount || 128;
-document.getElementById('stat-screened').textContent = screenedCount || 42;
-      document.getElementById('stat-onboarded').textContent = onboardedCount || 3;
 
-      document.getElementById('hero-applied').textContent = waitlistCount || 128;
-      document.getElementById('hero-screened').textContent = screenedCount || 42;
-      document.getElementById('hero-onboarded').textContent = onboardedCount || 3;
+      if (applicationsEl) applicationsEl.innerText = String(totalCount || 0);
+      if (interviewsEl) interviewsEl.innerText = String(interviewedCount || 0);
+      if (approvedEl) approvedEl.innerText = String(approvedCount || 0);
+
+      document.getElementById('hero-applied').textContent = String(totalCount || 0);
+      document.getElementById('hero-screened').textContent = String(interviewedCount || 0);
+      document.getElementById('hero-onboarded').textContent = String(approvedCount || 0);
       
     } catch (e) {
       console.error('Stats unavailable - using fallback numbers', e);
