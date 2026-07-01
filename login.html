@@ -369,10 +369,21 @@
       margin-bottom: 24px;
       line-height: 1.6;
     }
+
+    .toast-container { position: fixed; top: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 99999; pointer-events: none; }
+    .toast { min-width: 300px; max-width: 360px; display: flex; align-items: center; gap: 14px; background: rgba(20, 20, 26, 0.95); border: 1px solid rgba(212, 175, 55, 0.25); border-left: 4px solid var(--gold); color: var(--text-1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); padding: 16px 18px; border-radius: 18px; transform: translateX(120%); opacity: 0; transition: transform 0.35s ease, opacity 0.35s ease; pointer-events: auto; }
+    .toast.visible { transform: translateX(0); opacity: 1; }
+    .toast.hide { transform: translateX(120%); opacity: 0; }
+    .toast-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(212, 175, 55, 0.14); color: var(--gold); font-size: 16px; font-weight: 700; }
+    .toast-body { flex: 1; font-size: 14px; line-height: 1.4; }
+    .toast.success { border-left-color: var(--gold); }
+    .toast.error { border-left-color: #ef4444; }
+    .toast.warning { border-left-color: #f59e0b; }
   </style>
 </head>
 
 <body>
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <nav>
     <a href="index.html" class="nav-logo">Plus<span>One</span></a>
@@ -416,6 +427,24 @@
     const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentLoginType = 'female';
+
+    function showToast(message, type = 'success', duration = 2500) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div class="toast-icon">✔</div>
+        <div class="toast-body">${message}</div>
+      `;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('visible'));
+      setTimeout(() => {
+        toast.classList.remove('visible');
+        toast.classList.add('hide');
+        toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+      }, duration);
+    }
 
     function switchTab(type) {
       currentLoginType = type;
@@ -471,7 +500,8 @@
           localStorage.setItem('userRole', 'female');
           localStorage.setItem('userId', String(data.id));
           localStorage.setItem('userName', data.name);
-          window.location.href = 'dashboard.html';
+          showToast('Login Successful!', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
         } else {
           const { data, error: dbError } = await supabaseClient
             .from('companions')
@@ -486,7 +516,8 @@
           localStorage.setItem('userId', String(data.id));
           localStorage.setItem('userName', data.full_name);
           localStorage.setItem('companionStatus', data.status || 'pending');
-          window.location.href = 'companion-dashboard.html';
+          showToast('Login Successful!', 'success');
+          setTimeout(() => { window.location.href = 'companion-dashboard.html'; }, 1500);
         }
       } catch (error) {
         console.error('Login error:', error);

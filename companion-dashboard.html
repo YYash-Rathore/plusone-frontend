@@ -72,6 +72,16 @@
   }
   .nav-logo span { color: var(--gold); font-style: italic; }
 
+  .toast-container { position: fixed; top: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 99999; pointer-events: none; }
+  .toast { min-width: 300px; max-width: 360px; display: flex; align-items: center; gap: 14px; background: rgba(20, 20, 26, 0.95); border: 1px solid rgba(212, 175, 55, 0.25); border-left: 4px solid var(--gold); color: var(--text-1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); padding: 16px 18px; border-radius: 18px; transform: translateX(120%); opacity: 0; transition: transform 0.35s ease, opacity 0.35s ease; pointer-events: auto; }
+  .toast.visible { transform: translateX(0); opacity: 1; }
+  .toast.hide { transform: translateX(120%); opacity: 0; }
+  .toast-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(212, 175, 55, 0.14); color: var(--gold); font-size: 16px; font-weight: 700; }
+  .toast-body { flex: 1; font-size: 14px; line-height: 1.4; }
+  .toast.success { border-left-color: var(--gold); }
+  .toast.error { border-left-color: #ef4444; }
+  .toast.warning { border-left-color: #f59e0b; }
+
   .nav-right {
     display: flex;
     align-items: center;
@@ -626,6 +636,7 @@
 </style>
 </head>
 <body>
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
 <nav>
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>

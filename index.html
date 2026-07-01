@@ -686,6 +686,7 @@
 </style>
 </head>
 <body>
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
 <nav>
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>
@@ -711,9 +712,9 @@
         <p class="hero-sub">
 	Need a charming plus-one for a social gathering, coffee date, city outing, or simply a great conversation? Book a verified, well-mannered gentleman who brings confidence, comfort, and good company — always respectful, safe, and strictly platonic.
         </p>
-        <div class="hero-actions">
-          <a href="bookings.html" class="btn-primary">Book A Companion <span class="btn-arrow">→</span></a>
-          <a href="companion-register.html" class="btn-secondary">Apply as Companion (Men)</a>
+        <div class="hero-actions" id="heroActions">
+          <a href="bookings.html" class="btn-primary" id="btn-book">Book A Companion <span class="btn-arrow">→</span></a>
+          <a href="companion-register.html" class="btn-secondary" id="btn-apply">Apply as Companion (Men)</a>
         </div>
       </div>
 
@@ -950,38 +951,74 @@ document.getElementById('stat-screened').textContent = screenedCount || 42;
   async function checkAuthStatus() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     const authButtonsDiv = document.getElementById('auth-buttons');
-    
+    const bookBtn = document.getElementById('btn-book');
+    const applyBtn = document.getElementById('btn-apply');
+    const heroActions = document.getElementById('heroActions');
+
     if (session) {
-        authButtonsDiv.innerHTML = `
-            <a href="dashboard.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
-            <button onclick="logoutUser()" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
-        `;
+      const role = localStorage.getItem('userRole') || session.user?.user_metadata?.role || 'female';
+      const dashboardLink = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+
+      if (bookBtn) bookBtn.style.display = 'none';
+      if (applyBtn) applyBtn.style.display = 'none';
+
+      if (heroActions) {
+        const dashboardButton = document.createElement('a');
+        dashboardButton.href = dashboardLink;
+        dashboardButton.className = 'btn-primary';
+        dashboardButton.id = 'btn-dashboard';
+        dashboardButton.innerHTML = 'Go to My Dashboard <span class="btn-arrow">→</span>';
+        heroActions.appendChild(dashboardButton);
+      }
+
+      authButtonsDiv.innerHTML = `
+        <a href="${dashboardLink}" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
+        <button id="logoutBtn" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
+      `;
+      document.getElementById('logoutBtn')?.addEventListener('click', logoutUser);
     } else {
-        authButtonsDiv.innerHTML = `
-            <a href="login.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">Login</a>
-            <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Apply as Companion</a>
-        `;
+      authButtonsDiv.innerHTML = `
+        <a href="login.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">Login</a>
+        <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Apply as Companion</a>
+      `;
     }
   }
 
   async function logoutUser() {
-      await supabaseClient.auth.signOut();
-      localStorage.clear();
-      window.location.reload(); 
+    await supabaseClient.auth.signOut();
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  function setHeroDashboardButton(role) {
+    const heroActions = document.getElementById('heroActions');
+    const bookBtn = document.getElementById('btn-book');
+    const applyBtn = document.getElementById('btn-apply');
+    const existing = document.getElementById('btn-dashboard');
+    const dashboardLink = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+
+    if (bookBtn) bookBtn.style.display = 'none';
+    if (applyBtn) applyBtn.style.display = 'none';
+
+    if (heroActions && !existing) {
+      const dashboardButton = document.createElement('a');
+      dashboardButton.href = dashboardLink;
+      dashboardButton.className = 'btn-primary';
+      dashboardButton.id = 'btn-dashboard';
+      dashboardButton.innerHTML = 'Go to My Dashboard <span class="btn-arrow">→</span>';
+      heroActions.appendChild(dashboardButton);
+    }
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
-      loadLiveStats();
-      await checkAuthStatus();
-      
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-          const joinBtns = document.querySelectorAll('a[href="register.html"]'); 
-          joinBtns.forEach(btn => {
-              btn.textContent = 'Go to Dashboard →';
-              btn.setAttribute('href', 'dashboard.html');
-          });
-      }
+    loadLiveStats();
+    await checkAuthStatus();
+
+    const token = localStorage.getItem('userToken');
+    const role = localStorage.getItem('userRole');
+    if (token && role) {
+      setHeroDashboardButton(role);
+    }
   });
 </script>
 

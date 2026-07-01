@@ -960,71 +960,21 @@
       cursor: pointer;
     }
 
-    .custom-alert-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(1, 1, 2, 0.92);
-      backdrop-filter: blur(16px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .custom-alert-modal.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .custom-alert-box {
-      background: rgba(12, 12, 20, 0.98);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 32px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-      transform: translateY(-20px);
-      transition: transform 0.3s ease;
-    }
-
-    .custom-alert-modal.show .custom-alert-box {
-      transform: translateY(0);
-    }
-
-    .custom-alert-box p {
-      color: var(--text-1);
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .custom-alert-btn {
-      background: var(--gold);
-      color: #000;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .custom-alert-btn:hover {
-      transform: translateY(-2px);
-      background: #f1cc5b;
-    }
+    .toast-container { position: fixed; top: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 99999; pointer-events: none; }
+    .toast { min-width: 300px; max-width: 360px; display: flex; align-items: center; gap: 14px; background: rgba(20, 20, 26, 0.95); border: 1px solid rgba(212, 175, 55, 0.25); border-left: 4px solid var(--gold); color: var(--text-1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); padding: 16px 18px; border-radius: 18px; transform: translateX(120%); opacity: 0; transition: transform 0.35s ease, opacity 0.35s ease; pointer-events: auto; }
+    .toast.visible { transform: translateX(0); opacity: 1; }
+    .toast.hide { transform: translateX(120%); opacity: 0; }
+    .toast-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(212, 175, 55, 0.14); color: var(--gold); font-size: 16px; font-weight: 700; }
+    .toast-body { flex: 1; font-size: 14px; line-height: 1.4; }
+    .toast.success { border-left-color: var(--gold); }
+    .toast.error { border-left-color: #ef4444; }
+    .toast.warning { border-left-color: #f59e0b; }
+    .warning-note { margin-top: 18px; padding: 18px 20px; border: 1px solid rgba(255,255,255,0.09); background: rgba(212,175,55,0.08); color: #fff; border-radius: 16px; font-size: 13px; line-height: 1.6; }
   </style>
 </head>
 
 <body>
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <nav>
     <a href="index.html" class="nav-logo">Plus<span>One</span></a>
@@ -1065,11 +1015,6 @@
         <div class="form-group full">
           <label class="form-label" for="profileAboutMe">About Me</label>
           <textarea class="form-input" id="profileAboutMe" rows="3" placeholder="Tell us about yourself..."></textarea>
-        </div>
-        <div class="form-group full">
-          <label class="form-label" for="profileNotes">About You (Local)</label>
-          <textarea class="form-input" id="profileNotes"
-            placeholder="Share your preferences or a short profile summary."></textarea>
         </div>
         <div class="form-group full">
           <label class="form-label" for="profilePhoto">Profile Photo</label>
@@ -1150,17 +1095,22 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let currentUser = null;
 
-    function showCustomAlert(message) {
-      const modal = document.getElementById('customAlertModal');
-      if (modal) {
-        document.getElementById('customAlertMessage').textContent = message;
-        modal.classList.add('show');
-      }
-    }
-
-    function closeCustomAlert() {
-      const modal = document.getElementById('customAlertModal');
-      if (modal) modal.classList.remove('show');
+    function showToast(message, type = 'success', duration = 2500) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div class="toast-icon">✔</div>
+        <div class="toast-body">${message}</div>
+      `;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('visible'));
+      setTimeout(() => {
+        toast.classList.remove('visible');
+        toast.classList.add('hide');
+        toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+      }, duration);
     }
 
     async function requireFemaleSession() {
@@ -1205,8 +1155,11 @@
 
     async function logout() {
       await supabaseClient.auth.signOut();
-      localStorage.clear();
-      window.location.href = 'login.html';
+      showToast('Logged out successfully.', 'success');
+      setTimeout(() => {
+        localStorage.clear();
+        window.location.href = 'index.html';
+      }, 1500);
     }
 
     function openProfileModal() {
@@ -1246,7 +1199,6 @@
       const profileEmail = document.getElementById('profileEmail');
       const profilePhone = document.getElementById('profilePhone');
       const profileCity = document.getElementById('profileCity');
-      const profileNotes = document.getElementById('profileNotes');
       const profileAboutMe = document.getElementById('profileAboutMe');
 
       const { data: clientData } = await supabaseClient
@@ -1262,7 +1214,6 @@
       profilePhone.value = clientData?.phone || savedProfile.phone || '';
       profileCity.value = 'Lucknow';
       profileAboutMe.value = clientData?.about_me || '';
-      profileNotes.value = savedProfile.notes || '';
     }
 
     async function saveClientProfile(event) {
@@ -1272,12 +1223,11 @@
       const email = document.getElementById('profileEmail').value.trim();
       const phone = document.getElementById('profilePhone').value.trim();
       const city = document.getElementById('profileCity').value.trim();
-      const notes = document.getElementById('profileNotes').value.trim();
       const about_me = document.getElementById('profileAboutMe').value.trim();
 
       localStorage.setItem('userName', name);
       document.getElementById('userNameDisplay').textContent = name;
-      localStorage.setItem('clientProfile', JSON.stringify({ phone, city, notes }));
+      localStorage.setItem('clientProfile', JSON.stringify({ phone, city }));
 
       try {
         const payloadToSave = { name, about_me };
@@ -1289,11 +1239,11 @@
           .eq('email', email);
 
         if (error) throw error;
-        showCustomAlert('Profile saved successfully.');
+        showToast('Profile saved successfully.', 'success');
         setTimeout(() => closeProfileModal(), 900);
       } catch (error) {
         console.warn('Client profile save fallback:', error.message || error);
-        showCustomAlert('Profile saved locally. Server update is unavailable.');
+        showToast('Profile saved locally. Server update is unavailable.', 'warning');
       }
     }
 
@@ -1364,12 +1314,12 @@
         let statusHtml = '';
         let companionHtml = '';
 
+      const matchingCompanions = approvedCompanions.filter(companion => companionMatchesAvailability(companion, b.meetup_date, b.meetup_time));
         if (status === 'pending') {
           statusHtml = '<span class="status-badge status-pending">Pending Review</span>';
-          companionHtml = renderCompanionFlashcardGrid(
-            approvedCompanions.filter(companion => companionMatchesAvailability(companion, b.meetup_date, b.meetup_time)),
-            b.id
-          );
+          companionHtml = matchingCompanions.length > 0
+            ? renderCompanionFlashcardGrid(matchingCompanions, b.id)
+            : `<div class="warning-note">At present, no companion is available for this time, but we are trying our best to arrange one for you.</div>`;
         } else {
           statusHtml = '<span class="status-badge status-assigned">Companion Assigned</span>';
           const assignedCompanion = approvedCompanions.find(c => c.id === b.companion_id);
@@ -1477,10 +1427,10 @@
           .eq('id', bookingId);
 
         if (error) throw error;
-        showCustomAlert(`Companion ${companionName} has been assigned to your booking.`);
+        showToast(`Companion ${companionName} has been assigned to your booking.`, 'success');
         await fetchDashboardData();
       } catch (err) {
-        showCustomAlert(err.message || 'Could not assign companion. Please try again.');
+        showToast(err.message || 'Could not assign companion. Please try again.', 'error');
       } finally {
         if (button) {
           button.disabled = false;
@@ -1507,7 +1457,7 @@
         const availableCompanions = await loadMatchingCompanions(requestedDate, requestedTime);
 
         if (availableCompanions.length === 0) {
-          showCustomAlert('No approved companions match your requested date and time. Please try a different date or time.');
+          showToast('No approved companions match your requested date and time. Please try a different date or time.', 'warning');
           btn.textContent = originalText;
           btn.disabled = false;
           return;
@@ -1526,11 +1476,11 @@
         const { error } = await supabaseClient.from('bookings').insert(payload);
         if (error) throw error;
 
-        showCustomAlert('Booking request received successfully!');
+        showToast('Booking request created successfully.', 'success');
         document.getElementById('bookingForm').reset();
         await fetchDashboardData();
       } catch (err) {
-        showCustomAlert(err.message || 'Could not submit booking. Please try again.');
+        showToast(err.message || 'Could not submit booking. Please try again.', 'error');
       } finally {
         btn.textContent = originalText;
         btn.disabled = false;
@@ -1608,13 +1558,6 @@
       await fetchDashboardData();
     });
   </script>
-
-  <div id="customAlertModal" class="custom-alert-modal">
-    <div class="custom-alert-box">
-      <p id="customAlertMessage"></p>
-      <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
-    </div>
-  </div>
 
 </body>
 
