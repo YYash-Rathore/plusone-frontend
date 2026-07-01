@@ -8,6 +8,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     *,
     *::before,
@@ -525,21 +526,33 @@
           <div class="field-group"><label>Emergency Contact Number (SOS)</label><input type="tel"
               name="emergency_contact" required placeholder="Enter emergency contact number"></div>
           <div class="field-group"><label>SOS Relation</label>
-            <select name="emergency_contact_relation" required>
-              <option value="" disabled selected>Select</option>
-              <option value="Friend">Close Friend</option>
-              <option value="Sibling">Sibling</option>
-              <option value="Parent">Parent</option>
-              <option value="Other">Other</option>
-            </select>
+            <div class="custom-dropdown">
+              <button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="dropdown-value">Select</span>
+                <span class="dropdown-arrow">▾</span>
+              </button>
+              <ul class="custom-dropdown-menu" role="listbox">
+                <li data-value="Friend">Close Friend</li>
+                <li data-value="Sibling">Sibling</li>
+                <li data-value="Parent">Parent</li>
+                <li data-value="Other">Other</li>
+              </ul>
+              <input type="hidden" name="emergency_contact_relation" required>
+            </div>
           </div>
           <div class="field-group full"><label>Preferred Vibe</label>
-            <select name="vibe_tags" required>
-              <option value="" disabled selected>What kind of outings do you prefer?</option>
-              <option value="Cafe Hopping">Cafe Hopping</option>
-              <option value="Event/Wedding">Event/Wedding</option>
-              <option value="Intellectual Talks">Intellectual Talks</option>
-            </select>
+            <div class="custom-dropdown">
+              <button type="button" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="dropdown-value">What kind of outings do you prefer?</span>
+                <span class="dropdown-arrow">▾</span>
+              </button>
+              <ul class="custom-dropdown-menu" role="listbox">
+                <li data-value="Cafe Hopping">Cafe Hopping</li>
+                <li data-value="Event/Wedding">Event/Wedding</li>
+                <li data-value="Intellectual Talks">Intellectual Talks</li>
+              </ul>
+              <input type="hidden" name="vibe_tags" required>
+            </div>
           </div>
           <div class="field-group full"><label>About Me</label>
             <textarea name="about_me"
@@ -582,6 +595,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="dropdowns.js"></script>
   <script>
     const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';

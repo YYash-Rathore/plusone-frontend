@@ -135,6 +135,146 @@
       display: flex;
     }
 
+    .companion-details-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      background: rgba(4, 5, 8, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1200;
+      overflow-y: auto;
+      transition: opacity 240ms ease, visibility 240ms ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .companion-details-modal.open {
+      display: flex;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .companion-details-card {
+      position: relative;
+      width: min(100%, 520px);
+      border: 1px solid rgba(212, 175, 55, 0.18);
+      background: rgba(14, 14, 18, 0.95);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+      border-radius: 28px;
+      padding: 32px 30px 28px;
+      backdrop-filter: blur(14px);
+      animation: slideUpIn 320ms ease forwards;
+    }
+
+    .companion-details-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 28px;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .companion-details-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-radius: 50%;
+      background: rgba(10, 10, 12, 0.82);
+      color: var(--gold);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .companion-details-close:hover {
+      transform: scale(1.05);
+      background: rgba(212, 175, 55, 0.12);
+    }
+
+    .companion-details-title {
+      margin-bottom: 8px;
+      font-family: var(--serif);
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      color: var(--text-1);
+    }
+
+    .companion-details-subtitle {
+      color: var(--text-2);
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 8px;
+    }
+
+    .detail-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      padding: 18px 16px;
+      min-height: 92px;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 8px;
+    }
+
+    .detail-value {
+      color: var(--text-1);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .btn-detail {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      border: 1px solid rgba(212, 175, 55, 0.16);
+      background: transparent;
+      color: var(--text-1);
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-detail:hover {
+      background: rgba(212, 175, 55, 0.08);
+      border-color: var(--gold);
+    }
+
+    @keyframes slideUpIn {
+      from {
+        transform: translateY(24px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     .modal-container {
       width: min(100%, 580px);
       max-height: calc(100vh - 80px);
@@ -473,17 +613,18 @@
 
     /* ── BOOKING FORM UI ── */
     .booking-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 0.5px solid var(--rule-hi);
-      border-radius: var(--r-lg);
-      padding: 40px;
-      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.03);
+      border: 0.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 48px;
+      backdrop-filter: blur(18px);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
     .form-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
       margin-bottom: 24px;
     }
 
@@ -493,57 +634,132 @@
 
     .form-label {
       display: block;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-2);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
+      letter-spacing: 0.14em;
+      margin-bottom: 12px;
+      font-weight: 600;
     }
 
     .form-input,
-    .form-select {
+    .custom-dropdown-trigger {
       width: 100%;
-      background: rgba(0, 0, 0, 0.3);
-      border: 0.5px solid var(--rule-hi);
-      border-radius: var(--r-sm);
-      padding: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 18px;
       color: var(--text-1);
       font-family: var(--sans);
       font-size: 14px;
-      transition: all 0.3s;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      appearance: none;
+    }
+
+    .form-input::placeholder {
+      color: rgba(244, 244, 246, 0.5);
     }
 
     .form-input:focus,
-    .form-select:focus {
+    .custom-dropdown-trigger:focus {
       outline: none;
-      border-color: var(--gold-dim);
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.14);
+      transform: translateY(-1px);
     }
 
-    input[type="date"],
-    input[type="time"] {
-      padding-right: 16px;
-      background-color: rgba(0, 0, 0, 0.3);
-      border: 0.5px solid var(--rule-hi);
-      border-radius: var(--r-sm);
-      color: var(--text-1);
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+
+    .custom-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       cursor: pointer;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 18px;
+      color: var(--text-1);
+      font-family: var(--sans);
+      font-size: 14px;
+      text-align: left;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .custom-dropdown-trigger:hover {
+      border-color: rgba(212, 175, 55, 0.3);
+    }
+
+    .dropdown-arrow {
+      color: var(--gold);
+      font-size: 16px;
+      margin-left: 12px;
+    }
+
+    .custom-dropdown-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 14px);
+      background: rgba(10, 10, 12, 0.96);
+      border: 1px solid rgba(212, 175, 55, 0.16);
+      border-radius: 20px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      list-style: none;
+      padding: 10px;
+      margin: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity 200ms ease, transform 200ms ease, visibility 200ms ease;
+      z-index: 12;
+      max-height: 240px;
+      overflow: auto;
+    }
+
+    .custom-dropdown.open .custom-dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .custom-dropdown-menu li {
+      padding: 14px 16px;
+      margin: 4px 0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+      color: var(--text-1);
+      font-size: 14px;
+    }
+
+    .custom-dropdown-menu li:hover,
+    .custom-dropdown-menu li.selected {
+      background: rgba(212, 175, 55, 0.12);
+      color: var(--gold);
     }
 
     .icon-input {
       position: relative;
+      display: block;
     }
 
-    .icon-input input[type="date"],
-    .icon-input input[type="time"] {
+    .icon-input .form-input {
       width: 100%;
       box-sizing: border-box;
-      padding-right: 48px;
+      padding-right: 54px;
+      cursor: pointer;
     }
 
     .icon-input::after {
       content: '';
       position: absolute;
-      right: 16px;
+      right: 15px;
       top: 50%;
       transform: translateY(-50%);
       width: 20px;
@@ -560,7 +776,6 @@
     .icon-input.time::after {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F4F4F6' d='M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm1 11.5V7h-2v6.5l4.75 2.85.9-1.5-3.65-2.35z'/%3E%3C/svg%3E");
     }
-
     .btn-submit {
       width: 100%;
       padding: 16px;
@@ -768,15 +983,21 @@
     }
 
     .fc-avatar {
-      height: 210px;
+      width: 120px;
+      height: 120px;
+      margin: 20px auto 15px auto;
+      border-radius: 50%;
       overflow: hidden;
       background: var(--rule);
+      border: 2px solid var(--gold);
+      display: block;
     }
 
     .fc-avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: top center;
       display: block;
     }
 
@@ -785,6 +1006,8 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      align-items: center;
+      text-align: center;
     }
 
     .fc-name {
@@ -792,6 +1015,15 @@
       color: var(--text-1);
       font-weight: 600;
       margin: 0;
+    }
+
+    .premium-rating {
+      color: var(--gold);
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      text-align: center;
+      line-height: 1;
     }
 
     .fc-age {
@@ -971,6 +1203,7 @@
     .toast.warning { border-left-color: #f59e0b; }
     .warning-note { margin-top: 18px; padding: 18px 20px; border: 1px solid rgba(255,255,255,0.09); background: rgba(212,175,55,0.08); color: #fff; border-radius: 16px; font-size: 13px; line-height: 1.6; }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <body>
@@ -1042,32 +1275,43 @@
       <div class="booking-card">
         <form id="bookingForm">
           <div class="form-row">
-            <div>
-              <label class="form-label">Date</label>
-              <input type="date" id="b_date" class="form-input" required>
+            <div class="form-group">
+              <label class="form-label" for="b_date">Date</label>
+              <div class="icon-input date">
+                <input type="text" id="b_date" class="form-input" placeholder="Select a date" readonly required>
+              </div>
             </div>
-            <div>
-              <label class="form-label">Time</label>
-              <input type="time" id="b_time" class="form-input" required>
+            <div class="form-group">
+              <label class="form-label" for="b_time">Time</label>
+              <div class="icon-input time">
+                <input type="text" id="b_time" class="form-input" placeholder="Select time" readonly required>
+              </div>
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Duration</label>
-            <select id="b_duration" class="form-select" required>
-              <option value="hourly">Hourly (₹259)</option>
-              <option value="half_day">Half Day (₹399)</option>
-              <option value="full_day">Full Day (₹699)</option>
-            </select>
+            <div class="custom-dropdown" id="durationDropdown">
+              <button type="button" id="durationTrigger" class="custom-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span id="durationValue">Hourly (₹259)</span>
+                <span class="dropdown-arrow">▾</span>
+              </button>
+              <ul class="custom-dropdown-menu" id="durationOptions" role="listbox" aria-labelledby="durationTrigger">
+                <li role="option" data-value="hourly" class="selected">Hourly (₹259)</li>
+                <li role="option" data-value="half_day">Half Day (₹399)</li>
+                <li role="option" data-value="full_day">Full Day (₹699)</li>
+              </ul>
+            </div>
+            <input type="hidden" id="b_duration" name="b_duration" value="hourly" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Public Location</label>
+            <label class="form-label" for="b_location">Public Location</label>
             <input type="text" id="b_location" class="form-input" placeholder="e.g. Summit Building" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Promo Code (Optional)</label>
+            <label class="form-label" for="b_promo">Promo Code (Optional)</label>
             <input type="text" id="b_promo" class="form-input" placeholder="Enter code">
           </div>
 
@@ -1089,6 +1333,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
     const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
@@ -1264,7 +1509,7 @@
           .order('meetup_date', { ascending: false }),
         supabaseClient
           .from('companions')
-          .select('id, full_name, age, profile_picture_url, email')
+          .select('id, full_name, age, height, profile_picture_url, email, professional_status, company_or_college, designation_or_degree')
           .eq('status', 'approved'),
         supabaseClient
           .from('companion_availability')
@@ -1316,7 +1561,7 @@
 
       const matchingCompanions = approvedCompanions.filter(companion => companionMatchesAvailability(companion, b.meetup_date, b.meetup_time));
         if (status === 'pending') {
-          statusHtml = '<span class="status-badge status-pending">Pending Review</span>';
+          statusHtml = '<span class="status-badge status-pending">Awaiting Confirmation</span>';
           companionHtml = matchingCompanions.length > 0
             ? renderCompanionFlashcardGrid(matchingCompanions, b.id)
             : `<div class="warning-note">At present, no companion is available for this time, but we are trying our best to arrange one for you.</div>`;
@@ -1369,25 +1614,71 @@
         return '<div class="empty-state">No approved companions match your requested date and time. Try adjusting your meetup details.</div>';
       }
 
-      return `
-      <div class="flashcards-grid">
-        ${companions.map(companion => `
+      window.companionDetailMap = window.companionDetailMap || {};
+      const companionCards = companions.map(companion => {
+        window.companionDetailMap[companion.id] = companion;
+        return `
           <div class="flashcard">
             <div class="fc-avatar">
               <img src="${companion.profile_picture_url || 'https://via.placeholder.com/300x300?text=No+Photo'}" alt="${companion.full_name}">
             </div>
             <div class="fc-body">
+              <div class="premium-rating">★★★★★</div>
               <h3 class="fc-name">${companion.full_name}</h3>
               <div class="fc-age">Age ${companion.age || 'N/A'}</div>
               <div class="fc-action">
+                <button class="btn-detail" type="button" onclick="showCompanionDetails('${companion.id}')">View Details</button>
                 <button class="btn-select-profile" id="assign-btn-${bookingId}-${companion.id}" onclick="assignCompanion('${bookingId}', '${companion.id}', '${companion.full_name.replace(/'/g, "\\'")}')">Select Profile</button>
               </div>
             </div>
           </div>
-        `).join('')}
+        `;
+      }).join('');
+      return `
+      <div class="flashcards-grid">
+        ${companionCards}
       </div>
     `;
     }
+
+    function showCompanionDetails(companionId) {
+      const companion = window.companionDetailMap?.[companionId];
+      if (!companion) {
+        console.error('Companion not found for details view', companionId);
+        return;
+      }
+
+      document.getElementById('companionDetailsName').textContent = companion.full_name || 'Companion Profile';
+      document.getElementById('companionDetailsStatus').textContent = companion.professional_status || 'Status unavailable';
+      document.getElementById('companionDetailsHeight').textContent = companion.height || 'N/A';
+
+      const statusValue = (companion.professional_status || '').toLowerCase();
+      let roleText = 'Not available';
+      if (statusValue.includes('working')) {
+        roleText = `${companion.designation_or_degree || 'Professional'} at ${companion.company_or_college || 'Unknown'}`;
+      } else if (statusValue.includes('student')) {
+        roleText = `${companion.designation_or_degree || 'Student'} at ${companion.company_or_college || 'Unknown'}`;
+      } else {
+        roleText = `${companion.designation_or_degree || 'Background'} at ${companion.company_or_college || 'Unknown'}`;
+      }
+      document.getElementById('companionDetailsRole').textContent = roleText;
+
+      const modal = document.getElementById('companionDetailsModal');
+      modal.classList.add('open');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeCompanionDetailsModal() {
+      const modal = document.getElementById('companionDetailsModal');
+      modal.classList.remove('open');
+      document.body.classList.remove('modal-open');
+    }
+
+    document.getElementById('companionDetailsModal')?.addEventListener('click', function (event) {
+      if (event.target.id === 'companionDetailsModal') {
+        closeCompanionDetailsModal();
+      }
+    });
 
     function renderHistoryBookings(bookings) {
       const container = document.getElementById('historyBookingsContainer');
@@ -1440,6 +1731,100 @@
     }
 
     document.getElementById('profileForm').addEventListener('submit', saveClientProfile);
+
+    const durationDropdown = document.getElementById('durationDropdown');
+    const durationTrigger = document.getElementById('durationTrigger');
+    const durationOptions = document.getElementById('durationOptions');
+    const durationValue = document.getElementById('durationValue');
+    const durationHidden = document.getElementById('b_duration');
+
+    durationTrigger.addEventListener('click', () => {
+      const expanded = durationDropdown.classList.toggle('open');
+      durationTrigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+
+    durationOptions.querySelectorAll('li').forEach(option => {
+      option.addEventListener('click', () => {
+        durationOptions.querySelectorAll('li').forEach(item => item.classList.remove('selected'));
+        option.classList.add('selected');
+        const value = option.getAttribute('data-value');
+        durationValue.textContent = option.textContent;
+        durationHidden.value = value;
+        durationDropdown.classList.remove('open');
+        durationTrigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!durationDropdown.contains(event.target)) {
+        durationDropdown.classList.remove('open');
+        durationTrigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    const dateInput = document.getElementById('b_date');
+    const timeInput = document.getElementById('b_time');
+
+    const timePicker = flatpickr(timeInput, {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: 'h:i K',
+      time_24hr: false,
+      minuteIncrement: 60,
+      defaultHour: 8,
+      disableMobile: true,
+      clickOpens: true,
+      allowInput: false,
+      onOpen: (selectedDates, dateStr, instance) => {
+        if (!dateInput.value) {
+          instance.set('minTime', '08:00');
+          return;
+        }
+        const selectedDate = new Date(dateInput.value);
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+          const nextHour = new Date(today);
+          nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
+          const hourString = nextHour.toTimeString().slice(0, 5);
+          instance.set('minTime', hourString);
+        } else {
+          instance.set('minTime', '08:00');
+        }
+      }
+    });
+
+    flatpickr(dateInput, {
+      dateFormat: 'd M Y',
+      minDate: 'today',
+      disableMobile: true,
+      allowInput: false,
+      clickOpens: true,
+      onChange: function (selectedDates) {
+        if (!selectedDates || selectedDates.length === 0) return;
+        const selectedDate = selectedDates[0];
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+          const nextHour = new Date(today);
+          nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
+          const hourString = nextHour.toTimeString().slice(0, 5);
+          timePicker.set('minTime', hourString);
+          if (timeInput.value) {
+            const currentTime = flatpickr.parseDate(timeInput.value, 'h:i K');
+            if (currentTime && currentTime < nextHour) {
+              timeInput.value = '';
+            }
+          }
+        } else {
+          timePicker.set('minTime', '08:00');
+        }
+      }
+    });
+
+    timeInput.addEventListener('focus', () => {
+      if (!dateInput.value) {
+        dateInput.focus();
+      }
+    });
 
     document.getElementById('bookingForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -1519,7 +1904,7 @@
       const [companionsResponse, availabilityResponse] = await Promise.all([
         supabaseClient
           .from('companions')
-          .select('id, full_name, age, profile_picture_url, email')
+          .select('id, full_name, age, height, profile_picture_url, email, professional_status, company_or_college, designation_or_degree')
           .eq('status', 'approved'),
         supabaseClient
           .from('companion_availability')
@@ -1557,8 +1942,25 @@
       await loadClientProfile();
       await fetchDashboardData();
     });
-  </script>
+    </script>
 
+    <div id="companionDetailsModal" class="companion-details-modal" aria-hidden="true">
+      <div class="companion-details-card" role="dialog" aria-modal="true" aria-labelledby="companionDetailsName">
+        <button class="companion-details-close" type="button" aria-label="Close companion details" onclick="closeCompanionDetailsModal()">×</button>
+        <h2 id="companionDetailsName" class="companion-details-title">Companion Details</h2>
+        <p id="companionDetailsStatus" class="companion-details-subtitle">Professional status will appear here.</p>
+        <div class="detail-grid">
+          <div class="detail-card">
+            <div class="detail-label">Height</div>
+            <div id="companionDetailsHeight" class="detail-value">N/A</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">Role</div>
+            <div id="companionDetailsRole" class="detail-value">N/A</div>
+          </div>
+        </div>
+      </div>
+    </div>
 </body>
 
 </html>
