@@ -305,6 +305,7 @@
     font-size: 22px;
     font-weight: 400;
     color: var(--gold);
+    font-variant-numeric: tabular-nums;
   }
 
   /* ── DIVIDER LINES (Fading Effect) ── */
@@ -385,6 +386,7 @@
     color: var(--gold);
     line-height: 1.1;
     margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
   }
 
   .counter-label {
@@ -725,21 +727,21 @@
         <div class="card-stat-row">
           <div class="card-stat">
             <span class="card-stat-label">Male Companion Profiles Received</span>
-            <span class="card-stat-val" id="hero-applied">128</span>
+            <span class="card-stat-val" id="hero-applied">0</span>
           </div>
           
           <div class="hero-card-rule"></div>
 
           <div class="card-stat">
             <span class="card-stat-label">Personal Interviews Taken</span>
-            <span class="card-stat-val" id="hero-screened">42</span>
+            <span class="card-stat-val" id="hero-screened">0</span>
           </div>
 
           <div class="hero-card-rule"></div>
 
           <div class="card-stat">
             <span class="card-stat-label">Selected & Verified Gentlemen</span>
-            <span class="card-stat-val" id="hero-onboarded">3</span>
+            <span class="card-stat-val" id="hero-onboarded">0</span>
           </div>
         </div>
 
@@ -923,14 +925,31 @@
   }, { threshold: 0.1 });
   reveals.forEach(el => io.observe(el));
 
+  function animateValue(obj, start, end, duration) {
+    if (!obj) return;
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      // ease-out quart
+      const easeOut = 1 - Math.pow(1 - progress, 4);
+      obj.innerText = Math.floor(easeOut * (end - start) + start);
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        obj.innerText = end;
+      }
+    };
+    window.requestAnimationFrame(step);
+  }
+
   async function loadLiveStats() {
     const applicationsEl = document.getElementById('count-applications');
     const interviewsEl = document.getElementById('count-interviews');
     const approvedEl = document.getElementById('count-approved');
-
-    if (applicationsEl) applicationsEl.innerText = '0';
-    if (interviewsEl) interviewsEl.innerText = '0';
-    if (approvedEl) approvedEl.innerText = '0';
+    const heroApplied = document.getElementById('hero-applied');
+    const heroScreened = document.getElementById('hero-screened');
+    const heroOnboarded = document.getElementById('hero-onboarded');
 
     try {
       const [
@@ -943,13 +962,17 @@
         supabaseClient.from('companions').select('*', { count: 'exact', head: true }).eq('status', 'approved')
       ]);
 
-      if (applicationsEl) applicationsEl.innerText = String(totalCount || 0);
-      if (interviewsEl) interviewsEl.innerText = String(interviewedCount || 0);
-      if (approvedEl) approvedEl.innerText = String(approvedCount || 0);
+      const finalApplications = 33 + parseInt(totalCount || 0, 10);
+      const finalInterviews = 21 + parseInt(interviewedCount || 0, 10);
+      const finalApproved = 4 + parseInt(approvedCount || 0, 10);
 
-      document.getElementById('hero-applied').textContent = String(totalCount || 0);
-      document.getElementById('hero-screened').textContent = String(interviewedCount || 0);
-      document.getElementById('hero-onboarded').textContent = String(approvedCount || 0);
+      animateValue(applicationsEl, 0, finalApplications, 2000);
+      animateValue(interviewsEl, 0, finalInterviews, 2000);
+      animateValue(approvedEl, 0, finalApproved, 2000);
+
+      animateValue(heroApplied, 0, finalApplications, 2000);
+      animateValue(heroScreened, 0, finalInterviews, 2000);
+      animateValue(heroOnboarded, 0, finalApproved, 2000);
       
     } catch (e) {
       console.error('Stats unavailable - using fallback numbers', e);

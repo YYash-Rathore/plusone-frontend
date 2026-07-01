@@ -611,6 +611,44 @@
       font-style: italic;
     }
 
+    @keyframes soft-pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .availability-banner {
+      background: rgba(212, 175, 55, 0.08);
+      border-left: 2px solid var(--gold);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-1);
+      line-height: 1.4;
+    }
+
+    .availability-banner .info-icon {
+      animation: soft-pulse 3s infinite ease-in-out;
+      font-size: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .availability-banner {
+        padding: 12px;
+        font-size: 14px;
+        align-items: center;
+      }
+    }
+
     /* ── BOOKING FORM UI ── */
     .booking-card {
       background: rgba(255, 255, 255, 0.03);
@@ -970,6 +1008,7 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
       margin-top: 18px;
+      align-items: start;
     }
 
     .flashcard {
@@ -980,6 +1019,7 @@
       display: flex;
       flex-direction: column;
       min-height: 320px;
+      width: 100%;
     }
 
     .fc-avatar {
@@ -1066,6 +1106,22 @@
     html,
     body {
       overflow-x: hidden;
+    }
+
+    .active-engagements-column {
+      max-height: 85vh;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .active-engagements-column::-webkit-scrollbar {
+      width: 6px;
+    }
+    .active-engagements-column::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .active-engagements-column::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 10px;
     }
 
     @media (max-width: 1024px) {
@@ -1202,6 +1258,64 @@
     .toast.error { border-left-color: #ef4444; }
     .toast.warning { border-left-color: #f59e0b; }
     .warning-note { margin-top: 18px; padding: 18px 20px; border: 1px solid rgba(255,255,255,0.09); background: rgba(212,175,55,0.08); color: #fff; border-radius: 16px; font-size: 13px; line-height: 1.6; }
+
+    /* ── BOOKING FORM OVERRIDES ── */
+    #bookingForm .form-input, #bookingForm .custom-dropdown-trigger {
+      font-size: 16px !important;
+    }
+    .flatpickr-calendar {
+      background: rgba(25, 25, 25, 0.98) !important;
+      border: 1px solid var(--gold) !important;
+      will-change: transform;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+      border-radius: 12px !important;
+      padding: 10px !important;
+    }
+    .flatpickr-day {
+      color: var(--text-1) !important;
+    }
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      color: #000 !important;
+    }
+    .flatpickr-day:hover {
+      background: rgba(212, 175, 55, 0.2) !important;
+    }
+    .flatpickr-month, .flatpickr-weekday {
+      color: var(--text-1) !important;
+      fill: var(--text-1) !important;
+    }
+    .input-loader {
+      position: absolute;
+      right: 15px;
+      top: calc(50% - 9px);
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spinLoader 0.6s linear infinite;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .icon-input.loading .input-loader {
+      opacity: 1;
+      visibility: visible;
+    }
+    .icon-input.loading::after {
+      opacity: 0;
+    }
+    @keyframes spinLoader {
+      to { transform: rotate(360deg); }
+    }
+    .time-slots-menu {
+      max-height: 240px;
+      overflow-y: auto;
+    }
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
@@ -1271,6 +1385,10 @@
 
   <main>
     <div>
+      <div class="availability-banner">
+        <span class="info-icon">📅</span>
+        <span>Companions are most active on weekends for your convenience.</span>
+      </div>
       <h2 class="section-title">Concierge <em>Request.</em></h2>
       <div class="booking-card">
         <form id="bookingForm">
@@ -1278,13 +1396,18 @@
             <div class="form-group">
               <label class="form-label" for="b_date">Date</label>
               <div class="icon-input date">
-                <input type="text" id="b_date" class="form-input" placeholder="Select a date" readonly required>
+                <input type="text" id="b_date" class="form-input" placeholder="Select a date" readonly="true" required>
+                <div class="input-loader"></div>
               </div>
             </div>
             <div class="form-group">
               <label class="form-label" for="b_time">Time</label>
-              <div class="icon-input time">
-                <input type="text" id="b_time" class="form-input" placeholder="Select time" readonly required>
+              <div class="custom-dropdown" id="timeDropdown">
+                <div class="icon-input time">
+                  <input type="text" id="b_time" class="form-input" placeholder="Select time" readonly="true" required>
+                  <div class="input-loader"></div>
+                </div>
+                <ul class="custom-dropdown-menu time-slots-menu" id="time-slots-menu" role="listbox"></ul>
               </div>
             </div>
           </div>
@@ -1320,7 +1443,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="active-engagements-column">
       <h2 class="section-title">Active <em>Engagements.</em></h2>
       <div id="activeBookingsContainer">
         <div class="empty-state">Loading your active requests...</div>
@@ -1509,7 +1632,7 @@
           .order('meetup_date', { ascending: false }),
         supabaseClient
           .from('companions')
-          .select('id, full_name, age, height, profile_picture_url, email, professional_status, company_or_college, designation_or_degree')
+          .select('id, full_name, age, height, profile_picture_url, email, professional_status, company_or_college, designation_or_degree, professional_summary')
           .eq('status', 'approved'),
         supabaseClient
           .from('companion_availability')
@@ -1663,6 +1786,11 @@
       }
       document.getElementById('companionDetailsRole').textContent = roleText;
 
+      const bioEl = document.getElementById('companionDetailsBio');
+      if (bioEl) {
+        bioEl.textContent = companion.professional_summary ? `"${companion.professional_summary}"` : '';
+      }
+
       const modal = document.getElementById('companionDetailsModal');
       modal.classList.add('open');
       document.body.classList.add('modal-open');
@@ -1762,69 +1890,7 @@
       }
     });
 
-    const dateInput = document.getElementById('b_date');
-    const timeInput = document.getElementById('b_time');
 
-    const timePicker = flatpickr(timeInput, {
-      enableTime: true,
-      noCalendar: true,
-      dateFormat: 'h:i K',
-      time_24hr: false,
-      minuteIncrement: 60,
-      defaultHour: 8,
-      disableMobile: true,
-      clickOpens: true,
-      allowInput: false,
-      onOpen: (selectedDates, dateStr, instance) => {
-        if (!dateInput.value) {
-          instance.set('minTime', '08:00');
-          return;
-        }
-        const selectedDate = new Date(dateInput.value);
-        const today = new Date();
-        if (selectedDate.toDateString() === today.toDateString()) {
-          const nextHour = new Date(today);
-          nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
-          const hourString = nextHour.toTimeString().slice(0, 5);
-          instance.set('minTime', hourString);
-        } else {
-          instance.set('minTime', '08:00');
-        }
-      }
-    });
-
-    flatpickr(dateInput, {
-      dateFormat: 'd M Y',
-      minDate: 'today',
-      disableMobile: true,
-      allowInput: false,
-      clickOpens: true,
-      onChange: function (selectedDates) {
-        if (!selectedDates || selectedDates.length === 0) return;
-        const selectedDate = selectedDates[0];
-        const today = new Date();
-        if (selectedDate.toDateString() === today.toDateString()) {
-          const nextHour = new Date(today);
-          nextHour.setHours(nextHour.getHours() + 1, 0, 0, 0);
-          const hourString = nextHour.toTimeString().slice(0, 5);
-          timePicker.set('minTime', hourString);
-          if (timeInput.value) {
-            const currentTime = flatpickr.parseDate(timeInput.value, 'h:i K');
-            if (currentTime && currentTime < nextHour) {
-              timeInput.value = '';
-            }
-          }
-        } else {
-          timePicker.set('minTime', '08:00');
-        }
-      }
-    });
-
-    timeInput.addEventListener('focus', () => {
-      if (!dateInput.value) {
-        dateInput.focus();
-      }
-    });
 
     document.getElementById('bookingForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -1937,7 +2003,95 @@
       })).filter(companion => companionMatchesAvailability(companion, date, time));
     }
 
+    function renderTimeSlots(selectedDateObj) {
+      const timeSlotsMenu = document.getElementById('time-slots-menu');
+      const timeInput = document.getElementById('b_time');
+      const timeDropdown = document.getElementById('timeDropdown');
+      
+      timeSlotsMenu.innerHTML = '';
+      if (!selectedDateObj) return;
+
+      const today = new Date();
+      const isToday = selectedDateObj.toDateString() === today.toDateString();
+      let startHour = 8; // 8 AM
+      let endHour = 23; // 11 PM
+
+      if (isToday) {
+        let currentHour = today.getHours();
+        startHour = currentHour + 1;
+        if (startHour > 23) {
+          timeSlotsMenu.innerHTML = '<li style="color: var(--text-2); text-align: center;">No slots available today</li>';
+          return;
+        }
+        if (startHour < 8) startHour = 8;
+      }
+
+      for (let h = startHour; h <= endHour; h++) {
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const displayHour = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+        const timeString = `${displayHour.toString().padStart(2, '0')}:00 ${ampm}`;
+        
+        const li = document.createElement('li');
+        li.textContent = timeString;
+        li.setAttribute('role', 'option');
+        li.addEventListener('click', (e) => {
+          e.stopPropagation();
+          timeInput.value = timeString;
+          timeDropdown.classList.remove('open');
+        });
+        timeSlotsMenu.appendChild(li);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
+      const dateInput = document.getElementById('b_date');
+      const timeInput = document.getElementById('b_time');
+      const timeDropdown = document.getElementById('timeDropdown');
+      
+      let datePickerInstance = flatpickr(dateInput, {
+        dateFormat: 'd M Y',
+        minDate: 'today',
+        disableMobile: true,
+        allowInput: false,
+        clickOpens: false, // Handle manually for loader
+        onChange: function (selectedDates) {
+          timeInput.value = '';
+          if (selectedDates && selectedDates.length > 0) {
+            renderTimeSlots(selectedDates[0]);
+          }
+        }
+      });
+
+      dateInput.addEventListener('click', () => {
+        const wrapper = dateInput.closest('.icon-input');
+        wrapper.classList.add('loading');
+        setTimeout(() => {
+          wrapper.classList.remove('loading');
+          datePickerInstance.open();
+        }, 200);
+      });
+
+      timeInput.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wrapper = timeInput.closest('.icon-input');
+        wrapper.classList.add('loading');
+        
+        setTimeout(() => {
+          wrapper.classList.remove('loading');
+          if (!dateInput.value) {
+            showToast('Please select a date first.', 'warning');
+            return;
+          }
+          timeDropdown.classList.toggle('open');
+        }, 200);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (timeDropdown && !timeDropdown.contains(event.target)) {
+          timeDropdown.classList.remove('open');
+        }
+      });
+
       await requireFemaleSession();
       await loadClientProfile();
       await fetchDashboardData();
@@ -1958,6 +2112,9 @@
             <div class="detail-label">Role</div>
             <div id="companionDetailsRole" class="detail-value">N/A</div>
           </div>
+        </div>
+        <div style="margin-top: 24px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+          <p id="companionDetailsBio" style="font-family: var(--serif); font-size: 17px; font-style: italic; color: var(--gold); line-height: 1.5; padding: 0 10px; letter-spacing: 0.02em;"></p>
         </div>
       </div>
     </div>

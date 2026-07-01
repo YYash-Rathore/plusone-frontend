@@ -56,6 +56,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     background: rgba(8, 8, 10, 0.8);
     backdrop-filter: blur(20px);
     border-bottom: 0.5px solid var(--rule);
@@ -69,6 +70,7 @@
     font-size: 24px;
     color: var(--text-1);
     text-decoration: none;
+    flex-shrink: 0;
   }
   .nav-logo span { color: var(--gold); font-style: italic; }
 
@@ -91,7 +93,11 @@
   .user-email {
     font-size: 13px;
     color: var(--text-2);
-    display: none; /* Mobile pe hide karenge */
+    display: block; /* Shown on desktop, hidden on mobile */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
   }
 
   .btn-logout,
@@ -107,6 +113,7 @@
     letter-spacing: 0.08em;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
   }
   .btn-logout:hover,
   .btn-profile:hover {
@@ -130,6 +137,35 @@
     overflow-y: auto;
   }
   .profile-modal.open { display: flex; }
+
+  #app-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1a1a1a;
+    border: 1px solid var(--gold);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    font-family: var(--serif);
+    color: #fff;
+    padding: 16px 24px;
+    border-radius: 8px;
+    z-index: 99999;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  #app-toast.toast-visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  #app-toast.toast-hidden {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
 
   .modal-container {
     width: min(100%, 580px);
@@ -613,7 +649,7 @@
   @media (max-width: 768px) {
     nav { padding: 16px 18px; }
     .nav-right { gap: 14px; }
-    .user-email { display: block; }
+    .user-email { display: none; }
     .status-card { flex-direction: column; align-items: stretch; gap: 18px; padding: 22px; }
     .stats-grid { grid-template-columns: 1fr; }
     .day-checkbox-grid { grid-template-columns: 1fr; }
@@ -641,7 +677,7 @@
 <nav>
   <a href="index.html" class="nav-logo">Plus<span>One</span></a>
   <div class="nav-right">
-    <span class="user-email" id="displayEmail">loading...</span>
+    <span class="user-email" id="header-user-name">loading...</span>
     <button class="btn-profile" onclick="openProfileModal()">My Profile</button>
     <button class="btn-logout" onclick="logout()">Logout</button>
   </div>
@@ -666,11 +702,11 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label" for="profileAge">Age</label>
-          <input class="form-input" type="text" id="profileAge" placeholder="28">
+          <input class="form-input" type="number" id="profileAge" placeholder="28" min="18" max="99">
         </div>
         <div class="form-group">
           <label class="form-label" for="profileLocation">Location</label>
-          <input class="form-input" type="text" id="profileLocation" placeholder="Bangalore">
+          <input class="form-input" type="text" id="profileLocation" value="Lucknow" readonly="readonly" style="opacity: 0.6; cursor: not-allowed; background: rgba(255, 255, 255, 0.05);" placeholder="Lucknow">
         </div>
       </div>
       <div class="form-group full">
@@ -692,7 +728,6 @@
         <button type="button" class="btn-logout" onclick="closeProfileModal(event)">Cancel</button>
         <button type="submit" class="btn-submit btn-gold">Update Profile</button>
       </div>
-      <p id="profileMessage" class="error-message" style="display:none; margin-top: 16px;"></p>
     </form>
   </section>
 </div>
@@ -813,7 +848,8 @@
 
     if (!session && role === 'companion' && localEmail) {
       currentUser = { id: localId, email: localEmail, isCompanionRecord: true };
-      document.getElementById('displayEmail').textContent = localEmail;
+      const headerNameElement = document.getElementById('header-user-name');
+      if (headerNameElement) headerNameElement.textContent = localStorage.getItem('userName') || 'Companion';
       await fetchCompanionStatus();
       await loadCompanionProfile();
       await fetchAvailabilityAndBookings();
@@ -830,7 +866,8 @@
     localStorage.setItem('userEmail', session.user.email);
     localStorage.setItem('userRole', 'companion');
     localStorage.setItem('userId', session.user.id);
-    document.getElementById('displayEmail').textContent = session.user.email;
+    const headerNameElement = document.getElementById('header-user-name');
+    if (headerNameElement) headerNameElement.textContent = localStorage.getItem('userName') || 'Companion';
     await fetchCompanionStatus();
     await loadCompanionProfile();
     await fetchAvailabilityAndBookings();
@@ -886,7 +923,7 @@
 
     const { data, error } = await supabaseClient
       .from('companions')
-      .select('full_name, age, location, bio')
+      .select('full_name, age, location, professional_summary, bio')
       .eq('email', email)
       .limit(1)
       .maybeSingle();
@@ -894,8 +931,8 @@
     if (!error && data) {
       profileName.value = data.full_name || '';
       profileAge.value = data.age || '';
-      profileLocation.value = data.location || '';
-      profileBio.value = data.bio || '';
+      profileLocation.value = data.location || 'Lucknow';
+      profileBio.value = data.professional_summary || data.bio || '';
     } else {
       profileName.value = localStorage.getItem('userName') || '';
       profileAge.value = '';
@@ -906,8 +943,6 @@
 
   async function saveCompanionProfile(event) {
     event.preventDefault();
-    const profileMessage = document.getElementById('profileMessage');
-    profileMessage.style.display = 'none';
 
     const email = document.getElementById('profileEmail').value.trim();
     const full_name = document.getElementById('profileName').value.trim();
@@ -916,23 +951,27 @@
     const bio = document.getElementById('profileBio').value.trim();
 
     try {
-      const { error } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from('companions')
-        .update({ full_name, age, location, bio })
+        .update({ 
+           full_name: full_name, 
+           age: parseInt(age, 10), 
+           professional_summary: bio 
+        })
         .eq('email', email);
 
       if (error) throw error;
       localStorage.setItem('userName', full_name);
-      profileMessage.textContent = 'Profile saved successfully.';
-      profileMessage.style.color = '#9aedc3';
-      profileMessage.style.display = 'block';
-      document.getElementById('displayEmail').textContent = email;
+      const headerNameElement = document.getElementById('header-user-name');
+      if (headerNameElement) {
+          headerNameElement.textContent = full_name;
+      }
+      
+      showToast('Profile updated successfully!');
       setTimeout(() => closeProfileModal(), 900);
     } catch (error) {
-      console.warn('Companion profile save issue:', error.message || error);
-      profileMessage.textContent = 'Profile saved locally. Server update is unavailable.';
-      profileMessage.style.color = '#f4f4f6';
-      profileMessage.style.display = 'block';
+      console.error('Companion profile save issue:', error.message || error);
+      showToast(`Error: ${error.message || 'Could not update profile'}`, 'error');
     }
   }
 
@@ -954,6 +993,13 @@
       if (error) throw error;
       if (data) {
         currentUser.companion_id = data.id;
+        if (data.full_name) {
+          localStorage.setItem('userName', data.full_name);
+          const headerNameElement = document.getElementById('header-user-name');
+          if (headerNameElement) {
+              headerNameElement.textContent = data.full_name;
+          }
+        }
       }
       applyStatus(data?.status || 'pending');
     } catch (error) {
@@ -1139,7 +1185,9 @@
     container.innerHTML = bookings.map(b => `
       <div class="booking-item">
         <div class="client-avatar">
-          <img src="${(b.client || b.clients)?.profile_picture_url || 'https://via.placeholder.com/60?text=No+Photo'}" alt="${(b.client || b.clients)?.name || 'Client'}">
+          <img src="${(b.client || b.clients)?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent((b.client || b.clients)?.name || 'Client')}&background=D4AF37&color=1a1a1a`}" 
+               onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent((b.client || b.clients)?.name || 'Client')}&background=D4AF37&color=1a1a1a'" 
+               alt="${(b.client || b.clients)?.name || 'Client'}">
         </div>
         <div class="booking-details">
           <strong>${(b.client || b.clients)?.name || 'Client Name'}</strong>
@@ -1164,7 +1212,9 @@
       return `
       <div class="booking-item">
         <div class="client-avatar">
-          <img src="${b.client?.profile_picture_url || 'https://via.placeholder.com/60?text=No+Photo'}" alt="${clientName}">
+          <img src="${b.client?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=D4AF37&color=1a1a1a`}" 
+               onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=D4AF37&color=1a1a1a'" 
+               alt="${clientName}">
         </div>
         <div class="booking-details">
           <strong>${clientName}</strong>
@@ -1211,11 +1261,35 @@
       if (error) throw error;
 
       availabilityStatus.textContent = `Availability saved: ${availabilityType.replace('_', ' ')}${specificDays.length ? ` on ${specificDays.join(', ')}` : ''}${timeType === 'specific_time' && startTime && endTime ? ` from ${startTime} to ${endTime}` : ''}`;
+      showToast('Availability settings updated successfully!');
       await fetchAvailabilityAndBookings();
     } catch (err) {
       console.error('Availability save error:', err);
       availabilityStatus.textContent = err.message || 'Could not save availability settings.';
     }
   });
-</script></body>
+
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('app-toast');
+    if (!toast) return;
+    toast.textContent = message;
+
+    if (type === 'error') {
+        toast.style.borderColor = '#ef4444';
+        toast.style.color = '#ef4444';
+    } else {
+        toast.style.borderColor = 'var(--gold)';
+        toast.style.color = '#fff';
+    }
+
+    toast.className = 'toast-visible';
+
+    setTimeout(() => {
+        toast.className = 'toast-hidden';
+    }, 3000);
+  }
+</script>
+
+<div id="app-toast" class="toast-hidden"></div>
+</body>
 </html>
