@@ -584,6 +584,10 @@
       .profile-panel .profile-row {
         grid-template-columns: 1fr;
       }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ── MAIN DASHBOARD LAYOUT ── */
@@ -647,6 +651,12 @@
         font-size: 14px;
         align-items: center;
       }
+    }
+
+    .flatpickr-calendar {
+      max-width: 90vw; /* Keeps it within screen width */
+      left: 50% !important;
+      transform: translateX(-50%) !important; /* Forces it to center */
     }
 
     /* ── BOOKING FORM UI ── */

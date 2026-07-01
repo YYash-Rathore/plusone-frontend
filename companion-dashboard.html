@@ -264,6 +264,8 @@
     letter-spacing: 0.08em;
     box-shadow: 0 14px 30px rgba(212, 175, 55, 0.26);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    z-index: 1000;
   }
   .btn-gold:hover {
     transform: translateY(-2px);
@@ -930,7 +932,7 @@
 
     if (!error && data) {
       profileName.value = data.full_name || '';
-      profileAge.value = data.age || '';
+      profileAge.value = (data.age !== null && data.age !== undefined && data.age !== 0) ? parseInt(data.age, 10) : '';
       profileLocation.value = data.location || 'Lucknow';
       profileBio.value = data.professional_summary || data.bio || '';
     } else {
@@ -944,21 +946,34 @@
   async function saveCompanionProfile(event) {
     event.preventDefault();
 
-    const email = document.getElementById('profileEmail').value.trim();
+    if (!currentUser || !currentUser.email) {
+      showToast('Error: User not authenticated.', 'error');
+      return;
+    }
+
+    const email = currentUser.email;
     const full_name = document.getElementById('profileName').value.trim();
     const age = document.getElementById('profileAge').value.trim();
     const location = document.getElementById('profileLocation').value.trim();
     const bio = document.getElementById('profileBio').value.trim();
 
     try {
+      const payload = { 
+         full_name: full_name, 
+         age: age ? parseInt(age, 10) : null, 
+         professional_summary: bio 
+      };
+      
+      console.log('Sending Supabase update for:', email);
+      console.log('Payload:', payload);
+
       const { data, error } = await supabaseClient
         .from('companions')
-        .update({ 
-           full_name: full_name, 
-           age: parseInt(age, 10), 
-           professional_summary: bio 
-        })
-        .eq('email', email);
+        .update(payload)
+        .eq('email', email)
+        .select();
+
+      console.log('Supabase Update Response:', { data, error });
 
       if (error) throw error;
       localStorage.setItem('userName', full_name);
