@@ -1225,10 +1225,10 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let trackingStep = 1;
 
-    function redirectLoggedInUser() {
-      const token = localStorage.getItem('userToken');
+    async function redirectLoggedInUser() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
       const role = localStorage.getItem('userRole');
-      if (token && role) {
+      if (!error && session && role) {
         const target = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
         window.location.href = target;
       }
@@ -1411,6 +1411,25 @@
       return { valid: true, user: data.user, session: data.session };
     }
 
+    async function ensureFreshSignupSession(authSession) {
+      if (!authSession) {
+        throw new Error('Please check your email to verify your account before continuing.');
+      }
+
+      const { error: setSessionError } = await supabaseClient.auth.setSession({
+        access_token: authSession.access_token,
+        refresh_token: authSession.refresh_token
+      });
+      if (setSessionError) throw setSessionError;
+
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (error || !session) {
+        throw new Error('Please check your email to verify your account before continuing.');
+      }
+
+      return session;
+    }
+
     async function executeSubmission() {
       if (!runValidationProtocols(4)) {
         const firstError = document.querySelector('.field-error.show');
@@ -1426,7 +1445,7 @@
       submitBtn.textContent = 'Sending OTP...';
       submitBtn.classList.add('loading');
 
-      const email = document.getElementById('email').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
 
       try {
         await sendVerificationOTP(email);
@@ -1465,7 +1484,7 @@
       otpBtn.textContent = 'Verifying & Submitting...';
       otpBtn.classList.add('loading');
 
-      const email = document.getElementById('email').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const otp = document.getElementById('otpCode').value.trim();
       const password = document.getElementById('password').value;
       const professionalStatus = document.querySelector('input[name="professional_status"]:checked').value;
@@ -1473,12 +1492,20 @@
       try {
         const verifyRes = await verifyOTP(email, otp);
         if (!verifyRes.valid) throw new Error(verifyRes.error);
+        await ensureFreshSignupSession(verifyRes.session);
 
         const { error: passwordError } = await supabaseClient.auth.updateUser({
           password: password,
           data: { full_name: document.getElementById('full-name').value, role: 'companion' }
         });
-        if (passwordError) console.error("Could not set password:", passwordError);
+        if (passwordError) {
+          if (passwordError.message && passwordError.message.toLowerCase().includes('different from the old password')) {
+            console.warn('Password is already set to the requested value. Proceeding safely...');
+          } else {
+            console.error('Could not set companion password:', passwordError);
+            throw passwordError;
+          }
+        }
 
         const profileFileInput = document.getElementById('profile-picture-upload');
         const aadhaarFileInput = document.getElementById('aadhaar-upload');
@@ -1531,11 +1558,15 @@
           panDocPath = panUploadData.path;
         }
 
+        // 1. Force lowercase email for strict RLS policy matching
+        const cleanEmail = email.toLowerCase();
+
+        // 2. Build payload (STRICTLY DO NOT INCLUDE 'status'. Let Postgres use its default to avoid Enum cast errors)
         const payload = {
           full_name: document.getElementById('full-name').value,
-          email,
+          email: cleanEmail,
           phone: document.getElementById('phone').value,
-          password,
+          password: password,
           age: Number(document.getElementById('age').value),
           height: document.getElementById('height').value,
           city: document.getElementById('city').value,
@@ -1551,24 +1582,39 @@
           pan_number: document.getElementById('pan-number').value.toUpperCase(),
           aadhaar_doc_url: aadhaarDocPath,
           pan_doc_url: panDocPath,
-          profile_picture_url: profilePictureUrl,
-          status: 'pending'
+          profile_picture_url: profilePictureUrl
         };
 
-        const { data: existingCompanion } = await supabaseClient
+        // 3. Check for existing companion using the cleaned email
+        const { data: existingCompanion, error: selectError } = await supabaseClient
           .from('companions')
           .select('id')
-          .eq('email', email)
+          .eq('email', cleanEmail)
           .maybeSingle();
 
-        const companionQuery = existingCompanion
-          ? supabaseClient.from('companions').update(payload).eq('id', existingCompanion.id).select().single()
-          : supabaseClient.from('companions').insert(payload).select().single();
+        if (selectError) {
+          console.error('Error checking existing profile:', selectError);
+        }
+
+        // 4. Execute Insert or Update
+        let companionQuery;
+        if (existingCompanion && existingCompanion.id) {
+          companionQuery = supabaseClient.from('companions').update(payload).eq('id', existingCompanion.id).select().single();
+        } else {
+          // Pass payload as an array for insert
+          companionQuery = supabaseClient.from('companions').insert([payload]).select().single();
+        }
 
         const { data: companionData, error: companionError } = await companionQuery;
-        if (companionError) throw companionError;
 
-        localStorage.setItem('userToken', verifyRes.session.access_token);
+        // 5. Granular Error Handling
+        if (companionError) {
+          console.error('🔥 SUPABASE DB ERROR DETAILS:', JSON.stringify(companionError, null, 2));
+          // Surface the exact database error message to the UI instead of a generic message
+          const exactErrorMsg = companionError.message || companionError.details || 'Profile blocked by database policies.';
+          throw new Error(`DB Error: ${exactErrorMsg}`);
+        }
+
         localStorage.setItem('userEmail', companionData.email);
         localStorage.setItem('userRole', 'companion');
         localStorage.setItem('userId', String(companionData.id));

@@ -648,10 +648,10 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let registeredEmail = '';
 
-    function redirectLoggedInUser() {
-      const token = localStorage.getItem('userToken');
+    async function redirectLoggedInUser() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
       const role = localStorage.getItem('userRole');
-      if (token && role) {
+      if (!error && session && role) {
         const target = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
         window.location.href = target;
       }
@@ -697,6 +697,25 @@
       });
       if (error) return { valid: false, error: error.message };
       return { valid: true, user: data.user, session: data.session };
+    }
+
+    async function ensureFreshSignupSession(authSession) {
+      if (!authSession) {
+        throw new Error('Please check your email to verify your account before continuing.');
+      }
+
+      const { error: setSessionError } = await supabaseClient.auth.setSession({
+        access_token: authSession.access_token,
+        refresh_token: authSession.refresh_token
+      });
+      if (setSessionError) throw setSessionError;
+
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (error || !session) {
+        throw new Error('Please check your email to verify your account before continuing.');
+      }
+
+      return session;
     }
 
     async function uploadProfileImage(file, email) {
@@ -771,6 +790,7 @@
       try {
         const verifyRes = await verifyOTP(registeredEmail, otp);
         if (!verifyRes.valid) throw new Error(verifyRes.error);
+        await ensureFreshSignupSession(verifyRes.session);
 
         const { error: passwordError } = await supabaseClient.auth.updateUser({
           password: tempClientPayload.password,
@@ -793,7 +813,7 @@
         const { data: clientData, error: clientError } = await clientQuery;
         if (clientError) {
           console.error('Female client profile creation failed:', clientError);
-          throw new Error('Your account was verified, but we could not create your profile. Please contact support.');
+          throw new Error('Auth successful, but profile creation failed. Please try logging in to complete setup.');
         }
 
         // Create the client row first so a later storage failure cannot leave a
@@ -805,7 +825,6 @@
           .eq('id', clientData.id);
         if (photoUpdateError) throw photoUpdateError;
 
-        localStorage.setItem('userToken', verifyRes.session.access_token);
         localStorage.setItem('userEmail', clientData.email);
         localStorage.setItem('userRole', 'female');
         localStorage.setItem('userId', String(clientData.id));

@@ -1539,7 +1539,6 @@
       }
 
       currentUser = session.user;
-      localStorage.setItem('userToken', session.access_token);
       localStorage.setItem('userEmail', session.user.email);
       localStorage.setItem('userRole', 'female');
       localStorage.setItem('userId', session.user.id);
@@ -1984,6 +1983,59 @@
       }
     });
 
+    function generateBookingReference() {
+      return `BKG-${Math.floor(10000 + Math.random() * 90000)}`;
+    }
+
+    function getSelectedBookingCompanionName() {
+      const selectedCompanion = document.querySelector('[data-selected-companion="true"]');
+      if (selectedCompanion?.dataset?.companionName) {
+        return selectedCompanion.dataset.companionName.trim();
+      }
+
+      const companionNameField = document.querySelector('[name="companion_name"], #selectedCompanionName');
+      if (companionNameField?.value) {
+        return companionNameField.value.trim();
+      }
+
+      return 'To be confirmed by PlusOne Team';
+    }
+
+    function buildInstagramBookingMessage({ bookingRef, companionName, date, time, duration }) {
+      return `Hello PlusOne Team,
+I would like to confirm my booking request.
+
+Booking Ref: #${bookingRef}
+Companion: ${companionName}
+Date: ${date}
+Time: ${time}
+Duration: ${duration}
+
+Please let me know the next steps!`;
+    }
+
+    async function copyBookingMessageAndRedirect(formattedMessage) {
+      const instagramDmUrl = 'https://ig.me/m/myplusone.in';
+
+      try {
+        if (!navigator.clipboard?.writeText) {
+          throw new Error('Clipboard API unavailable');
+        }
+
+        await navigator.clipboard.writeText(formattedMessage);
+        showToast('Booking details copied! Redirecting to Instagram... Please paste the message.', 'success', 3500);
+        setTimeout(() => {
+          window.location.href = instagramDmUrl;
+        }, 1500);
+      } catch (clipboardError) {
+        console.error('Clipboard copy failed:', clipboardError);
+        window.prompt('Clipboard access was blocked. Please copy this booking message before continuing to Instagram:', formattedMessage);
+        setTimeout(() => {
+          window.location.href = instagramDmUrl;
+        }, 1500);
+      }
+    }
+
 
 
     document.getElementById('bookingForm').addEventListener('submit', async function (e) {
@@ -2021,10 +2073,17 @@
         const { error } = await supabaseClient.from('bookings').insert(payload);
         if (error) throw error;
 
-        showToast('Booking request created successfully.', 'success');
+        const bookingMessage = buildInstagramBookingMessage({
+          bookingRef: generateBookingReference(),
+          companionName: getSelectedBookingCompanionName(),
+          date: requestedDate,
+          time: requestedTime,
+          duration: durationValue.textContent.trim()
+        });
+
         document.getElementById('bookingForm').reset();
         updateDurationDropdown(currentPricing);
-        await fetchDashboardData();
+        await copyBookingMessageAndRedirect(bookingMessage);
       } catch (err) {
         showToast(err.message || 'Could not submit booking. Please try again.', 'error');
       } finally {

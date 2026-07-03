@@ -780,7 +780,6 @@
             throw new Error('Account verified, but profile data is missing. Please contact support or complete signup.');
           }
 
-          localStorage.setItem('userToken', authData.session.access_token);
           localStorage.setItem('userEmail', data.email);
           localStorage.setItem('userRole', 'female');
           localStorage.setItem('userId', String(data.id));
@@ -798,7 +797,6 @@
             throw new Error('Account verified, but profile data is missing. Please contact support or complete signup.');
           }
 
-          localStorage.setItem('userToken', authData.session.access_token);
           localStorage.setItem('userEmail', data.email);
           localStorage.setItem('userRole', 'companion');
           localStorage.setItem('userId', String(data.id));
