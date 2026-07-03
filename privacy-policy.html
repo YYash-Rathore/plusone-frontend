@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Read the PlusOne Concierge privacy policy, including how we collect, protect, use and delete client and companion information.">
+  <meta name="theme-color" content="#050507">
+  <title>Privacy Policy — PlusOne Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #050507;
+      --surface: #0a0a0e;
+      --rule: rgba(255, 255, 255, 0.06);
+      --rule-hi: rgba(255, 255, 255, 0.11);
+      --gold: #d4af37;
+      --gold-light: #e6c86a;
+      --gold-pale: rgba(212, 175, 55, 0.09);
+      --text-1: #fcfcfc;
+      --text-2: #aaaab3;
+      --text-3: #6e6e78;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-width: 320px;
+      overflow-x: hidden;
+      background: var(--ink);
+      color: var(--text-1);
+      font: 300 16px/1.75 var(--sans);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle 650px at 84% 6%, rgba(212, 175, 55, 0.055), transparent 70%),
+        radial-gradient(circle 500px at 10% 60%, rgba(255, 255, 255, 0.018), transparent 72%);
+    }
+
+    a { color: inherit; }
+
+    .skip-link {
+      position: fixed;
+      top: -80px;
+      left: 24px;
+      z-index: 200;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: var(--gold);
+      color: #050507;
+      font-weight: 600;
+      transition: top .2s ease;
+    }
+
+    .skip-link:focus { top: 16px; }
+
+    nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 6%;
+      border-bottom: 1px solid var(--rule);
+      background: rgba(5, 5, 7, 0.78);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+
+    .nav-logo {
+      font: 400 28px/1 var(--serif);
+      letter-spacing: .02em;
+      text-decoration: none;
+    }
+
+    .nav-logo span,
+    .footer-logo span { color: var(--gold); font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .25s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible,
+    .footer-links a:hover,
+    .footer-links a:focus-visible { color: var(--gold); }
+
+    .login-link {
+      padding: 10px 20px;
+      border: 1px solid rgba(212, 175, 55, .34);
+      border-radius: 8px;
+    }
+
+    main { position: relative; z-index: 1; }
+
+    .hero {
+      position: relative;
+      display: grid;
+      min-height: 66vh;
+      place-items: center;
+      padding: 180px 6% 100px;
+      text-align: center;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: 6%;
+      bottom: 0;
+      left: 6%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
+    }
+
+    .hero-inner { max-width: 870px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .eyebrow::after { transform: rotate(180deg); }
+
+    h1 {
+      margin-bottom: 28px;
+      font: 300 clamp(48px, 7vw, 78px)/1.03 var(--serif);
+      letter-spacing: -.02em;
+    }
+
+    h1 em { color: var(--gold); font-weight: 400; }
+
+    .hero-copy {
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.85;
+    }
+
+    .updated {
+      display: inline-block;
+      margin-top: 35px;
+      padding: 8px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 100px;
+      color: var(--text-3);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .policy-layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 810px);
+      gap: clamp(48px, 8vw, 110px);
+      max-width: 1190px;
+      margin: 0 auto;
+      padding: 110px 6% 130px;
+    }
+
+    .side-nav { position: sticky; top: 125px; align-self: start; }
+
+    .side-nav p {
+      margin-bottom: 18px;
+      color: var(--text-3);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .side-nav ul { list-style: none; }
+
+    .side-nav a {
+      display: block;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+      color: var(--text-2);
+      font-size: 13px;
+      text-decoration: none;
+      transition: color .25s ease, padding-left .25s ease;
+    }
+
+    .side-nav a:hover,
+    .side-nav a:focus-visible { padding-left: 5px; color: var(--gold); }
+
+    .policy-content { counter-reset: policy-section; }
+
+    .policy-section {
+      scroll-margin-top: 115px;
+      padding: 46px 0;
+      border-bottom: 1px solid var(--rule);
+      counter-increment: policy-section;
+    }
+
+    .policy-section:first-child { padding-top: 0; }
+
+    .policy-section h2 {
+      margin-bottom: 20px;
+      font: 400 clamp(29px, 4vw, 39px)/1.15 var(--serif);
+      letter-spacing: -.01em;
+    }
+
+    .policy-section h2::before {
+      content: '0' counter(policy-section) ' / ';
+      color: var(--gold);
+      font: 500 11px/1 var(--sans);
+      letter-spacing: .1em;
+      vertical-align: middle;
+    }
+
+    .policy-section p,
+    .policy-section li { color: var(--text-2); }
+
+    .policy-section p + p,
+    .policy-section ul + p,
+    .policy-section p + ul { margin-top: 16px; }
+
+    .policy-section ul { padding-left: 21px; }
+    .policy-section li { margin: 9px 0; padding-left: 6px; }
+    .policy-section li::marker { color: var(--gold); }
+
+    .callout {
+      margin: 24px 0 3px;
+      padding: 20px 22px;
+      border: 1px solid rgba(212, 175, 55, .16);
+      border-radius: 12px;
+      background: var(--gold-pale);
+      color: #d7d7dc !important;
+      font-size: 14px;
+    }
+
+    .rights-panel {
+      margin-top: 26px;
+      padding: 26px;
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .025), rgba(255, 255, 255, .008));
+    }
+
+    .rights-panel strong { display: block; margin-bottom: 8px; color: var(--text-1); font-weight: 500; }
+
+    .contact-panel {
+      max-width: 1040px;
+      margin: 0 auto 130px;
+      padding: 0 6%;
+    }
+
+    .contact-inner {
+      padding: clamp(38px, 7vw, 66px);
+      border: 1px solid rgba(212, 175, 55, .18);
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, .085), rgba(255, 255, 255, .015));
+      text-align: center;
+    }
+
+    .contact-inner h2 {
+      margin-bottom: 16px;
+      font: 400 clamp(34px, 5vw, 50px)/1.1 var(--serif);
+    }
+
+    .contact-inner p { max-width: 650px; margin: 0 auto 30px; color: var(--text-2); }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 14px 30px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #050507;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(212, 175, 55, .18); }
+
+    footer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 50px 6%;
+      background: rgba(0, 0, 0, .4);
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
+    }
+
+    .footer-logo { color: var(--text-2); font: 400 22px/1 var(--serif); }
+    .footer-note { color: var(--text-3); font-size: 13px; text-align: center; }
+    .footer-links { display: flex; gap: 32px; }
+
+    .footer-links a {
+      color: var(--text-3);
+      font-size: 12.5px;
+      letter-spacing: .05em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .3s ease;
+    }
+
+    .footer-links a[aria-current="page"] { color: var(--gold); }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .policy-layout { grid-template-columns: 1fr; }
+      .side-nav { display: none; }
+      footer { flex-direction: column; gap: 24px; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 18px; }
+      .nav-logo { font-size: 25px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 10px; letter-spacing: .07em; }
+      .login-link { padding: 8px 11px; }
+      .hero { min-height: auto; padding: 140px 20px 78px; }
+      .hero-copy { font-size: 15px; }
+      .policy-layout { padding: 72px 20px 90px; }
+      .policy-section { padding: 36px 0; }
+      .rights-panel { padding: 22px 20px; }
+      .contact-panel { margin-bottom: 90px; padding: 0 18px; }
+      .contact-inner { padding: 38px 24px; }
+      footer { padding: 36px 18px; }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 14px 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <nav aria-label="Primary navigation">
+    <a href="index.html" class="nav-logo" aria-label="PlusOne Concierge home">Plus<span>One</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="login.html" class="login-link">Login</a></li>
+    </ul>
+  </nav>
+
+  <main id="main-content">
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Privacy, Treated Personally</p>
+        <h1>Your confidence is <em>never for sale.</em></h1>
+        <p class="hero-copy">Discretion is part of the service, not an optional extra. This policy explains what PlusOne Concierge collects, why we need it and the choices you have over your information.</p>
+        <p class="updated">Effective and last updated: 3 July 2026</p>
+      </div>
+    </header>
+
+    <div class="policy-layout">
+      <aside class="side-nav" aria-label="Policy contents">
+        <p>Policy contents</p>
+        <ul>
+          <li><a href="#scope">Scope</a></li>
+          <li><a href="#collection">Data We Collect</a></li>
+          <li><a href="#use">How We Use Data</a></li>
+          <li><a href="#confidentiality">Absolute Confidentiality</a></li>
+          <li><a href="#companion-privacy">Companion Privacy</a></li>
+          <li><a href="#payments">Payment Security</a></li>
+          <li><a href="#sharing">Limited Sharing</a></li>
+          <li><a href="#retention">Retention &amp; Security</a></li>
+          <li><a href="#deletion">Your Rights &amp; Deletion</a></li>
+          <li><a href="#changes">Policy Changes</a></li>
+        </ul>
+      </aside>
+
+      <article class="policy-content">
+        <section class="policy-section" id="scope">
+          <h2>Who this policy covers</h2>
+          <p>This Privacy Policy applies to personal data handled by PlusOne Concierge Network through this website, user and companion accounts, bookings, verification, payments and official support channels. It covers both women who use our booking service and gentlemen who apply to or serve as verified companions.</p>
+          <p>By providing information to us, you acknowledge the practices described here. Where consent is the basis for processing, you may withdraw it through our official support channel, subject to information we must retain for legal, fraud-prevention or safety purposes.</p>
+        </section>
+
+        <section class="policy-section" id="collection">
+          <h2>Data we collect</h2>
+          <p><strong>For female users and bookings:</strong> we may collect your name, age or confirmation that you are an adult, phone number, email address, account credentials, booking date and time, selected venue, preferences you choose to share, companion selection, support communications, feedback, safety reports and transaction references.</p>
+          <p>We ask only for information reasonably needed to create your account, arrange and support an outing, process payment, prevent misuse and respond to you. Please do not place highly sensitive or unnecessary information in booking notes or chats.</p>
+          <p><strong>For companion applicants:</strong> our screening process requires more extensive information. This may include legal name, contact details, date of birth, photograph, address, work or education information, references, interview notes, Aadhaar and PAN details or copies, and verification results. We may also retain conduct, booking and performance records for approved companions.</p>
+          <p><strong>Technical data:</strong> when you use the website, standard systems may record device and browser type, IP address, timestamps, pages visited, login activity, cookies and diagnostic or security logs.</p>
+          <p class="callout">We do not need your account password, card PIN, UPI PIN or one-time password in support chats. Never share them with a companion or anyone claiming to represent PlusOne.</p>
+        </section>
+
+        <section class="policy-section" id="use">
+          <h2>How we use information</h2>
+          <p>We use personal data only for defined service, security and legal purposes, including to:</p>
+          <ul>
+            <li>create and protect accounts, verify eligibility and authenticate users;</li>
+            <li>review, interview and verify companion applicants;</li>
+            <li>arrange bookings and share the minimum necessary outing details;</li>
+            <li>provide WhatsApp check-ins, customer care and SOS support;</li>
+            <li>process payments, refunds and transaction records;</li>
+            <li>investigate safety reports, enforce our standards and prevent fraud;</li>
+            <li>maintain, secure and improve the website and service; and</li>
+            <li>comply with applicable law, lawful requests and dispute obligations.</li>
+          </ul>
+        </section>
+
+        <section class="policy-section" id="confidentiality">
+          <h2>Absolute confidentiality</h2>
+          <p>We do not sell, rent or trade personal data. A woman’s account, companion choices and booking history are private and are not made public, used for public testimonials without express permission or disclosed to friends, family or employers simply because they ask.</p>
+          <p>Within PlusOne, access is limited to team members who need information to arrange the service, provide safety support, handle payment or resolve a specific issue. Those handling personal information are expected to maintain strict confidentiality.</p>
+          <p class="callout">Discretion has limits only where disclosure is necessary to protect someone from credible harm, investigate misconduct, comply with law or respond to a valid request from an authorised public body.</p>
+        </section>
+
+        <section class="policy-section" id="companion-privacy">
+          <h2>Companion privacy</h2>
+          <p>We protect the identities and verification records of our gentlemen with the same seriousness. Clients receive only the profile and booking information needed to make an informed selection and meet safely. Government identifiers, document copies, home addresses, private contact information and internal screening notes are not displayed to clients.</p>
+          <p>Clients and companions must not photograph identity documents, publish profiles, forward private messages, conduct unauthorised background searches or use booking information to contact one another outside the agreed service. We may disclose relevant companion information where required for a safety investigation or by applicable law.</p>
+        </section>
+
+        <section class="policy-section" id="payments">
+          <h2>Payment security</h2>
+          <p>Payments are processed by a secure third-party payment gateway. PlusOne does not store full debit or credit card numbers, CVV codes, UPI PINs or banking passwords on its own systems. The payment provider may collect and process payment information under its own privacy and security terms.</p>
+          <p>We may retain limited transaction details—such as amount, date, payment status, gateway reference and refund history—for reconciliation, support, fraud prevention and statutory record-keeping.</p>
+        </section>
+
+        <section class="policy-section" id="sharing">
+          <h2>When information is shared</h2>
+          <p>We share the minimum information reasonably necessary with:</p>
+          <ul>
+            <li>the selected client or companion to coordinate a confirmed booking;</li>
+            <li>payment, hosting, authentication, communications and security providers acting for us;</li>
+            <li>professional advisers where confidential legal, compliance or accounting support is needed; and</li>
+            <li>law enforcement, courts or public authorities when legally required or reasonably necessary for safety and the prevention or investigation of wrongdoing.</li>
+          </ul>
+          <p>Service providers may process information only for the service they supply and are expected to apply appropriate confidentiality and security safeguards.</p>
+        </section>
+
+        <section class="policy-section" id="retention">
+          <h2>Retention and security</h2>
+          <p>We retain information only for as long as it serves the purpose for which it was collected, supports safety and dispute handling, or is required by applicable tax, accounting or other law. Retention periods may differ: an unselected application need not be held as long as records connected to a completed transaction or serious safety report.</p>
+          <p>We use reasonable administrative, technical and access-control safeguards appropriate to the nature of the information. No internet service can promise absolute security, but we work to restrict access, monitor misuse and respond appropriately if a data incident occurs.</p>
+        </section>
+
+        <section class="policy-section" id="deletion">
+          <h2>Your rights and data deletion</h2>
+          <p>You may ask to access, correct, update or delete personal data associated with your account. You may also withdraw consent where processing relies on consent, or raise a privacy grievance through the official support channel shown after login or in your booking communications.</p>
+          <div class="rights-panel">
+            <strong>Requesting full account deletion</strong>
+            <p>Send an account-deletion request from the phone number or email linked to your account through PlusOne’s official support channel. We may complete a proportionate identity check before acting. Once verified, we will delete or irreversibly anonymise eligible account data and confirm completion.</p>
+          </div>
+          <p>Deletion is not absolute where limited retention is necessary to comply with law, establish or defend legal claims, preserve transaction records, prevent repeat abuse, or investigate a safety incident. Any retained information will remain restricted to that purpose and will be removed when the reason for retention ends.</p>
+        </section>
+
+        <section class="policy-section" id="changes">
+          <h2>Changes to this policy</h2>
+          <p>We may update this policy as the service, technology or legal requirements evolve. The revised version will appear on this page with a new “last updated” date. If a change materially affects how we use personal data, we will provide an appropriate additional notice through the website, account or official contact channel.</p>
+        </section>
+      </article>
+    </div>
+
+    <section class="contact-panel" aria-labelledby="privacy-help-title">
+      <div class="contact-inner">
+        <p class="eyebrow">Questions Or Requests</p>
+        <h2 id="privacy-help-title">Your information should never feel out of your hands.</h2>
+        <p>For access, correction, consent withdrawal, deletion or a privacy grievance, contact us through the official support channel available in your account or booking conversation.</p>
+        <a class="button" href="login.html">Go to your account&nbsp; →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-logo">Plus<span>One</span></div>
+    <p class="footer-note">© 2026 PlusOne Concierge Network. Lucknow, India. Platform engineered for women's safety.</p>
+    <div class="footer-links">
+      <a href="privacy-policy.html" aria-current="page">Privacy Policy</a>
+      <a href="safety-guidelines.html">Safety Guidelines</a>
+    </div>
+  </footer>
+</body>
+</html>

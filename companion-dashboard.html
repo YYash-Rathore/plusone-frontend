@@ -36,7 +36,7 @@
     background: var(--ink);
     color: var(--text-1);
     font-family: var(--sans);
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
   }
@@ -126,7 +126,8 @@
   .profile-modal {
     position: fixed;
     inset: 0;
-    min-height: 100vh;
+    height: 100%;
+    min-height: 100dvh;
     background: rgba(1, 1, 2, 0.92);
     backdrop-filter: blur(26px);
     display: none;
@@ -169,7 +170,7 @@
 
   .modal-container {
     width: min(100%, 580px);
-    max-height: calc(100vh - 80px);
+    max-height: calc(100dvh - 80px);
     overflow-y: auto;
     background: rgba(8, 8, 14, 0.98);
     backdrop-filter: blur(24px);
@@ -180,6 +181,13 @@
     position: relative;
     animation: modalFade 0.28s ease forwards;
     margin: auto 0;
+  }
+
+  .my-profile-container {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 120px !important;
   }
 
   .modal-container h2 {
@@ -215,7 +223,10 @@
   @media (max-width: 560px) {
     .modal-container {
       padding: 28px 20px 24px;
+      max-height: calc(100dvh - 24px);
     }
+
+    .my-profile-container { padding-bottom: 120px !important; }
     .modal-actions {
       flex-direction: column;
       align-items: stretch;
@@ -686,7 +697,7 @@
 </nav>
 
 <div id="profileModal" class="profile-modal" onclick="closeProfileModal(event)">
-  <section class="profile-panel modal-container" onclick="event.stopPropagation()">
+  <section class="profile-panel modal-container my-profile-container" onclick="event.stopPropagation()">
     <button class="close-panel" onclick="closeProfileModal(event)">&times;</button>
     <h2>My Profile</h2>
     <p class="profile-note">Use this section to keep your companion profile current and visible for client matching.</p>

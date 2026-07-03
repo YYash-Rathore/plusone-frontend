@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how PlusOne Concierge protects women in Lucknow through strict vetting, public-only meetings, active support and a zero-tolerance conduct policy.">
+  <meta name="theme-color" content="#050507">
+  <title>Safety Guidelines — PlusOne Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #050507;
+      --surface: #0a0a0e;
+      --surface-raised: #0e0e13;
+      --rule: rgba(255, 255, 255, 0.06);
+      --rule-hi: rgba(255, 255, 255, 0.11);
+      --gold: #d4af37;
+      --gold-light: #e6c86a;
+      --gold-pale: rgba(212, 175, 55, 0.09);
+      --text-1: #fcfcfc;
+      --text-2: #aaaab3;
+      --text-3: #6e6e78;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-width: 320px;
+      overflow-x: hidden;
+      background: var(--ink);
+      color: var(--text-1);
+      font: 300 16px/1.75 var(--sans);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle 650px at 84% 6%, rgba(212, 175, 55, 0.055), transparent 70%),
+        radial-gradient(circle 500px at 10% 60%, rgba(255, 255, 255, 0.018), transparent 72%);
+    }
+
+    a { color: inherit; }
+
+    .skip-link {
+      position: fixed;
+      top: -80px;
+      left: 24px;
+      z-index: 200;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: var(--gold);
+      color: #050507;
+      font-weight: 600;
+      transition: top .2s ease;
+    }
+
+    .skip-link:focus { top: 16px; }
+
+    nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 6%;
+      border-bottom: 1px solid var(--rule);
+      background: rgba(5, 5, 7, 0.78);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+
+    .nav-logo {
+      font: 400 28px/1 var(--serif);
+      letter-spacing: .02em;
+      text-decoration: none;
+    }
+
+    .nav-logo span,
+    .footer-logo span { color: var(--gold); font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .25s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible,
+    .footer-links a:hover,
+    .footer-links a:focus-visible { color: var(--gold); }
+
+    .login-link {
+      padding: 10px 20px;
+      border: 1px solid rgba(212, 175, 55, .34);
+      border-radius: 8px;
+    }
+
+    main { position: relative; z-index: 1; }
+
+    .hero {
+      position: relative;
+      display: grid;
+      min-height: 70vh;
+      place-items: center;
+      padding: 180px 6% 100px;
+      text-align: center;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: 6%;
+      bottom: 0;
+      left: 6%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
+    }
+
+    .hero-inner { max-width: 850px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .eyebrow::after { transform: rotate(180deg); }
+
+    h1 {
+      margin-bottom: 28px;
+      font: 300 clamp(46px, 7vw, 76px)/1.03 var(--serif);
+      letter-spacing: -.02em;
+    }
+
+    h1 em { color: var(--gold); font-weight: 400; }
+
+    .hero-copy {
+      max-width: 690px;
+      margin: 0 auto;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.85;
+    }
+
+    .promise-strip {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      margin-top: 46px;
+      color: #c7c7ce;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .promise-strip span { display: flex; align-items: center; gap: 9px; }
+    .promise-strip span::before { content: '✓'; color: var(--gold); }
+
+    .content-shell {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 800px);
+      gap: clamp(48px, 8vw, 110px);
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 110px 6% 130px;
+    }
+
+    .side-nav { position: sticky; top: 125px; align-self: start; }
+
+    .side-nav p {
+      margin-bottom: 18px;
+      color: var(--text-3);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .side-nav ol { list-style: none; }
+
+    .side-nav a {
+      display: block;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--rule);
+      color: var(--text-2);
+      font-size: 13px;
+      text-decoration: none;
+      transition: color .25s ease, padding-left .25s ease;
+    }
+
+    .side-nav a:hover,
+    .side-nav a:focus-visible { padding-left: 5px; color: var(--gold); }
+
+    .guideline-list { display: grid; gap: 22px; }
+
+    .guideline {
+      scroll-margin-top: 115px;
+      padding: clamp(30px, 5vw, 52px);
+      border: 1px solid var(--rule);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .028), rgba(255, 255, 255, .008));
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .22);
+    }
+
+    .section-number {
+      display: block;
+      margin-bottom: 25px;
+      color: var(--gold);
+      font: 400 13px/1 var(--sans);
+      letter-spacing: .16em;
+    }
+
+    h2 {
+      margin-bottom: 18px;
+      font: 400 clamp(30px, 4vw, 42px)/1.1 var(--serif);
+      letter-spacing: -.01em;
+    }
+
+    .guideline p { color: var(--text-2); }
+
+    .guideline p + p { margin-top: 15px; }
+
+    .highlight {
+      margin-top: 25px;
+      padding: 17px 20px;
+      border-left: 2px solid var(--gold);
+      border-radius: 0 10px 10px 0;
+      background: var(--gold-pale);
+      color: #d7d7dc !important;
+      font-size: 14px;
+    }
+
+    .support-panel {
+      max-width: 1040px;
+      margin: 0 auto 130px;
+      padding: 0 6%;
+    }
+
+    .support-inner {
+      padding: clamp(38px, 7vw, 70px);
+      border: 1px solid rgba(212, 175, 55, .18);
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, .085), rgba(255, 255, 255, .015));
+      text-align: center;
+    }
+
+    .support-inner h2 { font-size: clamp(34px, 5vw, 50px); }
+    .support-inner p { max-width: 650px; margin: 0 auto 30px; color: var(--text-2); }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 14px 30px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #050507;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(212, 175, 55, .18); }
+
+    footer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 50px 6%;
+      background: rgba(0, 0, 0, .4);
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--rule-hi), transparent);
+    }
+
+    .footer-logo { color: var(--text-2); font: 400 22px/1 var(--serif); }
+    .footer-note { color: var(--text-3); font-size: 13px; text-align: center; }
+    .footer-links { display: flex; gap: 32px; }
+
+    .footer-links a {
+      color: var(--text-3);
+      font-size: 12.5px;
+      letter-spacing: .05em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .3s ease;
+    }
+
+    .footer-links a[aria-current="page"] { color: var(--gold); }
+
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+    @media (max-width: 900px) {
+      .content-shell { grid-template-columns: 1fr; }
+      .side-nav { display: none; }
+      footer { flex-direction: column; gap: 24px; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 18px; }
+      .nav-logo { font-size: 25px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 10px; letter-spacing: .07em; }
+      .login-link { padding: 8px 11px; }
+      .hero { min-height: auto; padding: 140px 20px 78px; }
+      .hero-copy { font-size: 15px; }
+      .promise-strip { flex-direction: column; align-items: center; gap: 12px; }
+      .content-shell { padding: 72px 18px 90px; }
+      .guideline { padding: 28px 24px; border-radius: 16px; }
+      .support-panel { margin-bottom: 90px; padding: 0 18px; }
+      .support-inner { padding: 38px 24px; }
+      footer { padding: 36px 18px; }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 14px 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <nav aria-label="Primary navigation">
+    <a href="index.html" class="nav-logo" aria-label="PlusOne Concierge home">Plus<span>One</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="login.html" class="login-link">Login</a></li>
+    </ul>
+  </nav>
+
+  <main id="main-content">
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Your Safety, Without Compromise</p>
+        <h1>Good company should feel <em>completely safe.</em></h1>
+        <p class="hero-copy">Every PlusOne experience is designed around a simple standard: you should feel respected, in control and at ease from the first message until you are safely on your way home.</p>
+        <div class="promise-strip" aria-label="Core safety promises">
+          <span>Strictly platonic</span>
+          <span>Public venues only</span>
+          <span>Live support</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-shell">
+      <aside class="side-nav" aria-label="On this page">
+        <p>On this page</p>
+        <ol>
+          <li><a href="#platonic-promise">The Platonic Promise</a></li>
+          <li><a href="#vetting-process">Our Vetting Process</a></li>
+          <li><a href="#public-venues">Public Venues Only</a></li>
+          <li><a href="#realtime-support">Real-time Support</a></li>
+          <li><a href="#zero-tolerance">Zero Tolerance</a></li>
+        </ol>
+      </aside>
+
+      <article class="guideline-list">
+        <section class="guideline" id="platonic-promise">
+          <span class="section-number">01 — OUR FOUNDATION</span>
+          <h2>The 100% Platonic Promise</h2>
+          <p>PlusOne Concierge is companionship, never dating and never an intimacy service. A booking is for respectful conversation and social company at a cafe, event, gathering or city outing. Physical or sexual contact is not part of the service under any circumstance.</p>
+          <p>Clear boundaries protect everyone. You may end an outing at any moment if you feel uncomfortable; you never owe an explanation, continued conversation or extra time.</p>
+          <p class="highlight">A companion who suggests otherwise is acting outside our service. End the meeting, move toward venue staff or another safe area, and contact PlusOne support immediately.</p>
+        </section>
+
+        <section class="guideline" id="vetting-process">
+          <span class="section-number">02 — SELECTED WITH CARE</span>
+          <h2>A rigorous vetting process</h2>
+          <p>We reject approximately 90% of companion applicants. Presentation alone is never enough: every shortlisted gentleman must complete identity and document checks using Aadhaar and PAN, followed by a personal interview focused on conduct, communication, discretion and respect for boundaries.</p>
+          <p>Approval is not permanent entitlement. We review feedback and reported concerns continuously, and may pause or remove a companion whenever our standards are not met.</p>
+          <p class="highlight">Verification reduces risk; it does not remove the need for ordinary personal-safety judgment. Keep your own transport, phone and trusted contacts available throughout every outing.</p>
+        </section>
+
+        <section class="guideline" id="public-venues">
+          <span class="section-number">03 — SAFE BY DESIGN</span>
+          <h2>Public venues only</h2>
+          <p>All meetings must begin, continue and end at a reputed public venue or organised event in Lucknow—such as a recognised cafe, restaurant, gallery or ticketed gathering. Choose a place with staff, lighting, other guests and reliable mobile connectivity.</p>
+          <p>Companions are prohibited from meeting in hotel rooms, residences, private rooms, isolated locations or vehicles used as a private meeting space. Neither party may pressure the other to change the agreed venue.</p>
+          <p class="highlight">Arrive and leave independently. Do not share a home address, accommodation details, financial credentials or unnecessary personal information.</p>
+        </section>
+
+        <section class="guideline" id="realtime-support">
+          <span class="section-number">04 — HERE WHILE YOU ARE OUT</span>
+          <h2>Real-time support</h2>
+          <p>Our team actively monitors the WhatsApp support channel associated with your booking during the outing window. Use it for a check-in, a change of plan or any concern—small or urgent. We would always rather hear from you early.</p>
+          <p>Our SOS protocol prioritises immediate contact, confirming your location and guiding you toward venue security or emergency services as the situation requires. For imminent danger, call India’s emergency number <strong>112</strong> first, then alert PlusOne.</p>
+          <p class="highlight">Before leaving, charge your phone, enable location services, save the booking support chat and tell a trusted person where you will be.</p>
+        </section>
+
+        <section class="guideline" id="zero-tolerance">
+          <span class="section-number">05 — ONE STANDARD FOR EVERYONE</span>
+          <h2>Zero tolerance for misconduct</h2>
+          <p>Harassment, intimidation, discrimination, stalking, coercion, intoxicated misconduct, non-consensual contact, threats, extortion and attempts to move a meeting into a private setting are strictly prohibited. This standard applies equally to clients and companions.</p>
+          <p>We may immediately suspend or permanently ban any person involved in a credible safety concern. Where conduct may be unlawful, we may preserve relevant records and cooperate with law enforcement in accordance with applicable law and our Privacy Policy.</p>
+          <p class="highlight">Report concerns through the active booking support channel. In an emergency or immediate threat, move to safety and call 112.</p>
+        </section>
+      </article>
+    </div>
+
+    <section class="support-panel" aria-labelledby="support-title">
+      <div class="support-inner">
+        <p class="eyebrow">You Remain In Control</p>
+        <h2 id="support-title">Trust your instincts. We will trust them too.</h2>
+        <p>If something feels wrong before or during a booking, pause or end it. Your comfort is a sufficient reason, and our team is there to support your decision.</p>
+        <a class="button" href="bookings.html">Plan a safe outing&nbsp; →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-logo">Plus<span>One</span></div>
+    <p class="footer-note">© 2026 PlusOne Concierge Network. Lucknow, India. Platform engineered for women's safety.</p>
+    <div class="footer-links">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="safety-guidelines.html" aria-current="page">Safety Guidelines</a>
+    </div>
+  </footer>
+</body>
+</html>

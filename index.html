@@ -695,6 +695,8 @@
   <ul class="nav-links">
     <li><a href="#whyus">Safety Standards</a></li>
     <li><a href="#howitworks">How To Book</a></li>
+    <li><a href="safety-guidelines.html">Safety Guidelines</a></li>
+    <li><a href="privacy-policy.html">Privacy Policy</a></li>
   </ul>
   
   <div id="auth-buttons" style="display: flex; gap: 12px; align-items: center;">
@@ -903,8 +905,8 @@
   <div class="footer-logo">Plus<span>One</span></div>
   <p class="footer-note">© 2026 PlusOne Concierge Network. Lucknow, India. Platform engineered for women's safety.</p>
   <div class="footer-links">
-    <a href="#">Privacy Policy</a>
-    <a href="#">Safety Guidelines</a>
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="safety-guidelines.html">Safety Guidelines</a>
   </div>
 </footer>
 
@@ -979,59 +981,52 @@
     }
   }
 
+  function clearStoredAuthState() {
+    ['userToken', 'userEmail', 'userRole', 'userId', 'userName', 'companionStatus']
+      .forEach(key => localStorage.removeItem(key));
+  }
+
+  function renderLoggedOutAuth() {
+    const authButtonsDiv = document.getElementById('auth-buttons');
+    const bookBtn = document.getElementById('btn-book');
+    const applyBtn = document.getElementById('btn-apply');
+
+    document.getElementById('btn-dashboard')?.remove();
+    if (bookBtn) bookBtn.style.display = '';
+    if (applyBtn) applyBtn.style.display = '';
+    authButtonsDiv.innerHTML = `
+      <a href="login.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">Login</a>
+      <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Apply as Companion</a>
+    `;
+  }
+
   async function checkAuthStatus() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
     const authButtonsDiv = document.getElementById('auth-buttons');
     const bookBtn = document.getElementById('btn-book');
     const applyBtn = document.getElementById('btn-apply');
     const heroActions = document.getElementById('heroActions');
 
-    if (session) {
-      const role = localStorage.getItem('userRole') || session.user?.user_metadata?.role || 'female';
-      const dashboardLink = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-      if (bookBtn) bookBtn.style.display = 'none';
-      if (applyBtn) applyBtn.style.display = 'none';
-
-      if (heroActions) {
-        const dashboardButton = document.createElement('a');
-        dashboardButton.href = dashboardLink;
-        dashboardButton.className = 'btn-primary';
-        dashboardButton.id = 'btn-dashboard';
-        dashboardButton.innerHTML = 'Go to My Dashboard <span class="btn-arrow">→</span>';
-        heroActions.appendChild(dashboardButton);
-      }
-
-      authButtonsDiv.innerHTML = `
-        <a href="${dashboardLink}" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
-        <button id="logoutBtn" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
-      `;
-      document.getElementById('logoutBtn')?.addEventListener('click', logoutUser);
-    } else {
-      authButtonsDiv.innerHTML = `
-        <a href="login.html" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">Login</a>
-        <a href="companion-register.html" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Apply as Companion</a>
-      `;
+    if (error || !session) {
+      clearStoredAuthState();
+      renderLoggedOutAuth();
+      return;
     }
-  }
 
-  async function logoutUser() {
-    await supabaseClient.auth.signOut();
-    localStorage.clear();
-    window.location.href = 'index.html';
-  }
+    const role = localStorage.getItem('userRole');
+    if (role !== 'female' && role !== 'companion') {
+      renderLoggedOutAuth();
+      return;
+    }
 
-  function setHeroDashboardButton(role) {
-    const heroActions = document.getElementById('heroActions');
-    const bookBtn = document.getElementById('btn-book');
-    const applyBtn = document.getElementById('btn-apply');
-    const existing = document.getElementById('btn-dashboard');
     const dashboardLink = role === 'companion' ? 'companion-dashboard.html' : 'dashboard.html';
+    localStorage.setItem('userToken', session.access_token);
 
     if (bookBtn) bookBtn.style.display = 'none';
     if (applyBtn) applyBtn.style.display = 'none';
 
-    if (heroActions && !existing) {
+    if (heroActions) {
       const dashboardButton = document.createElement('a');
       dashboardButton.href = dashboardLink;
       dashboardButton.className = 'btn-primary';
@@ -1039,17 +1034,24 @@
       dashboardButton.innerHTML = 'Go to My Dashboard <span class="btn-arrow">→</span>';
       heroActions.appendChild(dashboardButton);
     }
+
+    authButtonsDiv.innerHTML = `
+      <a href="${dashboardLink}" class="btn-primary" style="padding: 10px 20px; font-size: 11px;">My Dashboard</a>
+      <button id="logoutBtn" class="btn-secondary" style="padding: 10px 20px; font-size: 11px;">Logout</button>
+    `;
+    document.getElementById('logoutBtn')?.addEventListener('click', logoutUser);
+  }
+
+  async function logoutUser() {
+    await supabaseClient.auth.signOut();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = 'index.html';
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
     loadLiveStats();
     await checkAuthStatus();
-
-    const token = localStorage.getItem('userToken');
-    const role = localStorage.getItem('userRole');
-    if (token && role) {
-      setHeroDashboardButton(role);
-    }
   });
 </script>
 

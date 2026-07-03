@@ -164,6 +164,41 @@
       width: 100%;
     }
 
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      z-index: 2;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: color 0.2s ease;
+    }
+
+    .toggle-password:hover,
+    .toggle-password:focus-visible { color: var(--gold); }
+
+    .toggle-password:focus-visible {
+      outline: 1px solid var(--gold);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+
+    .password-wrapper input { padding-right: 48px; }
+
     textarea {
       min-height: 100px;
       resize: vertical;
@@ -521,8 +556,18 @@
               placeholder="name@example.com"></div>
           <div class="field-group"><label>Your Phone No.</label><input type="tel" name="phone" required
               placeholder="Primary Number"></div>
-          <div class="field-group"><label>Set Password</label><input type="password" name="password" required
-              minlength="6" placeholder="Min 6 characters"></div>
+          <div class="field-group">
+            <label>Set Password</label>
+            <div class="password-wrapper">
+              <input type="password" name="password" required minlength="6" placeholder="Min 6 characters">
+              <button type="button" class="toggle-password" aria-label="Show password" aria-pressed="false">
+                <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
           <div class="field-group"><label>Emergency Contact Number (SOS)</label><input type="tel"
               name="emergency_contact" required placeholder="Enter emergency contact number"></div>
           <div class="field-group"><label>SOS Relation</label>
@@ -596,6 +641,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="dropdowns.js"></script>
+  <script src="password-toggle.js"></script>
   <script>
     const SUPABASE_URL = 'https://tpqhjkpzdecbfjuquamv.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_xpm51YdviIKRoEzhewYzXg_07wz6Bfl';
@@ -730,9 +776,7 @@
           password: tempClientPayload.password,
           data: { full_name: tempClientPayload.name, role: 'female' }
         });
-        if (passwordError) console.error("Could not set password:", passwordError);
-
-        tempClientPayload.profile_picture_url = await uploadProfileImage(tempProfileFile, registeredEmail);
+        if (passwordError) throw passwordError;
 
         const { data: existingClient } = await supabaseClient
           .from('clients')
@@ -747,7 +791,19 @@
         console.log("Saving payload to Supabase:", tempClientPayload); // Check if 'about_me' exists here
 
         const { data: clientData, error: clientError } = await clientQuery;
-        if (clientError) throw clientError;
+        if (clientError) {
+          console.error('Female client profile creation failed:', clientError);
+          throw new Error('Your account was verified, but we could not create your profile. Please contact support.');
+        }
+
+        // Create the client row first so a later storage failure cannot leave a
+        // verified Auth user without a matching application profile.
+        const profilePictureUrl = await uploadProfileImage(tempProfileFile, registeredEmail);
+        const { error: photoUpdateError } = await supabaseClient
+          .from('clients')
+          .update({ profile_picture_url: profilePictureUrl })
+          .eq('id', clientData.id);
+        if (photoUpdateError) throw photoUpdateError;
 
         localStorage.setItem('userToken', verifyRes.session.access_token);
         localStorage.setItem('userEmail', clientData.email);
