@@ -1703,6 +1703,7 @@
 
     function renderActiveBookings(bookings, approvedCompanions) {
       const container = document.getElementById('activeBookingsContainer');
+      window.bookingDetailMap = {};
       if (bookings.length === 0) {
         container.innerHTML = '<div class="empty-state">No active requests at the moment.</div>';
         return;
@@ -1710,6 +1711,7 @@
 
       let html = '';
       bookings.forEach(b => {
+        window.bookingDetailMap[b.id] = b;
         const status = (b.status || 'pending').toLowerCase();
         let statusHtml = '';
         let companionHtml = '';
@@ -1864,6 +1866,49 @@
       return new Date(dateStr).toLocaleDateString('en-GB', options);
     }
 
+    function generateBookingReference() {
+      return `#BKG-${Math.floor(10000 + Math.random() * 90000)}`;
+    }
+
+    function formatDurationForConfirmation(duration) {
+      if (!duration) return 'Not specified';
+      return duration
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+    }
+
+    function buildInstagramBookingMessage({ bookingId, companionName, date, time, duration, location }) {
+      return `Hello PlusOne Team, I am confirming my booking.
+
+Booking ID: ${bookingId}
+Companion: ${companionName}
+Date: ${date}
+Time: ${time}
+Duration: ${duration}
+Location: ${location}`;
+    }
+
+    function redirectToInstagramDm() {
+      setTimeout(() => {
+        window.location.href = 'https://ig.me/m/myplusone.in';
+      }, 5000);
+    }
+
+    async function copyBookingMessage(formattedMessage) {
+      try {
+        if (!navigator.clipboard?.writeText) {
+          throw new Error('Clipboard API unavailable');
+        }
+
+        await navigator.clipboard.writeText(formattedMessage);
+        return true;
+      } catch (clipboardError) {
+        console.error('Clipboard copy failed:', clipboardError);
+        alert(`Clipboard access was blocked. Please screenshot or manually send these booking details on Instagram:\n\n${formattedMessage}`);
+        return false;
+      }
+    }
+
     async function assignCompanion(bookingId, companionId, companionName) {
       const button = document.getElementById(`assign-btn-${bookingId}-${companionId}`);
       if (button) {
@@ -1872,14 +1917,28 @@
       }
 
       try {
+        const booking = window.bookingDetailMap?.[bookingId] || {};
+        const bookingMessage = buildInstagramBookingMessage({
+          bookingId: generateBookingReference(),
+          companionName,
+          date: booking.meetup_date || 'Not specified',
+          time: booking.meetup_time || 'Not specified',
+          duration: formatDurationForConfirmation(booking.duration_type),
+          location: booking.location || 'Not specified'
+        });
+        const copiedToClipboard = await copyBookingMessage(bookingMessage);
+
         const { error } = await supabaseClient
           .from('bookings')
           .update({ companion_id: companionId, status: 'assigned' })
           .eq('id', bookingId);
 
         if (error) throw error;
-        showToast(`Companion ${companionName} has been assigned to your booking.`, 'success');
-        await fetchDashboardData();
+
+        if (copiedToClipboard) {
+          showToast('Booking Confirmed! Details copied. Paste the Details in the Chat, Redirecting to Instagram...', 'success', 6500);
+        }
+        redirectToInstagramDm();
       } catch (err) {
         showToast(err.message || 'Could not assign companion. Please try again.', 'error');
       } finally {
@@ -1983,61 +2042,6 @@
       }
     });
 
-    function generateBookingReference() {
-      return `BKG-${Math.floor(10000 + Math.random() * 90000)}`;
-    }
-
-    function getSelectedBookingCompanionName() {
-      const selectedCompanion = document.querySelector('[data-selected-companion="true"]');
-      if (selectedCompanion?.dataset?.companionName) {
-        return selectedCompanion.dataset.companionName.trim();
-      }
-
-      const companionNameField = document.querySelector('[name="companion_name"], #selectedCompanionName');
-      if (companionNameField?.value) {
-        return companionNameField.value.trim();
-      }
-
-      return 'To be confirmed by PlusOne Team';
-    }
-
-    function buildInstagramBookingMessage({ bookingRef, companionName, date, time, duration }) {
-      return `Hello PlusOne Team,
-I would like to confirm my booking request.
-
-Booking Ref: #${bookingRef}
-Companion: ${companionName}
-Date: ${date}
-Time: ${time}
-Duration: ${duration}
-
-Please let me know the next steps!`;
-    }
-
-    async function copyBookingMessageAndRedirect(formattedMessage) {
-      const instagramDmUrl = 'https://ig.me/m/myplusone.in';
-
-      try {
-        if (!navigator.clipboard?.writeText) {
-          throw new Error('Clipboard API unavailable');
-        }
-
-        await navigator.clipboard.writeText(formattedMessage);
-        showToast('Booking details copied! Redirecting to Instagram... Please paste the message.', 'success', 3500);
-        setTimeout(() => {
-          window.location.href = instagramDmUrl;
-        }, 1500);
-      } catch (clipboardError) {
-        console.error('Clipboard copy failed:', clipboardError);
-        window.prompt('Clipboard access was blocked. Please copy this booking message before continuing to Instagram:', formattedMessage);
-        setTimeout(() => {
-          window.location.href = instagramDmUrl;
-        }, 1500);
-      }
-    }
-
-
-
     document.getElementById('bookingForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const btn = document.getElementById('submitBookingBtn');
@@ -2073,17 +2077,10 @@ Please let me know the next steps!`;
         const { error } = await supabaseClient.from('bookings').insert(payload);
         if (error) throw error;
 
-        const bookingMessage = buildInstagramBookingMessage({
-          bookingRef: generateBookingReference(),
-          companionName: getSelectedBookingCompanionName(),
-          date: requestedDate,
-          time: requestedTime,
-          duration: durationValue.textContent.trim()
-        });
-
         document.getElementById('bookingForm').reset();
         updateDurationDropdown(currentPricing);
-        await copyBookingMessageAndRedirect(bookingMessage);
+        showToast('Booking request submitted. Select an available companion to confirm.', 'success', 3500);
+        await fetchDashboardData();
       } catch (err) {
         showToast(err.message || 'Could not submit booking. Please try again.', 'error');
       } finally {
